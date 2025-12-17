@@ -372,12 +372,11 @@ Mod+Shift+Backspace { spawn "kitty" "--title" "Task Manager" "btop"; }
 
     Mod+W { toggle-column-tabbed-display; }
     // Launch WhatsApp (Helium PWA) with Mod+M
-    Mod+M { spawn "/home/alaeddine/.local/bin/toggle-whatsapp"; }
+	Mod+M { spawn "bash" "-c" "~/.config/niri/scripts/toggle-whatsapp"; }
     // Launch Gemini (Helium PWA) with Mod+G
-    Mod+G { spawn "/home/alaeddine/.local/bin/toggle-gemini"; }
-
+Mod+G { spawn "bash" "-c" "~/.config/niri/scripts/toggle-gemini"; }
     Mod+Shift+4 { screenshot; }
-    Mod+Shift+5 { spawn "/home/alaeddine/.local/bin/recorder-menu"; }
+	Mod+Shift+5 { spawn "bash" "-c" "~/.config/niri/scripts/recorder-menu"; }
     Ctrl+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
