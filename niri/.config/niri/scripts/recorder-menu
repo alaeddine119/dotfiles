@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Check if recording is already running
+if pgrep -x "wf-recorder" > /dev/null; then
+    # If running, show "Stop" option
+    CHOICE=$(echo -e "⏹️ Stop Recording" | fuzzel -d -p "Recording Active: " -w 20)
+    
+    if [[ "$CHOICE" == "⏹️ Stop Recording" ]]; then
+        killall -s SIGINT wf-recorder
+        notify-send "Recording Saved" "Video saved to ~/Videos"
+    fi
+else
+    # If not running, show Start options
+    CHOICE=$(echo -e "🖥️ Full Screen (No Audio)\n🔊 Full Screen (With Audio)\n✂️ Select Region (No Audio)" | fuzzel -d -p "Start Recording: " -w 30)
+
+    TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
+    FILENAME="$HOME/Videos/Rec_$TIMESTAMP.mp4"
+
+    case "$CHOICE" in
+        "🖥️ Full Screen (No Audio)")
+            notify-send "Recording Started" "Full Screen"
+            wf-recorder -f "$FILENAME" &
+            ;;
+        "🔊 Full Screen (With Audio)")
+            notify-send "Recording Started" "With Audio"
+            # Uses default audio source automatically
+            wf-recorder -a -f "$FILENAME" &
+            ;;
+        "✂️ Select Region (No Audio)")
+            notify-send "Select Region" "Draw a box to record"
+            wf-recorder -g "$(slurp)" -f "$FILENAME" &
+            ;;
+    esac
+fi

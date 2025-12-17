@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# WhatsApp App ID (Hash)
+APP_ID="hnpfjngllnobngcgfapefoaidbinmjnm"
+
+# Check if the window exists
+if niri msg windows | grep -q "$APP_ID"; then
+    # It exists. Now check if it is FOCUSED.
+    FOCUSED_ID=$(niri msg focused-window | grep "App ID" | grep "$APP_ID")
+    
+    if [ -n "$FOCUSED_ID" ]; then
+        # If it is focused, close it
+        niri msg action close-window
+    else
+        # If it exists but NOT focused, find ID and focus it
+        WINDOW_ID=$(niri msg windows | grep -B 5 "$APP_ID" | grep "Window ID" | head -n1 | awk '{print $3}' | tr -d :)
+        niri msg action focus-window --id $WINDOW_ID
+    fi
+else
+    # It doesn't exist, launch it
+    exec /opt/helium-browser-bin/chrome-wrapper \
+        --profile-directory=Default \
+        --app-id=hnpfjngllnobngcgfapefoaidbinmjnm \
+        --ozone-platform=wayland \
+        --disable-features=WaylandWindowDecorations
+fi
