@@ -71,7 +71,7 @@ spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 spawn-at-startup "swaync"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
 spawn-at-startup "swayosd-server"
-spawn-at-startup "swayidle" "-w" "timeout" "300" "sh -c 'pgrep -x gtklock || gtklock'" "timeout" "301" "niri msg action power-off-monitors" "resume" "niri msg action power-on-monitors" "before-sleep" "sh -c 'pgrep -x gtklock || gtklock'"
+spawn-at-startup "swayidle" "-w" "timeout" "300" "swaylock -f --screenshots --clock --indicator --effect-blur 7x5" "timeout" "601" "niri msg action power-off-monitors" "resume" "niri msg action power-on-monitors" "before-sleep" "swaylock -f --screenshots --clock --indicator --effect-blur 7x5"
 environment {
     XDG_CURRENT_DESKTOP "niri"
     XDG_SESSION_TYPE "wayland"
@@ -207,7 +207,7 @@ binds {
         spawn "fuzzel"
     }
     Mod+B hotkey-overlay-title="Run an Application: zen-browser" {
-        spawn "zen-browser"
+        spawn "flatpak" "run" "app.zen_browser.zen"
     }
     Mod+E hotkey-overlay-title="Run an Application: File Browser" {
         spawn "nautilus"
@@ -215,10 +215,10 @@ binds {
     Mod+P hotkey-overlay-title="Run an Application: vscode" {
         spawn "code"
     }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" {
-        spawn "gtklock"
+    Mod+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" {
+        spawn "swaylock" "-f" "--screenshots" "--effect-scale" "0.5" "--effect-blur" "7x5" "--effect-scale" "2" "--clock" "--indicator"
     }
-    Super+Alt+S allow-when-locked=true hotkey-overlay-title=null {
+    Mod+Alt+S allow-when-locked=true hotkey-overlay-title=null {
         spawn-sh "pkill orca || exec orca"
     }
     Mod+Alt+B {
@@ -603,8 +603,8 @@ binds {
     Ctrl+Alt+Delete {
         quit
     }
-    Mod+Shift+P {
-        power-off-monitors
+    Mod+Shift+P hotkey-overlay-title="Power Menu" {
+        spawn "~/.config/niri/scripts/powermenu"
     }
 }
 overview {
