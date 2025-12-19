@@ -77,10 +77,11 @@ layer-rule {
 
 spawn-at-startup "waybar"
 // spawn-at-startup "localsend" "--hidden"
+spawn-at-startup "swaybg" "-m" "fill" "-i" "/home/alaeddine/Pictures/Wallpapers/ashya-jamila.jpg"
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 spawn-at-startup "swaync"
-
+spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
 spawn-at-startup "swayidle" "-w" \
     "timeout" "300" "sh -c 'pgrep -x gtklock || gtklock'" \
     "timeout" "301" "niri msg action power-off-monitors" \
@@ -93,6 +94,8 @@ environment {
 	QT_QPA_PLATFORM "wayland"
 	MOZ_ENABLE_WAYLAND "1"
 	QT_WAYLAND_DISABLE_WINDOWDECORATION "1"
+	GTK_IM_MODULE "simple"
+	ELECTRON_OZONE_PLATFORM_HINT "auto"
 }
 
 
