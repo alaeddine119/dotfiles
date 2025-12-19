@@ -82,6 +82,7 @@ spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 spawn-at-startup "swaync"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
+spawn-at-startup "swayosd-server"
 spawn-at-startup "swayidle" "-w" \
     "timeout" "300" "sh -c 'pgrep -x gtklock || gtklock'" \
     "timeout" "301" "niri msg action power-off-monitors" \
@@ -232,21 +233,67 @@ Mod+T { spawn "pkill" "-SIGUSR1" "waybar"; }
 Mod+Alt+B { spawn "kitty" "--title" "Bluetooth TUI" "bluetui"; }
 Mod+Shift+Backspace { spawn "kitty" "--title" "Task Manager" "btop"; }
 	Mod+Alt+W  { spawn "kitty" "--title" "Wifi TUI" "impala"; }
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ -l 1.0"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
-    XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-    XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
-    XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
-    XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
 
-    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+2%"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "2%-"; }
 
-	XF86KbdBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "--device" "kbd_backlight" "set" "+2%"; }
-    XF86KbdBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--device" "kbd_backlight" "set" "2%-"; }
+// AUDIO CONTROLS
+XF86AudioRaiseVolume allow-when-locked=true {
+    spawn "swayosd-client" "--output-volume" "raise"
+}
+
+XF86AudioLowerVolume allow-when-locked=true {
+    spawn "swayosd-client" "--output-volume" "lower"
+}
+
+XF86AudioMute allow-when-locked=true {
+    spawn "swayosd-client" "--output-volume" "mute-toggle"
+}
+
+XF86AudioMicMute allow-when-locked=true {
+    spawn "swayosd-client" "--input-volume" "mute-toggle"
+}
+
+
+// MEDIA PLAYBACK
+XF86AudioPlay allow-when-locked=true {
+    spawn "swayosd-client" "--playerctl" "play-pause"
+}
+
+XF86AudioStop allow-when-locked=true {
+    spawn "swayosd-client" "--playerctl" "stop"
+}
+
+XF86AudioPrev allow-when-locked=true {
+    spawn "swayosd-client" "--playerctl" "previous"
+}
+
+XF86AudioNext allow-when-locked=true {
+    spawn "swayosd-client" "--playerctl" "next"
+}
+
+
+// SCREEN BRIGHTNESS
+XF86MonBrightnessUp allow-when-locked=true {
+    spawn "swayosd-client" "--brightness" "raise"
+}
+
+XF86MonBrightnessDown allow-when-locked=true {
+    spawn "swayosd-client" "--brightness" "lower"
+}
+
+// KEYBOARD BACKLIGHT 
+   
+   
+XF86KbdBrightnessUp allow-when-locked=true {
+    spawn "brightnessctl" "--device" "kbd_backlight" "set" "+2%"
+}
+
+XF86KbdBrightnessDown allow-when-locked=true {
+    spawn "brightnessctl" "--device" "kbd_backlight" "set" "2%-"
+}
+
+
+
 
     Mod+O repeat=false { toggle-overview; }
 
