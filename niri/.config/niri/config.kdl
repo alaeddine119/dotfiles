@@ -110,7 +110,7 @@ window-rule {
     open-floating true
 }
 window-rule {
-    match app-id="kitty" title="Bluetooth TUI"
+    match app-id="foot" title="Bluetooth TUI"
     open-floating true
     default-column-width {
         fixed 800
@@ -120,7 +120,7 @@ window-rule {
     }
 }
 window-rule {
-    match app-id="kitty" title="Wifi TUI"
+    match app-id="foot" title="Wifi TUI"
     open-floating true
     default-column-width {
         fixed 800
@@ -170,7 +170,7 @@ window-rule {
 // btop
 window-rule {
     // Match any terminal running btop (Title must be "btop")
-    match app-id="(kitty|Alacritty)" title="Task Manager"
+    match app-id="(foot)" title="Task Manager"
     open-floating true
     default-column-width {
         fixed 900
@@ -222,13 +222,13 @@ binds {
         spawn-sh "pkill orca || exec orca"
     }
     Mod+Alt+B {
-        spawn "kitty" "--title" "Bluetooth TUI" "bluetui"
+        spawn "foot" "--title" "Bluetooth TUI" "bluetui"
     }
     Mod+Shift+Backspace {
-        spawn "kitty" "--title" "Task Manager" "btop"
+        spawn "foot" "--title" "Task Manager" "btop"
     }
     Mod+Alt+W {
-        spawn "kitty" "--title" "Wifi TUI" "impala"
+        spawn "foot" "--title" "Wifi TUI" "impala"
     }
     // AUDIO CONTROLS
     XF86AudioRaiseVolume allow-when-locked=true {

@@ -36,7 +36,7 @@
 		"max-length": 50,
 	},
     "tray": {
-        "icon-size": 12,
+        "icon-size": 26,
         "spacing": 8,
     },
 	"custom/wifi": {
