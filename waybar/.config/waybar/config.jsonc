@@ -49,7 +49,7 @@
         "off": "睊"           // Icon: wifi-off
     },
     "exec": "~/.config/waybar/scripts/wifi-status.sh",
-    "on-click": "kitty --title 'Wifi TUI' impala",
+    "on-click": "foot --title 'Wifi TUI' impala",
     "tooltip": true
 },
 
@@ -63,7 +63,7 @@
         "off": ""           // Icon: bluetooth-off
     },
     "exec": "~/.config/waybar/scripts/bluetooth-status.sh",
-    "on-click": "kitty --title 'Bluetooth TUI' bluetui", // Launch TUI
+    "on-click": "foot --title 'Bluetooth TUI' bluetui", // Launch TUI
     "tooltip": true
 },
     "clock": {
