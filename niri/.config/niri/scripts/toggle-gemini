@@ -18,9 +18,7 @@ if niri msg windows | grep -q "$APP_ID"; then
 	fi
 else
 	# It doesn't exist, launch it
-	exec /home/alaeddine/AppImages/helium.appimage \
+	exec helium-browser \
 		--profile-directory=Default \
-		--app-id=gdfaincndogidkdcdkhapmbffkckdkhn \
-		--ozone-platform=wayland \
-		--disable-features=WaylandWindowDecorations
+		--app-id=gdfaincndogidkdcdkhapmbffkckdkhn
 fi
