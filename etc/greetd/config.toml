@@ -1,0 +1,6 @@
+[terminal]
+vt = 1 
+
+[default_session]
+command = "tuigreet --time --width 100 --window-padding 2 --remember --asterisks --cmd niri-session"
+user = "greetd"

@@ -66,7 +66,7 @@ layer-rule {
 spawn-at-startup "waybar"
 // spawn-at-startup "localsend" "--hidden"
 spawn-at-startup "swaybg" "-m" "fill" "-i" "/home/alaeddine/Pictures/Wallpapers/ashya-jamila.jpg"
-spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 spawn-at-startup "swaync"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
@@ -180,6 +180,14 @@ window-rule {
     }
  // Optional height
 }
+
+// backlight
+window-rule {
+    match app-id="yad" title="System Brightness"
+    open-floating true
+
+}
+
 // stremio
 window-rule {
     // Match Stremio Enhanced
@@ -189,6 +197,8 @@ window-rule {
     // Disable client-side decorations (clean look)
     draw-border-with-background false
 }
+
+
 binds {
     Mod+Shift+Slash {
         show-hotkey-overlay
@@ -200,8 +210,8 @@ binds {
     Mod+T {
         spawn "pkill" "-SIGUSR1" "waybar"
     }
-    Mod+Return hotkey-overlay-title="Open a Terminal: Kitty" {
-        spawn "kitty"
+    Mod+Return hotkey-overlay-title="Open a Terminal: Foot" {
+        spawn "foot"
     }
     Mod+Space hotkey-overlay-title="Run an Application: fuzzel" {
         spawn "fuzzel"
@@ -224,6 +234,9 @@ binds {
     Mod+Alt+B {
         spawn "foot" "--title" "Bluetooth TUI" "bluetui"
     }
+    Mod+Shift+B {
+    spawn "~/.local/bin/light-control.sh"
+  }
     Mod+Shift+Backspace {
         spawn "foot" "--title" "Task Manager" "btop"
     }
