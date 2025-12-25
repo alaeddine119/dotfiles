@@ -180,14 +180,11 @@ window-rule {
     }
  // Optional height
 }
-
 // backlight
 window-rule {
-    match app-id="yad" title="System Brightness"
+    match app-id="yad"
     open-floating true
-
 }
-
 // stremio
 window-rule {
     // Match Stremio Enhanced
@@ -197,8 +194,6 @@ window-rule {
     // Disable client-side decorations (clean look)
     draw-border-with-background false
 }
-
-
 binds {
     Mod+Shift+Slash {
         show-hotkey-overlay
@@ -235,8 +230,11 @@ binds {
         spawn "foot" "--title" "Bluetooth TUI" "bluetui"
     }
     Mod+Shift+B {
-    spawn "~/.local/bin/light-control.sh"
-  }
+        spawn "~/.local/bin/light-control.sh"
+    }
+    Mod+Shift+S {
+        spawn "~/.local/bin/audio-control.sh"
+    }
     Mod+Shift+Backspace {
         spawn "foot" "--title" "Task Manager" "btop"
     }
