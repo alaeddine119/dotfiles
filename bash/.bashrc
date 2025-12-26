@@ -13,7 +13,6 @@ export PATH
 export PATH="$PATH:/opt/nvim-linux-arm64/bin"
 
 # --- 2. Tool Settings & Exports ---
-export GTK_THEME=Adwaita:dark
 export EDITOR='nvim'
 export VISUAL='nvim'
 
@@ -53,3 +52,4 @@ eval "$(starship init bash)"
 
 # Initialize zoxide replacing 'cd'
 eval "$(zoxide init --cmd cd bash)"
+

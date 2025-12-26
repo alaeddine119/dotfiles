@@ -2,9 +2,9 @@
 * {
     border: none;
     border-radius: 0;
-    font-family: "JetBrainsMono Nerd Font Propo", "FontAwesome", "Roboto", sans-serif;
+    font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Brands", sans-serif;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 14px; /* Fixed unit makes rendering more predictable than 1rem */
     min-height: 0;
     margin: 0;
     padding: 0;

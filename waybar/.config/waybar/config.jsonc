@@ -46,7 +46,7 @@
     "format-icons": {
         "connected": "",    // Icon: wifi
         "disconnected": "󱛅", // Icon: warning
-        "off": "睊"           // Icon: wifi-off
+        "off": "󰖪"           // Icon: wifi-off
     },
     "exec": "~/.config/waybar/scripts/wifi-status.sh",
     "on-click": "foot --title 'Wifi TUI' impala",
@@ -58,9 +58,9 @@
     "return-type": "json",
     "interval": 5,
     "format-icons": {
-        "connected": "",    // Icon: bluetooth-b
-        "on": "",           // Icon: bluetooth
-        "off": ""           // Icon: bluetooth-off
+        "connected": "󰂱",    // Icon: bluetooth-b
+        "on": "󰂯",           // Icon: bluetooth
+        "off": "󰂲"           // Icon: bluetooth-off
     },
     "exec": "~/.config/waybar/scripts/bluetooth-status.sh",
     "on-click": "foot --title 'Bluetooth TUI' bluetui", // Launch TUI
