@@ -38,8 +38,10 @@
     "tray": {
         "icon-size": 21,
         "spacing": 12,
+	"reverse-direction": true
     },
-	"custom/wifi": {
+
+    "custom/wifi": {
     "format": "{icon}",
     "return-type": "json",
     "interval": 5,

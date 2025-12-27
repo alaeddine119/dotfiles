@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # INTERFACE NAME
-IFACE="wlp1s0f0"
+IFACE="wlan0"
 
 # Get raw status from iwd
 RAW_OUTPUT=$(iwctl station "$IFACE" show)
