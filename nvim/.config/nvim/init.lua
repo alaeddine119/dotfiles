@@ -58,7 +58,7 @@ vim.pack.add({
 	},
 	{
 		src = "https://github.com/nvim-lua/plenary.nvim",
-	},
+	},{src = "https://github.com/rose-pine/neovim"},
 })
 
 -- Setup Mason
@@ -105,3 +105,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 vim.cmd("set completeopt+=noselect")
+
+-- Color scheme
+vim.cmd("colorscheme rose-pine")
