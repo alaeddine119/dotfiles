@@ -58,7 +58,8 @@ vim.pack.add({
 	},
 	{
 		src = "https://github.com/nvim-lua/plenary.nvim",
-	},{src = "https://github.com/rose-pine/neovim"},
+	},
+	{ src = "https://github.com/rose-pine/neovim" },
 })
 
 -- Setup Mason
@@ -77,17 +78,33 @@ local harpoon = require("harpoon")
 
 harpoon:setup()
 
-vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
-vim.keymap.set("n", "<leader>e", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+vim.keymap.set("n", "<leader>a", function()
+	harpoon:list():add()
+end)
+vim.keymap.set("n", "<leader>e", function()
+	harpoon.ui:toggle_quick_menu(harpoon:list())
+end)
 
-vim.keymap.set("n", "<leader>1", function() harpoon:list():select(1) end)
-vim.keymap.set("n", "<leader>2", function() harpoon:list():select(2) end)
-vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end)
-vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end)
+vim.keymap.set("n", "<leader>1", function()
+	harpoon:list():select(1)
+end)
+vim.keymap.set("n", "<leader>2", function()
+	harpoon:list():select(2)
+end)
+vim.keymap.set("n", "<leader>3", function()
+	harpoon:list():select(3)
+end)
+vim.keymap.set("n", "<leader>4", function()
+	harpoon:list():select(4)
+end)
 
 -- Toggle previous & next buffers stored within Harpoon list
-vim.keymap.set("n", "<leader>p", function() harpoon:list():prev() end)
-vim.keymap.set("n", "<leader>n", function() harpoon:list():next() end)
+vim.keymap.set("n", "<leader>p", function()
+	harpoon:list():prev()
+end)
+vim.keymap.set("n", "<leader>n", function()
+	harpoon:list():next()
+end)
 
 -- Keybinds
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
@@ -107,4 +124,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 vim.cmd("set completeopt+=noselect")
 
 -- Color scheme
-vim.cmd("colorscheme rose-pine")
+vim.cmd("colorscheme rose-pine-moon")
+
+-- Diagnostics config
+vim.diagnostic.config({
+	virtual_text = false,
+	virtual_lines = true,
+	severity_sort = true,
+	float = { border = "rounded", source = "if_many" },
+	underline = { severity = vim.diagnostic.severity.ERROR },
+})
