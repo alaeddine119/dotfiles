@@ -91,5 +91,3 @@ else
     pactl set-source-mute "$NEW_SOURCE" 0
 fi
 
-# Send notification
-notify-send "Audio Settings Applied" "Vol: ${NEW_SINK_VOL}% | Mic: ${NEW_SOURCE_VOL}%" -i audio-volume-high
