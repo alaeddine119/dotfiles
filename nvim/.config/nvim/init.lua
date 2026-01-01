@@ -59,7 +59,13 @@ vim.pack.add({
 	{
 		src = "https://github.com/nvim-lua/plenary.nvim",
 	},
-	{ src = "https://github.com/rose-pine/neovim" },
+	{
+		src = "https://github.com/rose-pine/neovim",
+	},
+	{
+		src = "https://github.com/nvim-treesitter/nvim-treesitter",
+		version = "master",
+	},
 })
 
 -- Setup Mason
@@ -72,6 +78,48 @@ require("mason-tool-installer").setup({
 		"rust-analyzer",
 	},
 })
+-- Treesitter setup
+require("nvim-treesitter").install({
+	"bash",
+	"c",
+	"diff",
+	"html",
+	"lua",
+	"luadoc",
+	"markdown",
+	"markdown_inline",
+	"query",
+	"vim",
+	"vimdoc",
+	"rust",
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 	"bash",
+	"c",
+	"diff",
+	"html",
+	"lua",
+	"luadoc",
+	"markdown",
+	"markdown_inline",
+	"query",
+	"vim",
+	"vimdoc",
+	"rust",
+ },
+    callback = function()
+      -- syntax highlighting, provided by Neovim
+      vim.treesitter.start()
+      -- folds, provided by Neovim
+      vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+      vim.wo.foldmethod = 'expr'
+      -- indentation, provided by nvim-treesitter
+      vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end,
+  })
+
+
 
 -- Harpoon setup
 local harpoon = require("harpoon")

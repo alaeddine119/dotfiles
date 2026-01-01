@@ -1,5 +1,4 @@
 # .bashrc
-
 # --- 1. Global Definitions ---
 if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
@@ -16,6 +15,15 @@ export PATH="$PATH:/opt/nvim-linux-arm64/bin"
 export EDITOR='nvim'
 export VISUAL='nvim'
 
+# --- 3. Start Zellij
+# Only auto-start Zellij if:
+# 1. We are NOT already in Zellij
+# 2. We are NOT on the raw TTY console (TERM usually equals 'linux')
+# 3. We are in an interactive session
+if [[ -z "$ZELLIJ" && "$TERM" != "linux" && $- == *i* ]]; then
+    eval "$(zellij setup --generate-auto-start bash)"
+fi
+
 # NVM (Node Version Manager)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -30,7 +38,7 @@ fi
 unset rc
 . "$HOME/.cargo/env"
 
-# --- 3. Aliases ---
+# --- 4. Aliases ---
 alias ls="eza -lh"
 alias ll="eza -alh"
 alias tree="eza --tree"
@@ -53,3 +61,7 @@ eval "$(starship init bash)"
 # Initialize zoxide replacing 'cd'
 eval "$(zoxide init --cmd cd bash)"
 
+
+
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
