@@ -1,145 +1,154 @@
 # Default config for sway
-#
-# Copy this to ~/.config/sway/config and edit it to your liking.
-#
-# Read `man 5 sway` for a complete reference.
+# Copy this to ~/.config/sway/config
 
 ### Variables
-#
-# Logo key. Use Mod1 for Alt.
 set $mod Mod4
-# Home row direction keys, like vim
 set $left h
 set $down j
 set $up k
 set $right l
-# Your preferred terminal emulator
 set $term ghostty
-# Your preferred application launcher
 set $menu fuzzel
-# Your preferred browser application
 set $browser zen-browser
-
-# Your preferred wallpaper
 set $wallpaper /home/alaeddine/Pictures/Wallpapers/ashya-jamila.jpg
 
 
-### Output configuration
-#
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+# Colors
+set $bg-color            #000000
+set $inactive-bg-color   #222222
+set $text-color          #ffffff
+set $inactive-text-color #888888
+set $urgent-bg-color     #8c001a
+set $border-color        #000000
+
+
+# Window Colors
+# class                 border           background         text                 indicator        child_border
+client.focused          $border-color    $bg-color          $text-color          $border-color    $border-color
+client.focused_inactive $inactive-bg-color $inactive-bg-color $inactive-text-color $inactive-bg-color $inactive-bg-color
+client.unfocused        $inactive-bg-color $inactive-bg-color $inactive-text-color $inactive-bg-color $inactive-bg-color
+client.urgent           $urgent-bg-color $urgent-bg-color   $text-color          $urgent-bg-color $urgent-bg-color
+
+# Global Font
+font pango:JetBrainsMono Nerd Font Mono 8
+
+### Output & Autostart
 output * bg $wallpaper fill
-#
-# Prefered scale 2560x1600 @ 1.667 scale:
-#
+# Asahi Mac Resolution/Scale
 output eDP-1 scale 1.66667 resolution 2560x1600 pos 0 0
-#
-# You can get the names of your outputs by running: swaymsg -t get_outputs
 
-### Idle configuration
-#
-# Example configuration:
-#
+# Essential Daemons
+exec wl-paste --watch cliphist store
 exec swayidle -w \
-          timeout 300 'swaylock -f -c 000000' \
-          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-          before-sleep 'swaylock -f -c 000000'
+    timeout 300 'swaylock -f -c 000000' \
+    timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+    before-sleep 'swaylock -f -c 000000'
 
-# This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 300 seconds, and turn your screens back on when
-# resumed. It will also lock your screen before your computer goes to sleep.
-
-### Input configuration
-#
-# Example configuration:
-#
+### Input Configuration (Asahi/Mac)
 input type:touchpad {
-       dwt enabled
-       tap enabled
-       natural_scroll enabled
-       middle_emulation enabled
-   }
-
-
-# Input configuration arabic
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+}
 input "type:keyboard" {
     xkb_layout "us,ma"
     xkb_variant "mac,"
     xkb_options "grp:alt_shift_toggle"
 }
 
-# You can also configure each device individually.
-# Read `man 5 sway-input` for more information about this section.
+### Layout Settings
+# Sets new workspaces to be tabbed by default
+workspace_layout tabbed
+
+# Use Pixel borders (Clean look)
+default_border pixel 0
 
 ### Key bindings
 #
-# Basics:
+# Basics
 #
-    # Start a terminal
+    # Terminal
     bindsym $mod+Return exec $term
 
-    # Kill focused window
+    # Launcher (Fuzzel) -> Mod+Space
+    bindsym $mod+Space exec $menu
+
+    # Kill Window
     bindsym $mod+q kill
 
-    # Start your launcher
-    bindsym $mod+d exec $menu
-
-    # Start the browser
+    # Browser
     bindsym $mod+z exec $browser
+    
+    # Reload / Exit
+    bindsym $mod+Shift+c reload
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
 
-    # Bluetooth TUI
+#
+# Floating & Focus (Niri Style)
+#
+    # Toggle Floating Mode -> Mod+Shift+Space
+    bindsym $mod+Shift+space floating toggle
+
+    # Switch Focus between Tiling and Floating area -> Mod+Shift+v
+    bindsym $mod+Shift+v focus mode_toggle
+
+    # Drag floating windows with mouse
+    floating_modifier $mod normal
+
+#
+# Clipboard (Niri Style)
+#
+    # Mod+v -> Open Clipboard History
+    bindsym $mod+v exec cliphist list | fuzzel -d -w 50 | cliphist decode | wl-copy
+
+#
+# TUI Apps & Scripts
+#
     bindsym $mod+Alt+b exec foot --title "Bluetooth TUI" bluetui
-    # Wifi TUI
     bindsym $mod+Alt+w exec foot --title "Wifi TUI" impala
-    # Task Manager Tui
     bindsym $mod+Shift+BackSpace exec foot --title "Task Manager" btop
 
     # Lock Screen
     bindsym $mod+Alt+l exec swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2
-    
-    # Drag floating windows by holding down $mod and left mouse button.
-    # Resize them with right mouse button + $mod.
-    # Despite the name, also works for non-floating windows.
-    # Change normal to inverse to use left mouse button for resizing and right
-    # mouse button for dragging.
-    floating_modifier $mod normal
 
-    # Reload the configuration file
-    bindsym $mod+Shift+c reload
-
-    # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 #
-# Moving around:
+# Moving Focus
 #
-    # Move your focus around
     bindsym $mod+$left focus left
     bindsym $mod+$down focus down
     bindsym $mod+$up focus up
     bindsym $mod+$right focus right
-    # Or use $mod+[up|down|left|right]
     bindsym $mod+Left focus left
     bindsym $mod+Down focus down
     bindsym $mod+Up focus up
     bindsym $mod+Right focus right
 
-    # Move the focused window with the same, but add Shift
+#
+# Moving Windows
+#
     bindsym $mod+Shift+$left move left
     bindsym $mod+Shift+$down move down
     bindsym $mod+Shift+$up move up
     bindsym $mod+Shift+$right move right
-    # Ditto, with arrow keys
     bindsym $mod+Shift+Left move left
     bindsym $mod+Shift+Down move down
     bindsym $mod+Shift+Up move up
     bindsym $mod+Shift+Right move right
-    # Trackpad Gestures
-    bindgesture swipe:3:right workspace prev
-    bindgesture swipe:3:left workspace next
 
 #
-# Workspaces:
+# Trackpad Gestures
 #
-    # Switch to workspace
+    # 3 Fingers: Switch Tabs
+    bindgesture swipe:3:right focus prev
+    bindgesture swipe:3:left  focus next
+    # 4 Fingers: Switch Workspaces
+    bindgesture swipe:4:left  workspace next
+    bindgesture swipe:4:right workspace prev
+
+#
+# Workspaces
+#
     bindsym $mod+1 workspace number 1
     bindsym $mod+2 workspace number 2
     bindsym $mod+3 workspace number 3
@@ -150,7 +159,7 @@ input "type:keyboard" {
     bindsym $mod+8 workspace number 8
     bindsym $mod+9 workspace number 9
     bindsym $mod+0 workspace number 10
-    # Move focused container to workspace
+
     bindsym $mod+Shift+1 move container to workspace number 1
     bindsym $mod+Shift+2 move container to workspace number 2
     bindsym $mod+Shift+3 move container to workspace number 3
@@ -161,108 +170,91 @@ input "type:keyboard" {
     bindsym $mod+Shift+8 move container to workspace number 8
     bindsym $mod+Shift+9 move container to workspace number 9
     bindsym $mod+Shift+0 move container to workspace number 10
-    # Note: workspaces can have any name you want, not just numbers.
-    # We just use 1-10 as the default.
 
 #
-# Layout stuff:
-
-
-    # Sets new workspaces to be tabbed by default (like web browser tabs)
-    workspace_layout tabbed
-
-
-
-    # You can "split" the current object of your focus with
-    # $mod+b or $mod+v, for horizontal and vertical splits
-    # respectively.
+# Layout Manipulation
+#
     bindsym $mod+b splith
-    bindsym $mod+v splitv
-
-    # Switch the current container between different layout styles
+    # bindsym $mod+v splitv
     bindsym $mod+s layout stacking
     bindsym $mod+w layout tabbed
     bindsym $mod+e layout toggle split
-
-    # Make the current focus fullscreen
     bindsym $mod+f fullscreen
-
-    # Toggle the current focus between tiling and floating mode
-    bindsym $mod+Shift+space floating toggle
-
-    # Swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
-
-    # Move focus to the parent container
     bindsym $mod+a focus parent
-#
-# Scratchpad:
-#
-    # Sway has a "scratchpad", which is a bag of holding for windows.
-    # You can send windows there and get them back later.
 
-    # Move the currently focused window to the scratchpad
+#
+# Scratchpad
+#
     bindsym $mod+Shift+minus move scratchpad
-
-    # Show the next scratchpad window or hide the focused scratchpad window.
-    # If there are multiple scratchpad windows, this command cycles through them.
     bindsym $mod+minus scratchpad show
+
 #
-# Resizing containers:
+# Window Rules (Floating Apps)
+#
+    for_window [app_id="foot" title="Bluetooth TUI"] floating enable, resize set 800 600
+    for_window [app_id="foot" title="Wifi TUI"] floating enable, resize set 800 600
+    for_window [app_id="foot" title="Task Manager"] floating enable, resize set 900 600
+    for_window [title="^Picture-in-Picture$"] floating enable, sticky enable
+
+#
+# Resize Mode
 #
 mode "resize" {
-    # left will shrink the containers width
-    # right will grow the containers width
-    # up will shrink the containers height
-    # down will grow the containers height
     bindsym $left resize shrink width 10px
     bindsym $down resize grow height 10px
     bindsym $up resize shrink height 10px
     bindsym $right resize grow width 10px
-
-    # Ditto, with arrow keys
     bindsym Left resize shrink width 10px
     bindsym Down resize grow height 10px
     bindsym Up resize shrink height 10px
     bindsym Right resize grow width 10px
-
-    # Return to default mode
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
+
 #
-# Utilities:
+# Hardware Controls (Asahi/Mac)
 #
-    # Special keys to adjust volume via PulseAudio
-    bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
-    bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5%
-    bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
-    bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
-    # Special keys to adjust brightness via brightnessctl
+    # Volume
+    bindsym --locked XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+    bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+    bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+    bindsym --locked XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+    
+    # Brightness
     bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
     bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
-
-    # Keyboard Backlight (Asahi/Mac specific)
-    # Using 'kbd_backlight' device name which is standard for Mac/Asahi
     bindsym --locked XF86KbdBrightnessDown exec brightnessctl --device='*kbd_backlight' set 5%-
     bindsym --locked XF86KbdBrightnessUp exec brightnessctl --device='*kbd_backlight' set 5%+
 
-    # Special key to take a screenshot with grim
+    # Screenshot
     bindsym $mod+p exec grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S.png')
     bindsym $mod+shift+p exec grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S.png')
 
 #
-# Status Bar:
+# Status Bar
 #
-# Read `man 5 sway-bar` for more information about this section.
 bar {
     position bottom
+    
+    font pango:JetBrainsMono Nerd Font Mono 10
 
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-status_command while date +'%Y-%m-%d %H:%M'; do sleep 1; done
- 
+    # status_command executes your shell script
+    status_command ~/.config/sway/status.sh
+    
+    # No 'colors' block = Use Sway Defaults (Blue/Grey)
+    colors {
+        background $bg-color
+        separator  $border-color
+        statusline $text-color
+
+        # State             Border           BG               Text
+        focused_workspace   $border-color    $border-color    $text-color
+        active_workspace    $inactive-bg-color $inactive-bg-color $text-color
+        inactive_workspace  $bg-color        $bg-color        $inactive-text-color
+        urgent_workspace    $urgent-bg-color $urgent-bg-color $text-color
+    }
 }
 
 include /etc/sway/config.d/*

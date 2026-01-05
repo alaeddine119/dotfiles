@@ -2,7 +2,7 @@
 # Rosé Pine Moon
 
 [colors]
-background=232136
+background=000000
 foreground=e0def4
 
 regular0=393552     # black (Overlay)

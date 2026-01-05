@@ -1,1 +1,4 @@
 theme = Rose Pine Moon
+background = #121212
+foreground = #E0E0E0
+font-size = 14
