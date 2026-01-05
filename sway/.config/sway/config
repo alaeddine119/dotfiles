@@ -30,19 +30,28 @@ client.unfocused        $inactive-bg-color $inactive-bg-color $inactive-text-col
 client.urgent           $urgent-bg-color $urgent-bg-color   $text-color          $urgent-bg-color $urgent-bg-color
 
 # Global Font
-font pango:JetBrainsMono Nerd Font Mono 8
+font pango:JetBrainsMono Nerd Font Mono 11
 
 ### Output & Autostart
 output * bg $wallpaper fill
 # Asahi Mac Resolution/Scale
-output eDP-1 scale 1.66667 resolution 2560x1600 pos 0 0
+output eDP-1 scale 1.5 resolution 2560x1600 pos 0 0
+
 
 # Essential Daemons
-exec wl-paste --watch cliphist store
+
+# 1. Clipboard History (Store Text and Images separately for stability)
+exec wl-paste --type text --watch cliphist store
+exec wl-paste --type image --watch cliphist store
+
+# 2. Clipboard Persistence (Fixes the "Empty Paste" bug)
+exec wl-clip-persist --clipboard regular
+
 exec swayidle -w \
-    timeout 300 'swaylock -f -c 000000' \
-    timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-    before-sleep 'swaylock -f -c 000000'
+    timeout 300 'swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2' \
+    timeout 600 'swaymsg "output * power off"' \
+    resume 'swaymsg "output * power on"' \
+    before-sleep 'swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2'
 
 ### Input Configuration (Asahi/Mac)
 input type:touchpad {
@@ -238,7 +247,7 @@ bindsym $mod+r mode "resize"
 bar {
     position bottom
     
-    font pango:JetBrainsMono Nerd Font Mono 10
+    font pango:JetBrainsMono Nerd Font Mono 11
 
     # status_command executes your shell script
     status_command ~/.config/sway/status.sh
