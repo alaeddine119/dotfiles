@@ -58,6 +58,7 @@ telescope.setup({
 --    We wrap these in pcall (protected call) to prevent errors if they aren't built yet.
 pcall(telescope.load_extension, "fzf")
 pcall(telescope.load_extension, "ui-select")
+pcall(telescope.load_extension, "fidget")
 
 -- 5. Configure Harpoon.
 local harpoon = require("harpoon")
@@ -119,6 +120,11 @@ vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps"
 vim.keymap.set("n", "<leader>se", function()
 	builtin.find_files({ cwd = vim.fn.expand("%:p:h") })
 end, { desc = "[S]earch [E]xplorer (Current file dir)" })
+
+-- Search notification history
+vim.keymap.set("n", "<leader>sn", function()
+	require("telescope").extensions.fidget.fidget()
+end, { desc = "[S]earch [N]otifications" })
 
 -- -------------------------------------------------------------------------- --
 --  Keymaps: Harpoon
