@@ -40,9 +40,27 @@ require("mason").setup()
 require("mason-tool-installer").setup({
 	-- Ensure these specific tools are always installed.
 	ensure_installed = {
-		"lua_ls", -- Language Server for Lua.
-		"stylua", -- Formatter for Lua.
-		"rust-analyzer", -- Language Server for Rust.
+
+		-- LSPs (Keep your existing ones)
+		"lua_ls",
+		"rust-analyzer",
+		"tailwindcss-language-server",
+		"typescript-language-server",
+		"html-lsp",
+		"css-lsp",
+		"dockerfile-language-server",
+		"biome",
+		"rustywind",
+
+		-- Formatters (Keep stylua)
+		"stylua",
+
+		-- LINTERS (Add these for nvim-lint)
+		"hadolint", -- Docker Linter
+		"htmlhint", -- HTML Linter
+		"stylelint", -- CSS Linter
+		"luacheck", -- Lua Linter
+		"commitlint", -- Git Linter
 	},
 })
 
@@ -50,11 +68,32 @@ require("mason-tool-installer").setup({
 --    This tells Mason-LSPConfig what to do when a server is ready.
 require("mason-lspconfig").setup({
 	handlers = {
-		-- The default handler function: applies to all installed servers.
 		function(server_name)
-			-- Call the standard setup function for the server.
-			-- You can pass specific settings inside the {} if needed.
-			require("lspconfig")[server_name].setup({})
+			-- 1. Get the default capabilities from Neovim
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+			-- 2. Merge them with Blink.cmp capabilities (CRITICAL STEP)
+			--    We use pcall just in case Blink isn't loaded yet
+			local ok, blink = pcall(require, "blink.cmp")
+			if ok then
+				capabilities = blink.get_lsp_capabilities(capabilities)
+			end
+
+			-- SPECIAL SETUP: Biome
+			if server_name == "biome" then
+				require("lspconfig").biome.setup({
+					capabilities = capabilities,
+					-- Biome usually works from the root, but we can force it
+					-- to look for biome.json if needed.
+					root_dir = require("lspconfig.util").root_pattern("biome.json", "package.json", ".git"),
+				})
+				return -- Stop here so we don't run the default setup below
+			end
+
+			-- 3. Setup the server with these capabilities
+			require("lspconfig")[server_name].setup({
+				capabilities = capabilities,
+			})
 		end,
 	},
 })
@@ -71,14 +110,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			-- Enable completion triggers (like typing '.').
 			vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
 		end
-
-		-- Define Buffer-Local Keymaps (Only active in this file).
-
-		-- Format the current buffer using the LSP.
-		vim.keymap.set("n", "<leader>f", vim.lsp.buf.format, {
-			desc = "Format current buffer",
-			buffer = ev.buf,
-		})
 
 		-- Jump to the definition of the symbol under cursor.
 		vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
