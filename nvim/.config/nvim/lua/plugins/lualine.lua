@@ -26,6 +26,10 @@ lualine.setup({
 		section_separators = "",
 	},
 	sections = {
+		-- Left side: Normal stuff + Trouble Symbols
+		lualine_c = {
+			"filename",
+		},
 		-- This is where Line (l), Column (c), and Percent (p) are defined
 		lualine_z = { "location" },
 	},
