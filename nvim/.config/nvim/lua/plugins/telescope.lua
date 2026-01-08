@@ -45,7 +45,14 @@ vim.pack.add({
 
 -- 3. Configure Telescope.
 local telescope = require("telescope")
+local trouble = require("trouble.sources.telescope") -- Import Trouble source
 telescope.setup({
+	defaults = {
+		mappings = {
+			i = { ["<c-t>"] = trouble.open }, -- Press Ctrl+t in Insert mode
+			n = { ["<c-t>"] = trouble.open }, -- Press Ctrl+t in Normal mode
+		},
+	},
 	extensions = {
 		-- Configure the UI-Select extension to use the dropdown theme.
 		["ui-select"] = {
@@ -120,6 +127,27 @@ vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" 
 -- Search Keymaps (shows what keys are mapped to what).
 vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
 
+-- Search existing buffers
+vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "[ ] Find existing buffers" })
+
+-- Slightly advanced example of overriding default behavior and theme
+vim.keymap.set("n", "<leader>/", function()
+	-- You can pass additional configuration to Telescope to change the theme, layout, etc.
+	builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+		winblend = 10,
+		previewer = false,
+	}))
+end, { desc = "[/] Fuzzily search in current buffer" })
+
+-- It's also possible to pass additional configuration options.
+--  See `:help telescope.builtin.live_grep()` for information about particular keys
+vim.keymap.set("n", "<leader>s/", function()
+	builtin.live_grep({
+		grep_open_files = true,
+		prompt_title = "Live Grep in Open Files",
+	})
+end, { desc = "[S]earch [/] in Open Files" })
+
 -- Custom: Search files in the directory of the *current buffer* only.
 -- This acts like a file explorer for the folder the current file is in.
 vim.keymap.set("n", "<leader>se", function()
@@ -130,6 +158,13 @@ end, { desc = "[S]earch [E]xplorer (Current file dir)" })
 vim.keymap.set("n", "<leader>sn", function()
 	require("telescope").extensions.fidget.fidget()
 end, { desc = "[S]earch [N]otifications" })
+
+-- Search neovim config
+vim.keymap.set("n", "<leader>sc", function()
+	builtin.find_files({
+		cwd = vim.fn.stdpath("config"),
+	})
+end)
 
 -- -------------------------------------------------------------------------- --
 --  Keymaps: Harpoon
