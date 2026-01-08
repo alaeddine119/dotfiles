@@ -55,7 +55,11 @@ wk.add({
 	{ "<leader>f", group = "Format" },
 	{ "<leader>s", group = "Search" },
 	{ "<leader>g", group = "Git" },
+	{ "<leader>h", group = "Git [H]unk" },
+	{ "<leader>t", group = "[T]oggle" },
 	{ "<leader>w", group = "Write/Window" },
+	{ "<leader>x", group = "Trouble" },
+	{ "<leader>c", group = "Code / Symbols" },
 
 	-- G / Comment Mappings
 	{ "g", group = "Go / Actions" },
