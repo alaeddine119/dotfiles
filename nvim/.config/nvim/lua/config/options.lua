@@ -13,6 +13,10 @@ vim.g.maplocalleader = " "
 -- This allows plugins like nvim-web-devicons to render icons safely.
 vim.g.have_nerd_font = true
 
+-- Disable Netrw (We are using Oil.nvim instead)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- -------------------------------------------------------------------------- --
 --  Visual Settings
 -- -------------------------------------------------------------------------- --
