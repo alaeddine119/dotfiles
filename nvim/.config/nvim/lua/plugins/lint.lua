@@ -27,10 +27,6 @@ lint.linters_by_ft = {
 	css = { "stylelint" },
 	html = { "htmlhint" },
 
-	-- Lua
-	-- "luacheck" is great for catching global variable pollution.
-	lua = { "luacheck" },
-
 	-- Git
 	-- Checks commit messages against standard conventions.
 	gitcommit = { "commitlint" },
