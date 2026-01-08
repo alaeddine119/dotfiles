@@ -12,9 +12,10 @@ vim.keymap.set("n", "<leader>q", ":quit<CR>", { desc = "Quit Neovim" })
 vim.keymap.set("n", "<leader>x", ":x<CR>", { desc = "Save and Quit" })
 -- Map <leader>so to source the current file (:source %)
 vim.keymap.set("n", "<leader>so", ":source %<CR>", { desc = "Source Current File" })
--- Map <leader><space> to open the built-in file explorer (Netrw).
--- :Ex opens the explorer in the current buffer directory.
-vim.keymap.set("n", "<leader><leader>", ":Ex<CR>", { desc = "Open File Explorer (Netrw)" })
+
+-- Map <leader><leader> to open the built-in file explorer (Netrw).
+-- NOTE: This is now handled by lua/plugins/oil.lua (Replaces Netrw)
+-- vim.keymap.set("n", "<leader><leader>", ":Ex<CR>", { desc = "Open File Explorer (Netrw)" })
 
 -- Map Escape to clear search highlights.
 -- By default, search results stay highlighted until you search for something else.

@@ -52,6 +52,11 @@ telescope.setup({
 			require("telescope.themes").get_dropdown(),
 		},
 	},
+	pickers = {
+		find_files = {
+			theme = "ivy",
+		},
+	},
 })
 
 -- 4. Load Telescope Extensions.
