@@ -41,6 +41,7 @@ vim.pack.add({
 
 	-- Harpoon (File marking and quick navigation).
 	{ src = "https://github.com/ThePrimeagen/harpoon", version = "harpoon2" },
+	"https://github.com/folke/trouble.nvim",
 })
 
 -- 3. Configure Telescope.
