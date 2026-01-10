@@ -2,6 +2,13 @@
 --  GLOBAL KEYMAPS
 -- ========================================================================== --
 
+-- Move half page and center view
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down and center cursor" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center cursor" })
+-- Keeps cursor in the middle when jumping to next search match
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+
 -- Map <leader>w to save the current file (:write).
 -- This is faster than typing :w<Enter>.
 vim.keymap.set("n", "<leader>w", ":write<CR>", { desc = "Save File" })
@@ -29,11 +36,11 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highl
 -- Map [d to go to the previous diagnostic message (error/warning).
 -- We use count = -1 to move backward.
 vim.keymap.set("n", "[d", function()
-    vim.diagnostic.jump({ count = -1, float = true })
+	vim.diagnostic.jump({ count = -1, float = true })
 end, { desc = "Go to previous [D]iagnostic message" })
 
 -- Map ]d to go to the next diagnostic message.
 -- We use count = 1 to move forward.
 vim.keymap.set("n", "]d", function()
-    vim.diagnostic.jump({ count = 1, float = true })
+	vim.diagnostic.jump({ count = 1, float = true })
 end, { desc = "Go to next [D]iagnostic message" })

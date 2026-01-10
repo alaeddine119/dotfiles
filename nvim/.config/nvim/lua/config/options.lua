@@ -21,6 +21,9 @@ vim.g.loaded_netrwPlugin = 1
 --  Visual Settings
 -- -------------------------------------------------------------------------- --
 
+-- Enable fat cursor
+vim.o.guicursor = ""
+
 -- Enable line numbers on the left side of the window.
 vim.o.number = true
 
@@ -39,6 +42,15 @@ vim.o.winborder = "rounded"
 -- We disable this specifically because it can interfere with font ligatures in some terminals.
 vim.o.cursorline = false
 
+-- While typing a search command, show where the pattern, as it was typed so far, matches
+vim.o.incsearch = true
+
+-- Enables 24-bit RGB color in the `TUI`
+vim.o.termguicolors = true
+
+-- Screen column highlight 80 characters
+vim.o.colorcolumn = "80"
+
 -- -------------------------------------------------------------------------- --
 --  Tab & Indentation Settings
 -- -------------------------------------------------------------------------- --
@@ -54,6 +66,9 @@ vim.o.shiftwidth = 4
 
 -- Convert actual tab characters to spaces. This ensures consistency across editors.
 vim.o.expandtab = true
+
+-- Do smart autoindenting when starting a new line
+vim.o.smartindent = true
 
 -- -------------------------------------------------------------------------- --
 --  Behavior & Interaction
@@ -76,8 +91,8 @@ vim.o.confirm = true
 -- Configure the system clipboard.
 -- We wrap this in `vim.schedule` to ensure it runs after the UI starts (prevents slow startup).
 vim.schedule(function()
-    -- 'unnamedplus' links Neovim's clipboard to the system clipboard (Ctrl+C / Ctrl+V).
-    vim.o.clipboard = "unnamedplus"
+	-- 'unnamedplus' links Neovim's clipboard to the system clipboard (Ctrl+C / Ctrl+V).
+	vim.o.clipboard = "unnamedplus"
 end)
 
 -- -------------------------------------------------------------------------- --
@@ -86,16 +101,15 @@ end)
 
 -- Create an autocommand to highlight text when it is yanked (copied).
 vim.api.nvim_create_autocmd("TextYankPost", {
-    -- Description of what this autocommand does (good for debugging).
-    desc = "Highlight when yanking (copying) text",
+	-- Description of what this autocommand does (good for debugging).
+	desc = "Highlight when yanking (copying) text",
 
-    -- Assign it to a specific group so we can clear it easily if needed.
-    group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+	-- Assign it to a specific group so we can clear it easily if needed.
+	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
 
-    -- The function to run when the event happens.
-    callback = function()
-        -- Use the built-in highlight function.
-        vim.hl.on_yank()
-    end,
+	-- The function to run when the event happens.
+	callback = function()
+		-- Use the built-in highlight function.
+		vim.hl.on_yank()
+	end,
 })
-
