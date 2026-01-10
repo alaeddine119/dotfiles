@@ -60,17 +60,7 @@ require("mini.indentscope").setup({
 require("mini.icons").setup()
 MiniIcons.mock_nvim_web_devicons() -- Let other plugins use MiniIcons
 
---    Replaces standard vim.notify with a nice floating window.
---    Works well alongside 'fidget.nvim' (which handles LSP progress).
-local notify = require("mini.notify")
-notify.setup({
-	-- Critical: Disable LSP progress in mini.notify because
-	-- 'fidget.nvim' handles it better (with the spinning circle).
-	lsp_progress = { enable = false },
-})
-vim.notify = notify.make_notify()
-
---    Smooth scrolling and cursor movement.
+-- Smooth scrolling and cursor movement.
 require("mini.animate").setup({
 	-- Disable Scroll animation to fix touchpad lag
 	scroll = { enable = false },
@@ -78,7 +68,10 @@ require("mini.animate").setup({
 	-- Keep Cursor animation (smooth movement within buffer)
 	cursor = {
 		enable = true,
-		timing = require("mini.animate").gen_timing.linear({ duration = 100, unit = "total" }),
+		timing = require("mini.animate").gen_timing.linear({
+			duration = 100,
+			unit = "total",
+		}),
 	},
 
 	-- Enable Resize/Open/Close animations if you like them
@@ -147,17 +140,34 @@ require("mini.statusline").setup()
 -- REPLACES: todo-comments.lua (Hipatterns can do highlighing)
 require("mini.hipatterns").setup({
 	highlighters = {
-		fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
-		hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
-		todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
-		note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
+		fixme = {
+			pattern = "%f[%w]()FIXME()%f[%W]",
+			group = "MiniHipatternsFixme",
+		},
+		hack = {
+			pattern = "%f[%w]()HACK()%f[%W]",
+			group = "MiniHipatternsHack",
+		},
+		todo = {
+			pattern = "%f[%w]()TODO()%f[%W]",
+			group = "MiniHipatternsTodo",
+		},
+		note = {
+			pattern = "%f[%w]()NOTE()%f[%W]",
+			group = "MiniHipatternsNote",
+		},
 		hex_color = require("mini.hipatterns").gen_highlighter.hex_color(),
 	},
 })
 
 -- Helper function for expression mappings
 local function map_blink(lhs, rhs)
-	vim.keymap.set("i", lhs, rhs, { expr = true, silent = true, replace_keycodes = true })
+	vim.keymap.set(
+		"i",
+		lhs,
+		rhs,
+		{ expr = true, silent = true, replace_keycodes = true }
+	)
 end
 
 -- TAB: Completion Next -> Indent
