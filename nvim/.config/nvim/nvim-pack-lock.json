@@ -57,6 +57,10 @@
       "rev": "efc85e42262cd0c9e1fdbf806c25cb0be6de115c",
       "src": "https://github.com/nvim-mini/mini.icons"
     },
+    "mini.nvim": {
+      "rev": "a0ae5a65507d009a22b245cb0e9e347690a5f94e",
+      "src": "https://github.com/echasnovski/mini.nvim"
+    },
     "neovim": {
       "rev": "cf2a288696b03d0934da713d66c6d71557b5c997",
       "src": "https://github.com/rose-pine/neovim"
@@ -85,6 +89,10 @@
     "nvim-web-devicons": {
       "rev": "6788013bb9cb784e606ada44206b0e755e4323d7",
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
+    },
+    "oil-git-status.nvim": {
+      "rev": "4b5cf53842c17a09420919e655a6a559da3112d7",
+      "src": "https://github.com/refractalize/oil-git-status.nvim"
     },
     "oil.nvim": {
       "rev": "81b8a91735ad5cd24a6b3137f14a89f19176364f",

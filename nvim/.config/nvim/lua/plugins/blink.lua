@@ -50,7 +50,12 @@ end
 
 -- 4. CONFIGURE
 blink.setup({
-	keymap = { preset = "default" },
+	keymap = {
+		preset = "none",
+		["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+		["<C-e>"] = { "hide" },
+		-- Note: We DON'T map <Tab> or <CR> here because Mini.keymap does it
+	},
 
 	appearance = {
 		use_nvim_cmp_as_default = true,

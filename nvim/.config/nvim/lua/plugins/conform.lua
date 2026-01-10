@@ -37,14 +37,29 @@ conform.setup({
 		-- Fallback for everything else
 		["_"] = { "trim_whitespace" },
 	},
+	-- 4. CUSTOMIZE FORMATTERS (Force 80 char width)
+	formatters = {
+		biome = {
+			-- Biome default is 80, but this forces it if a config file says otherwise
+			prepend_args = { "--line-width", "80" },
+		},
+		stylua = {
+			-- Stylua default is often 120
+			prepend_args = { "--column-width", "80" },
+		},
+		rustfmt = {
+			-- Rustfmt default is 100
+			prepend_args = { "--config", "max_width=80" },
+		},
+	},
 
-	-- 4. FORMAT ON SAVE SETTINGS
+	-- 5. FORMAT ON SAVE SETTINGS
 	format_on_save = {
-		timeout_ms = 1000, -- Biome is fast, but 1s is safe
+		timeout_ms = 1000,
 		lsp_format = "fallback",
 	},
 
-	-- 5. NOTIFICATIONS
+	-- 6. NOTIFICATIONS
 	notify_on_error = true,
 })
 
