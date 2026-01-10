@@ -80,6 +80,9 @@ require("mini.animate").setup({
 	close = { enable = true },
 })
 
+-- Highlight trailing whitespace (red blocks at end of line)
+require("mini.trailspace").setup()
+
 -- ========================================================================== --
 --  3. REPLACEMENTS (Comment out your old plugins if you enable these)
 -- ========================================================================== --

@@ -83,6 +83,17 @@ blink.setup({
 		default = { "lsp", "path", "snippets", "buffer" },
 	},
 
+    cmdline = {
+        sources = function()
+            local type = vim.fn.getcmdtype()
+            -- Search mode (/ or ?) -> use buffer words
+            if type == '/' or type == '?' then return { 'buffer' } end
+            -- Command mode (:) -> use cmdline history and commands
+            if type == ':' then return { 'cmdline' } end
+            return {}
+        end
+    },
+
 	signature = { enabled = true },
 
 	-- Force it to use the binary we just built
