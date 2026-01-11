@@ -24,7 +24,12 @@ trouble.setup({
 
 -- 4. KEYMAPS (Global triggers)
 -- Diagnostics (Project)
-vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Trouble: Diagnostics (Project)" })
+vim.keymap.set(
+	"n",
+	"<leader>xx",
+	"<cmd>Trouble diagnostics toggle<cr>",
+	{ desc = "Trouble: Diagnostics (Project)" }
+)
 
 -- Diagnostics (Current Buffer)
 vim.keymap.set(
@@ -35,7 +40,12 @@ vim.keymap.set(
 )
 
 -- Symbols (Like an outline)
-vim.keymap.set("n", "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Trouble: Symbols" })
+vim.keymap.set(
+	"n",
+	"<leader>cs",
+	"<cmd>Trouble symbols toggle focus=false<cr>",
+	{ desc = "Trouble: Symbols" }
+)
 
 -- LSP References/Definitions
 vim.keymap.set(
@@ -46,7 +56,17 @@ vim.keymap.set(
 )
 
 -- Location List
-vim.keymap.set("n", "<leader>xL", "<cmd>Trouble loclist toggle<cr>", { desc = "Trouble: Location List" })
+vim.keymap.set(
+	"n",
+	"<leader>xL",
+	"<cmd>Trouble loclist toggle<cr>",
+	{ desc = "Trouble: Location List" }
+)
 
 -- Quickfix List
-vim.keymap.set("n", "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", { desc = "Trouble: Quickfix List" })
+vim.keymap.set(
+	"n",
+	"<leader>xQ",
+	"<cmd>Trouble qflist toggle<cr>",
+	{ desc = "Trouble: Quickfix List" }
+)

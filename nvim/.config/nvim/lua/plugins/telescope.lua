@@ -12,7 +12,10 @@ vim.api.nvim_create_autocmd("PackChanged", {
 		local kind = ev.data.kind
 
 		-- Check if the modified plugin is fzf-native.
-		if name == "telescope-fzf-native.nvim" and (kind == "install" or kind == "update") then
+		if
+			name == "telescope-fzf-native.nvim"
+			and (kind == "install" or kind == "update")
+		then
 			print("Building fzf-native...")
 
 			-- Execute the 'make' command in the plugin's directory.
@@ -22,7 +25,10 @@ vim.api.nvim_create_autocmd("PackChanged", {
 			if result.code == 0 then
 				print("Successfully built fzf-native!")
 			else
-				print("Failed to build fzf-native: " .. (result.stderr or "unknown error"))
+				print(
+					"Failed to build fzf-native: "
+						.. (result.stderr or "unknown error")
+				)
 			end
 		end
 	end,
@@ -37,7 +43,10 @@ vim.pack.add({
 
 	-- FZF Native Sorter (C++ version for speed).
 	-- We specify the name explicitly to match our build hook above.
-	{ src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim", name = "telescope-fzf-native.nvim" },
+	{
+		src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim",
+		name = "telescope-fzf-native.nvim",
+	},
 
 	-- Harpoon (File marking and quick navigation).
 	{ src = "https://github.com/ThePrimeagen/harpoon", version = "harpoon2" },
@@ -91,7 +100,9 @@ local function toggle_telescope(harpoon_files)
 	require("telescope.pickers")
 		.new({}, {
 			prompt_title = "Harpoon",
-			finder = require("telescope.finders").new_table({ results = file_paths }),
+			finder = require("telescope.finders").new_table({
+				results = file_paths,
+			}),
 			previewer = conf.file_previewer({}),
 			sorter = conf.generic_sorter({}),
 		})
@@ -105,31 +116,76 @@ end
 local builtin = require("telescope.builtin")
 
 -- Search for files in the current working directory.
-vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
+vim.keymap.set(
+	"n",
+	"<leader>sf",
+	builtin.find_files,
+	{ desc = "[S]earch [F]iles" }
+)
 
 -- Search for text (Grep) inside all files in the directory.
-vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch via [G]rep" })
+vim.keymap.set(
+	"n",
+	"<leader>sg",
+	builtin.live_grep,
+	{ desc = "[S]earch via [G]rep" }
+)
 
 -- Search for the word currently under the cursor.
-vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
+vim.keymap.set(
+	"n",
+	"<leader>sw",
+	builtin.grep_string,
+	{ desc = "[S]earch current [W]ord" }
+)
 
 -- Search through LSP diagnostics (errors/warnings).
-vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
+vim.keymap.set(
+	"n",
+	"<leader>sd",
+	builtin.diagnostics,
+	{ desc = "[S]earch [D]iagnostics" }
+)
 
 -- Resume the last search (useful if you closed the window by accident).
-vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
+vim.keymap.set(
+	"n",
+	"<leader>sr",
+	builtin.resume,
+	{ desc = "[S]earch [R]esume" }
+)
 
 -- Search recent files (oldfiles). '.' is used as a mnemonic for "recent".
-vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = "[S]earch Recent Files" })
+vim.keymap.set(
+	"n",
+	"<leader>s.",
+	builtin.oldfiles,
+	{ desc = "[S]earch Recent Files" }
+)
 
 -- Search Help tags (vim documentation).
-vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
+vim.keymap.set(
+	"n",
+	"<leader>sh",
+	builtin.help_tags,
+	{ desc = "[S]earch [H]elp" }
+)
 
 -- Search Keymaps (shows what keys are mapped to what).
-vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
+vim.keymap.set(
+	"n",
+	"<leader>sk",
+	builtin.keymaps,
+	{ desc = "[S]earch [K]eymaps" }
+)
 
 -- Search existing buffers
-vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "[ ] Find existing buffers" })
+vim.keymap.set(
+	"n",
+	"<leader>sb",
+	builtin.buffers,
+	{ desc = "[ ] Find existing buffers" }
+)
 
 -- Slightly advanced example of overriding default behavior and theme
 vim.keymap.set("n", "<leader>/", function()
@@ -165,7 +221,9 @@ vim.keymap.set("n", "<leader>sc", function()
 	builtin.find_files({
 		cwd = vim.fn.stdpath("config"),
 	})
-end)
+end, {
+	desc = "[S]earch [C]onfig",
+})
 
 -- -------------------------------------------------------------------------- --
 --  Keymaps: Harpoon

@@ -218,31 +218,40 @@ local function map_blink(lhs, rhs)
 	)
 end
 
--- TAB: Completion Next -> Indent
-map_blink("<Tab>", function()
+-- Ctrl+N: Select Next (Navigation)
+map_blink("<C-n>", function()
 	local blink = require("blink.cmp")
 	if blink.is_menu_visible() then
 		return blink.select_next()
 	end
-	return "<Tab>"
+	return "<C-n>"
 end)
 
--- SHIFT-TAB: Completion Prev -> Dedent
-map_blink("<S-Tab>", function()
+-- Ctrl+P: Select Previous (Navigation)
+map_blink("<C-p>", function()
 	local blink = require("blink.cmp")
 	if blink.is_menu_visible() then
 		return blink.select_prev()
 	end
-	return "<S-Tab>"
+	return "<C-p>"
 end)
 
--- ENTER: Accept Completion -> New Line
-map_blink("<CR>", function()
+-- Ctrl+Y: Accept Completion (Yes)
+map_blink("<C-y>", function()
 	local blink = require("blink.cmp")
 	if blink.is_menu_visible() then
 		return blink.accept()
 	end
-	return "<CR>"
+	return "<C-y>"
+end)
+
+-- Ctrl+E: Cancel / Close Menu (Exit)
+map_blink("<C-e>", function()
+	local blink = require("blink.cmp")
+	if blink.is_menu_visible() then
+		return blink.hide()
+	end
+	return "<C-e>"
 end)
 
 -- ========================================================================== --
