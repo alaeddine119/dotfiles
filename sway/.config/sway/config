@@ -47,6 +47,9 @@ exec wl-paste --type image --watch cliphist store
 # 2. Clipboard Persistence (Fixes the "Empty Paste" bug)
 exec wl-clip-persist --clipboard regular
 
+
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+
 exec swayidle -w \
     timeout 300 'swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2' \
     timeout 600 'swaymsg "output * power off"' \
@@ -242,6 +245,9 @@ bindsym $mod+r mode "resize"
     # Screenshot
     bindsym $mod+p exec grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S.png')
     bindsym $mod+shift+p exec grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S.png')
+
+    # Power Menu
+    bindsym $mod+Shift+q exec ~/.local/bin/power-menu.sh
 
 #
 # Status Bar
