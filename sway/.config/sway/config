@@ -63,12 +63,16 @@ input type:touchpad {
     natural_scroll enabled
     middle_emulation enabled
 }
+
 input "type:keyboard" {
     xkb_layout "us,ma"
     xkb_variant "mac,"
     xkb_options "grp:alt_shift_toggle"
-    # Add 'lv3:ralt_alt' to force Right Option to act as Alt
-    xkb_options "grp:alt_shift_toggle,lv3:ralt_alt"
+    # Options:
+    # 1. grp:alt_shift_toggle (Switch layout)
+    # 2. lv3:ralt_alt (Right Option as Alt)
+    # 3. caps:escape (Caps Lock behaves as Escape)
+    xkb_options "grp:alt_shift_toggle,lv3:ralt_alt,caps:escape"
 }
 
 ### Layout Settings
