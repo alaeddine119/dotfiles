@@ -15,22 +15,22 @@ vim.keymap.set(
 	"<C-u>zz",
 	{ desc = "Scroll up and center cursor" }
 )
+
 -- Keeps cursor in the middle when jumping to next search match
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next search match (centered)" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Prev search match (centered)" })
 
 -- Map <leader>w to save the current file (:write).
 -- This is faster than typing :w<Enter>.
-vim.keymap.set("n", "<leader>w", ":write<CR>", { desc = "Save File" })
+vim.keymap.set("n", "<leader>w", ":write<CR>", { desc = "[W]rite File" })
+vim.keymap.set("n", "<leader>q", ":quit<CR>", { desc = "[Q]uit Window" })
 
--- Map <leader>q to quit the current window (:quit).
-vim.keymap.set("n", "<leader>q", ":quit<CR>", { desc = "Quit Neovim" })
--- Map <leader>so to source the current file (:source %)
+-- Map <leader>cx to source the current file (:source %)
 vim.keymap.set(
 	"n",
-	"<leader>so",
+	"<leader>cx",
 	":source %<CR>",
-	{ desc = "Source Current File" }
+	{ desc = "[C]ode E[x]ecute (Source)" }
 )
 
 -- Map <leader><leader> to open the built-in file explorer (Netrw).
@@ -55,10 +55,10 @@ vim.keymap.set(
 -- We use count = -1 to move backward.
 vim.keymap.set("n", "[d", function()
 	vim.diagnostic.jump({ count = -1, float = true })
-end, { desc = "Go to previous [D]iagnostic message" })
+end, { desc = "Prev [D]iagnostic" })
 
 -- Map ]d to go to the next diagnostic message.
 -- We use count = 1 to move forward.
 vim.keymap.set("n", "]d", function()
 	vim.diagnostic.jump({ count = 1, float = true })
-end, { desc = "Go to next [D]iagnostic message" })
+end, { desc = "Next [D]iagnostic" })

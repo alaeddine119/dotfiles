@@ -22,4 +22,9 @@ vim.g.undotree_WindowLayout = 2
 vim.g.undotree_SetFocusWhenToggle = 1
 
 -- 5. KEYMAPS
-vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Toggle UndoTree" })
+vim.keymap.set(
+	"n",
+	"<leader>U",
+	vim.cmd.UndotreeToggle,
+	{ desc = "[U]ndoTree Toggle" }
+)

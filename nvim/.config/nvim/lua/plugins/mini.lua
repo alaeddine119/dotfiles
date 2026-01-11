@@ -136,33 +136,38 @@ miniclue.setup({
 		miniclue.gen_clues.z(),
 
 		-- 2. CUSTOM LEADER GROUPS
-		-- I matched these to your installed plugins:
+		-- <Leader>b: Buffer management (Delete, Scratch...)
+		{ mode = "n", keys = "<Leader>b", desc = "+[B]uffers" },
 
-		-- <Leader>b: Buffer (Delete)
-		{ mode = "n", keys = "<Leader>b", desc = "+[B]uffer" },
-		-- <Leader>c: Code (Trouble, Rename)
-		{ mode = "n", keys = "<Leader>c", desc = "+[C]ode / LSP" },
+		-- <Leader>c: Code actions (Format, Rename...)
+		{ mode = "n", keys = "<Leader>c", desc = "+[C]ode Actions" },
 
-		-- <Leader>g: Main Git (Lazygit, Browse)
-		{ mode = "n", keys = "<Leader>g", desc = "+[G]it Main" },
+		-- <Leader>g: Git main commands (Lazygit, Browse)
+		{ mode = "n", keys = "<Leader>g", desc = "+[G]it Tools" },
 
-		-- <Leader>h: Hunks (From gitsigns.lua: hs, hr, hp, hb...)
+		-- <Leader>h: Git Hunks (Stage, Reset, Preview via Gitsigns)
 		{ mode = "n", keys = "<Leader>h", desc = "+Git [H]unks" },
 
-		-- <Leader>n: Notifications (From snacks.lua / noice.lua)
+		-- <Leader>n: Notifications (History, Dismiss)
 		{ mode = "n", keys = "<Leader>n", desc = "+[N]otifications" },
 
-		-- <Leader>s: Search (From telescope.lua)
-		{ mode = "n", keys = "<Leader>s", desc = "+[S]earch (Telescope)" },
+		-- <Leader>s: Search (Telescope Files, Grep, Config...)
+		{ mode = "n", keys = "<Leader>s", desc = "+[S]earch" },
 
-		-- <Leader>t: Toggles (From gitsigns.lua: tb, tD / lsp.lua: th)
-		{ mode = "n", keys = "<Leader>t", desc = "+[T]oggle Options" },
+		-- <Leader>t: Toggles (Spell, Wrap, Diagnostics, Dim...)
+		{ mode = "n", keys = "<Leader>t", desc = "+[T]oggles" },
 
-		-- <Leader>u: UI & Utils (From snacks.lua toggles & undotree.lua)
-		{ mode = "n", keys = "<Leader>u", desc = "+[U]I / Utils" },
+		-- <Leader>x: Trouble (Diagnostics, Quickfix...)
+		{ mode = "n", keys = "<Leader>x", desc = "+Diagnostics [X]" },
 
-		-- <Leader>x: Trouble (From trouble.lua)
-		{ mode = "n", keys = "<Leader>x", desc = "+Diagnostics / Trouble" },
+		-- 3. SPECIFIC MAPPINGS
+		-- Helper clues for standalone keys that don't belong to a group
+		{ mode = "n", keys = "<Leader>w", desc = "[W]rite File" },
+		{ mode = "n", keys = "<Leader>q", desc = "[Q]uit" },
+		{ mode = "n", keys = "<Leader>z", desc = "[Z]en Mode" },
+		{ mode = "n", keys = "<Leader>U", desc = "[U]ndoTree" },
+		{ mode = "n", keys = "<Leader>a", desc = "Harpoon [A]dd" },
+		{ mode = "n", keys = "<Leader>e", desc = "Harpoon [E]dit" },
 	},
 
 	window = {

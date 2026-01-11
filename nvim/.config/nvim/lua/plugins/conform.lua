@@ -64,7 +64,7 @@ conform.setup({
 })
 
 -- 6. KEYMAPS
---    Manual format command: <Leader>f
-vim.keymap.set("", "<leader>f", function()
+--    Manual format command: <Leader>cf
+vim.keymap.set("", "<leader>cf", function()
 	require("conform").format({ async = true, lsp_format = "fallback" })
-end, { desc = "Format buffer" })
+end, { desc = "[C]ode [F]ormat" })

@@ -160,7 +160,7 @@ vim.keymap.set(
 	"n",
 	"<leader>s.",
 	builtin.oldfiles,
-	{ desc = "[S]earch Recent Files" }
+	{ desc = "[S]earch Recent Files [.]" }
 )
 
 -- Search Help tags (vim documentation).
@@ -184,7 +184,7 @@ vim.keymap.set(
 	"n",
 	"<leader>sb",
 	builtin.buffers,
-	{ desc = "[ ] Find existing buffers" }
+	{ desc = "[S]earch [B]uffers" }
 )
 
 -- Slightly advanced example of overriding default behavior and theme
@@ -201,7 +201,7 @@ end, { desc = "[/] Fuzzily search in current buffer" })
 vim.keymap.set("n", "<leader>s/", function()
 	builtin.live_grep({
 		grep_open_files = true,
-		prompt_title = "Live Grep in Open Files",
+		prompt_title = "[S]earch [/] Open Files",
 	})
 end, { desc = "[S]earch [/] in Open Files" })
 
@@ -244,24 +244,25 @@ vim.keymap.set("n", "<C-e>", function()
 	toggle_telescope(harpoon:list())
 end, { desc = "Harpoon: Telescope View" })
 
--- Quick Navigation to specific Harpoon marks (1-4).
-vim.keymap.set("n", "<leader>1", function()
+-- Quick Navigation: Alt + Shift + h/j/k/l
+-- <M-H> stands for Alt+Shift+h
+vim.keymap.set("n", "<M-H>", function()
 	harpoon:list():select(1)
-end, { desc = "Harpoon: Go to File 1" })
-vim.keymap.set("n", "<leader>2", function()
+end, { desc = "Harpoon: File 1 [H]" })
+vim.keymap.set("n", "<M-J>", function()
 	harpoon:list():select(2)
-end, { desc = "Harpoon: Go to File 2" })
-vim.keymap.set("n", "<leader>3", function()
+end, { desc = "Harpoon: File 2 [J]" })
+vim.keymap.set("n", "<M-K>", function()
 	harpoon:list():select(3)
-end, { desc = "Harpoon: Go to File 3" })
-vim.keymap.set("n", "<leader>4", function()
+end, { desc = "Harpoon: File 3 [K]" })
+vim.keymap.set("n", "<M-L>", function()
 	harpoon:list():select(4)
-end, { desc = "Harpoon: Go to File 4" })
+end, { desc = "Harpoon: File 4 [L]" })
 
 -- Cycle through Harpoon marks (Previous/Next).
-vim.keymap.set("n", "<leader>p", function()
+vim.keymap.set("n", "<C-S-P>", function()
 	harpoon:list():prev()
 end, { desc = "Harpoon: [P]revious File" })
-vim.keymap.set("n", "<leader>n", function()
+vim.keymap.set("n", "<C-S-N>", function()
 	harpoon:list():next()
 end, { desc = "Harpoon: [N]ext File" })
