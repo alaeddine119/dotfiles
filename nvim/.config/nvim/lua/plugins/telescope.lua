@@ -246,16 +246,16 @@ end, { desc = "Harpoon: Telescope View" })
 
 -- Quick Navigation: Alt + Shift + h/j/k/l
 -- <M-H> stands for Alt+Shift+h
-vim.keymap.set("n", "<M-H>", function()
+vim.keymap.set("n", "<M-a>", function()
 	harpoon:list():select(1)
 end, { desc = "Harpoon: File 1 [H]" })
-vim.keymap.set("n", "<M-J>", function()
+vim.keymap.set("n", "<M-s>", function()
 	harpoon:list():select(2)
 end, { desc = "Harpoon: File 2 [J]" })
-vim.keymap.set("n", "<M-K>", function()
+vim.keymap.set("n", "<M-d>", function()
 	harpoon:list():select(3)
 end, { desc = "Harpoon: File 3 [K]" })
-vim.keymap.set("n", "<M-L>", function()
+vim.keymap.set("n", "<M-f>", function()
 	harpoon:list():select(4)
 end, { desc = "Harpoon: File 4 [L]" })
 
