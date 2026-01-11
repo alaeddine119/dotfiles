@@ -94,13 +94,21 @@ require("mini.pairs").setup()
 require("mini.comment").setup()
 
 -- REPLACES: which-key.lua
-require("mini.clue").setup({
+local miniclue = require("mini.clue")
+miniclue.setup({
 	triggers = {
+		-- Leader triggers
 		{ mode = "n", keys = "<Leader>" },
 		{ mode = "x", keys = "<Leader>" },
+
+		-- Built-in completion
 		{ mode = "i", keys = "<C-x>" },
+
+		-- g key (LSP, Go to...)
 		{ mode = "n", keys = "g" },
 		{ mode = "x", keys = "g" },
+
+		-- Marks & Registers
 		{ mode = "n", keys = "'" },
 		{ mode = "n", keys = "`" },
 		{ mode = "x", keys = "'" },
@@ -109,21 +117,58 @@ require("mini.clue").setup({
 		{ mode = "x", keys = '"' },
 		{ mode = "i", keys = "<C-r>" },
 		{ mode = "c", keys = "<C-r>" },
+
+		-- Window commands
 		{ mode = "n", keys = "<C-w>" },
+
+		-- Folds
 		{ mode = "n", keys = "z" },
 		{ mode = "x", keys = "z" },
 	},
+
 	clues = {
-		-- Enhance this by adding descriptions for <Leader> mapping groups
-		require("mini.clue").gen_clues.builtin_completion(),
-		require("mini.clue").gen_clues.g(),
-		require("mini.clue").gen_clues.marks(),
-		require("mini.clue").gen_clues.registers(),
-		require("mini.clue").gen_clues.windows(),
-		require("mini.clue").gen_clues.z(),
+		-- 1. BUILT-IN ENHANCEMENTS
+		miniclue.gen_clues.builtin_completion(),
+		miniclue.gen_clues.g(),
+		miniclue.gen_clues.marks(),
+		miniclue.gen_clues.registers(),
+		miniclue.gen_clues.windows(),
+		miniclue.gen_clues.z(),
+
+		-- 2. CUSTOM LEADER GROUPS
+		-- I matched these to your installed plugins:
+
+		-- <Leader>b: Buffer (Delete)
+		{ mode = "n", keys = "<Leader>b", desc = "+[B]uffer" },
+		-- <Leader>c: Code (Trouble, Rename)
+		{ mode = "n", keys = "<Leader>c", desc = "+[C]ode / LSP" },
+
+		-- <Leader>g: Main Git (Lazygit, Browse)
+		{ mode = "n", keys = "<Leader>g", desc = "+[G]it Main" },
+
+		-- <Leader>h: Hunks (From gitsigns.lua: hs, hr, hp, hb...)
+		{ mode = "n", keys = "<Leader>h", desc = "+Git [H]unks" },
+
+		-- <Leader>n: Notifications (From snacks.lua / noice.lua)
+		{ mode = "n", keys = "<Leader>n", desc = "+[N]otifications" },
+
+		-- <Leader>s: Search (From telescope.lua)
+		{ mode = "n", keys = "<Leader>s", desc = "+[S]earch (Telescope)" },
+
+		-- <Leader>t: Toggles (From gitsigns.lua: tb, tD / lsp.lua: th)
+		{ mode = "n", keys = "<Leader>t", desc = "+[T]oggle Options" },
+
+		-- <Leader>u: UI & Utils (From snacks.lua toggles & undotree.lua)
+		{ mode = "n", keys = "<Leader>u", desc = "+[U]I / Utils" },
+
+		-- <Leader>x: Trouble (From trouble.lua)
+		{ mode = "n", keys = "<Leader>x", desc = "+Diagnostics / Trouble" },
 	},
+
 	window = {
 		config = { width = "auto" },
+		-- Slight delay prevents the popup from flashing if you type fast
+		delay = 300,
 	},
 })
 
@@ -204,47 +249,10 @@ end)
 --  5. EXTRAS
 -- ========================================================================== --
 
--- REPLACES: which-key.lua
--- (Requires manual trigger configuration)
-local miniclue = require("mini.clue")
-miniclue.setup({
-	triggers = {
-		-- Leader triggers
-		{ mode = "n", keys = "<Leader>" },
-		{ mode = "x", keys = "<Leader>" },
-		{ mode = "i", keys = "<C-x>" }, -- Built-in completion
-		{ mode = "n", keys = "g" }, -- `g` key
-		{ mode = "x", keys = "g" },
-		{ mode = "n", keys = "'" }, -- Marks
-		{ mode = "n", keys = "`" },
-		{ mode = "x", keys = "'" },
-		{ mode = "x", keys = "`" },
-		{ mode = "n", keys = '"' }, -- Registers
-		{ mode = "x", keys = '"' },
-		{ mode = "i", keys = "<C-r>" },
-		{ mode = "c", keys = "<C-r>" },
-		{ mode = "n", keys = "<C-w>" }, -- Window commands
-		{ mode = "n", keys = "z" }, -- Folds
-		{ mode = "x", keys = "z" },
-	},
-	clues = {
-		miniclue.gen_clues.builtin_completion(),
-		miniclue.gen_clues.g(),
-		miniclue.gen_clues.marks(),
-		miniclue.gen_clues.registers(),
-		miniclue.gen_clues.windows(),
-		miniclue.gen_clues.z(),
-		-- Custom Descriptions
-		{ mode = "n", keys = "<Leader>f", desc = "+Format" },
-		{ mode = "n", keys = "<Leader>s", desc = "+Search" },
-		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
-		{ mode = "n", keys = "<Leader>x", desc = "+Trouble" },
-		{ mode = "n", keys = "<Leader>c", desc = "+Code" },
-	},
-	window = {
-		config = { width = "auto" },
-	},
-})
-
 -- BETTER ESCAPE (JK to Exit)
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
+
+-- Trim trailing whitespace manually
+vim.keymap.set("n", "<leader>tw", function()
+	require("mini.trailspace").trim()
+end, { desc = "Trim Whitespace" })
