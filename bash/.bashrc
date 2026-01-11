@@ -30,30 +30,38 @@ fi
 unset rc
 . "$HOME/.cargo/env"
 
+# --- 3. Interactive Shell Settings (History & Keys) ---
+
+# [NEW] Map Up/Down arrows to partial history search
+# Type 'git c' and press Up to see 'git commit', 'git checkout', etc.
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+
+
 # --- 4. Aliases ---
 alias ls="eza -lh"
 alias ll="eza -alh"
 alias tree="eza --tree"
 alias cat="bat"
 
-# --- 4. VS Code Integration ---
+# --- 5. VS Code Integration ---
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "/usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh"
 
-# --- 5. FZF Integration (Keybindings) ---
-# This allows Alt+C to jump folders and Ctrl+R for history
-if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
-	. /usr/share/fzf/shell/key-bindings.bash
-fi
+# --- 6. FZF Integration (Keybindings) ---
+# Loads keybindings (Ctrl+R, Alt+C) and auto-completion
+[ -f /usr/share/fzf/key-bindings.bash ] && source /usr/share/fzf/key-bindings.bash
+[ -f /usr/share/fzf/completion.bash ] && source /usr/share/fzf/completion.bash
 
-# --- 6. Starship ---
+
+# --- 7. Starship ---
 eval "$(starship init bash)"
 
-# --- 7. Zoxide (MUST BE LAST) ---
+# --- 8. Zoxide (MUST BE LAST) ---
 
 # Initialize zoxide replacing 'cd'
 eval "$(zoxide init --cmd cd bash)"
 
 
-
-
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+
