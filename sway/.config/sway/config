@@ -64,6 +64,8 @@ input "type:keyboard" {
     xkb_layout "us,ma"
     xkb_variant "mac,"
     xkb_options "grp:alt_shift_toggle"
+    # Add 'lv3:ralt_alt' to force Right Option to act as Alt
+    xkb_options "grp:alt_shift_toggle,lv3:ralt_alt"
 }
 
 ### Layout Settings
@@ -88,7 +90,7 @@ default_border pixel 0
 
     # Browser
     bindsym $mod+z exec $browser
-    
+
     # Reload / Exit
     bindsym $mod+Shift+c reload
     bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
@@ -230,7 +232,7 @@ bindsym $mod+r mode "resize"
     bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
     bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
     bindsym --locked XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
-    
+
     # Brightness
     bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
     bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
@@ -246,12 +248,12 @@ bindsym $mod+r mode "resize"
 #
 bar {
     position bottom
-    
+
     font pango:JetBrainsMono Nerd Font Mono 11
 
     # status_command executes your shell script
     status_command ~/.config/sway/status.sh
-    
+
     # No 'colors' block = Use Sway Defaults (Blue/Grey)
     colors {
         background $bg-color
