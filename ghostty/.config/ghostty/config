@@ -1,5 +1,5 @@
 theme = Rose Pine Moon
-background = #121212
+background = #000000
 foreground = #E0E0E0
 font-size = 14
 command = tmux new-session -A -s main
