@@ -53,6 +53,19 @@ alias cat="bat"
 [ -f /usr/share/fzf/completion.bash ] && source /usr/share/fzf/completion.bash
 
 
+FZF_TAB_HOME="$HOME/.local/share/fzf-tab-completion"
+if [ -f "$FZF_TAB_HOME/bash/fzf-bash-completion.sh" ]; then
+    source "$FZF_TAB_HOME/bash/fzf-bash-completion.sh"
+
+    # Bind TAB to trigger FZF
+    bind -x '"\t": fzf_bash_completion'
+
+    # Configure Previews with Quote Handling
+    # 1. 'eval v={}' unquotes the filename passed by the plugin (fixes the duplication error)
+    # 2. We use 'eza' for directories and 'bat' for files
+    export FZF_COMPLETION_OPTS="--preview 'eval v={1}; if [ -d \"\$v\" ]; then eza --tree --color=always -- \"\$v\" | head -200; else bat -n --color=always --line-range :500 -- \"\$v\"; fi'"
+fi
+
 # --- 7. Starship ---
 eval "$(starship init bash)"
 
