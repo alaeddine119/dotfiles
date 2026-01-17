@@ -266,3 +266,45 @@ end, { desc = "Harpoon: [P]revious File" })
 vim.keymap.set("n", "<C-S-N>", function()
 	harpoon:list():next()
 end, { desc = "Harpoon: [N]ext File" })
+
+-- -------------------------------------------------------------------------- --
+--  Keymaps: Tmux Session Switcher (FIXED)
+-- -------------------------------------------------------------------------- --
+vim.keymap.set("n", "<leader>st", function()
+	local pickers = require("telescope.pickers")
+	local finders = require("telescope.finders")
+	local actions = require("telescope.actions")
+	local action_state = require("telescope.actions.state")
+
+	pickers
+		.new({}, {
+			prompt_title = "Select Tmux Session",
+			-- Get list of sessions, showing only the name
+			finder = finders.new_oneshot_job({
+				"tmux",
+				"list-sessions",
+				"-F",
+				"#S",
+			}, {}),
+			sorter = conf.generic_sorter({}),
+			attach_mappings = function(prompt_bufnr, _)
+				actions.select_default:replace(function()
+					-- 1. Close Telescope first to avoid UI conflict
+					actions.close(prompt_bufnr)
+
+					local selection = action_state.get_selected_entry()
+					if selection then
+						-- 2. Schedule the switch to happen after Neovim updates
+						-- This prevents the "frozen terminal" issue
+						vim.schedule(function()
+							vim.fn.system(
+								"tmux switch-client -t " .. selection[1]
+							)
+						end)
+					end
+				end)
+				return true
+			end,
+		})
+		:find()
+end, { desc = "[S]witch [T]mux Session (Fuzzy)" })

@@ -142,6 +142,9 @@ miniclue.setup({
 		-- <Leader>c: Code actions (Format, Rename...)
 		{ mode = "n", keys = "<Leader>c", desc = "+[C]ode Actions" },
 
+		-- <leader>d: Debuger commands
+		{ mode = "n", keys = "<Leader>d", desc = "+[D]ebugger" },
+
 		-- <Leader>g: Git main commands (Lazygit, Browse)
 		{ mode = "n", keys = "<Leader>g", desc = "+[G]it Tools" },
 

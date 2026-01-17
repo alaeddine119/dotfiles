@@ -38,9 +38,8 @@ vim.o.signcolumn = "yes"
 -- Set the border style for floating windows (like LSP hover or diagnostics) to 'rounded'.
 vim.o.winborder = "rounded"
 
--- Disable the cursorline (highlighting the line the cursor is on).
--- We disable this specifically because it can interfere with font ligatures in some terminals.
-vim.o.cursorline = false
+-- Enable the cursorline (highlighting the line the cursor is on).
+vim.o.cursorline = true
 
 -- While typing a search command, show where the pattern, as it was typed so far, matches
 vim.o.incsearch = true

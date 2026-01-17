@@ -14,14 +14,12 @@ vim.pack.add({
 -- 2. Configure Diagnostic Visuals (How errors appear).
 vim.diagnostic.config({
 	virtual_text = false, -- Disable inline error text to keep code clean.
-	virtual_lines = true, -- Enable multiline errors (requires lsp_lines plugin, else ignored).
+	virtual_lines = false, -- Enable multiline errors (requires lsp_lines plugin, else ignored).
+	unserline = true, -- Enable underline (the subtle hint)
 	severity_sort = true, -- Sort diagnostics so Errors appear above Warnings.
 	float = {
 		border = "rounded", -- Use rounded borders for hover windows.
 		source = "if_many", -- Show the source of the error only if there are multiple sources.
-	},
-	underline = {
-		severity = vim.diagnostic.severity.ERROR, -- Only underline actual Errors, not warnings.
 	},
 })
 
@@ -181,7 +179,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		--  For example, in C this would take you to the header.
 		map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
-		-- Show documentation for the symbol under cursor (Hover).
+		-- Show doumentation for the symbol under cursor (Hover).
 		map("K", vim.lsp.buf.hover, "Hover Documentation")
 
 		-- Get the client object that just attached.
@@ -197,6 +195,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
 				{ autotrigger = true }
 			)
 		end
+		-- SHOW ERROR: Open a floating window with the error message
+		map("<leader>te", vim.diagnostic.open_float, "Show [E]rror message")
+
+		--  TOGGLE GHOST TEXT: If you sometimes want to turn inline text back on
+		map("<leader>td", function()
+			local current_config = vim.diagnostic.config()
+			local new_state = not current_config.virtual_text
+			vim.diagnostic.config({ virtual_text = new_state })
+			print("Diagnostic Virtual Text: " .. (new_state and "ON" or "OFF"))
+		end, "[T]oggle [D]iagnostic Text")
 
 		-- The following code creates a keymap to toggle inlay hints in your
 		-- code, if the language server you are using supports them

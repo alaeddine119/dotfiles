@@ -8,6 +8,11 @@
 require("config.options") -- Load options like line numbers, tabs, and mouse support
 require("config.keymaps") -- Load global keybindings (Save, Quit, Explorer)
 
+-- 2. CRITICAL: Load Infrastructure First
+--    We MUST load LSP (which has Mason) before Debug (which needs Mason).
+--    'require' caches modules, so the loop below won't reload them.
+require("plugins.lsp")
+
 -- 2. Automatic Plugin Loader
 --    We define the path to the 'lua/plugins' directory where our modular files live.
 --    This allows us to dynamically load every file in that folder.
