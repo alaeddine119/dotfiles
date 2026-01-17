@@ -9,7 +9,7 @@ set $up k
 set $right l
 set $term ghostty
 set $menu fuzzel
-set $browser zen-browser
+set $browser helium-browser
 set $wallpaper /home/alaeddine/Pictures/Wallpapers/ashya-jamila.jpg
 
 
@@ -96,7 +96,7 @@ default_border pixel 0
     bindsym $mod+q kill
 
     # Browser
-    bindsym $mod+z exec $browser
+    bindsym $mod+b exec $browser
 
     # Reload / Exit
     bindsym $mod+Shift+c reload
@@ -126,6 +126,7 @@ default_border pixel 0
     bindsym $mod+Alt+b exec foot --title "Bluetooth TUI" bluetui
     bindsym $mod+Alt+w exec foot --title "Wifi TUI" impala
     bindsym $mod+Shift+BackSpace exec foot --title "Task Manager" btop
+    bindsym $mod+Alt+s exec foot --title "Sound TUI" wiremix --max-volume-percent 100
 
     # Lock Screen
     bindsym $mod+Alt+l exec swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2
@@ -192,7 +193,7 @@ default_border pixel 0
 #
 # Layout Manipulation
 #
-    bindsym $mod+b splith
+    # bindsym $mod+b splith
     # bindsym $mod+v splitv
     bindsym $mod+s layout stacking
     bindsym $mod+w layout tabbed
@@ -211,7 +212,9 @@ default_border pixel 0
 #
     for_window [app_id="foot" title="Bluetooth TUI"] floating enable, resize set 800 600
     for_window [app_id="foot" title="Wifi TUI"] floating enable, resize set 800 600
-    for_window [app_id="foot" title="Task Manager"] floating enable, resize set 900 600
+    for_window [app_id="foot" title="Task Manager"] floating enable, resize set 1500 800
+    for_window [app_id="foot" title="Sound TUI"] floating enable, resize set 800 600
+
     for_window [title="^Picture-in-Picture$"] floating enable, sticky enable
 
 #
@@ -249,6 +252,9 @@ bindsym $mod+r mode "resize"
     # Screenshot
     bindsym $mod+p exec grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S.png')
     bindsym $mod+shift+p exec grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S.png')
+
+    # Color picker
+    bindsym $mod+c exec grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | tail -n 1 | cut -d ' ' -f 4 | wl-copy
 
     # Power Menu
     bindsym $mod+Shift+q exec ~/.local/bin/power-menu.sh
