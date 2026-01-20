@@ -15,7 +15,7 @@ vim.pack.add({
 vim.diagnostic.config({
 	virtual_text = false, -- Disable inline error text to keep code clean.
 	virtual_lines = false, -- Enable multiline errors (requires lsp_lines plugin, else ignored).
-	unserline = true, -- Enable underline (the subtle hint)
+	underline = true, -- Enable underline (the subtle hint)
 	severity_sort = true, -- Sort diagnostics so Errors appear above Warnings.
 	float = {
 		border = "rounded", -- Use rounded borders for hover windows.

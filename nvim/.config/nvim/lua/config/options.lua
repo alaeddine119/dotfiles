@@ -50,6 +50,24 @@ vim.o.termguicolors = true
 -- Screen column highlight 80 characters
 vim.o.colorcolumn = "80"
 
+-- Decrease update time (default is 4000ms).
+-- Faster updates help plugins that rely on "CursorHold" events (like highlighting
+-- the word under cursor or refreshing diagnostics).
+vim.o.updatetime = 250
+
+-- Decrease mapped sequence wait time (default is 1000ms).
+-- Displays which-key / mini.clue popups faster when you stop typing.
+vim.o.timeoutlen = 300
+
+-- Scrolloff: Keep 8 lines of context above/below the cursor when scrolling.
+-- This prevents the cursor from ever hitting the very bottom/top of the screen.
+vim.o.scrolloff = 8
+
+-- Split behavior: Force new splits to appear below or to the right.
+-- (Default is above and left, which feels unnatural to most).
+vim.o.splitright = true
+vim.o.splitbelow = true
+
 -- -------------------------------------------------------------------------- --
 --  Tab & Indentation Settings
 -- -------------------------------------------------------------------------- --
