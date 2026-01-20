@@ -45,7 +45,12 @@ alias tree="eza --tree"
 alias cat="bat"
 
 # --- 5. VS Code Integration ---
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "/usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh"
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    # Path updated for manual install at /opt/visual-studio-code
+    if [ -f "/opt/visual-studio-code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh" ]; then
+        . "/opt/visual-studio-code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh"
+    fi
+fi
 
 # --- 6. FZF Integration (Keybindings) ---
 # Loads keybindings (Ctrl+R, Alt+C) and auto-completion
