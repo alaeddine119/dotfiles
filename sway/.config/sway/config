@@ -265,7 +265,7 @@ bindsym $mod+r mode "resize"
 bar {
     position bottom
 
-    font pango:JetBrainsMono Nerd Font Mono 11
+    font pango:JetBrainsMono Nerd Font Propo 11
 
     # status_command executes your shell script
     status_command ~/.config/sway/status.sh
