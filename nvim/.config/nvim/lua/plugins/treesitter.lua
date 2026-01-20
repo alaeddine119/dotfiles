@@ -4,7 +4,11 @@
 
 -- 1. Install Treesitter
 vim.pack.add({
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "master" },
+	{
+		src = "https://github.com/nvim-treesitter/nvim-treesitter",
+		version = "master",
+	},
+	"https://github.com/nvim-treesitter/nvim-treesitter-context",
 })
 
 -- 2. Guarded Configuration
@@ -33,11 +37,13 @@ configs.setup({
 		"vimdoc",
 		"rust",
 	},
-
 	auto_install = true,
-
 	highlight = { enable = true },
 	indent = { enable = true },
+	-- Keymap: Jump to the context header
+	vim.keymap.set("n", "[c", function()
+		require("treesitter-context").go_to_context(vim.v.count1)
+	end, { silent = true, desc = "Jump to [C]ontext" }),
 })
 
 -- 4. Force Treesitter features
