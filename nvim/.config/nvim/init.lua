@@ -8,9 +8,12 @@
 require("config.options") -- Load options like line numbers, tabs, and mouse support
 require("config.keymaps") -- Load global keybindings (Save, Quit, Explorer)
 
--- 2. CRITICAL: Load Infrastructure First
+-- 2. CRITICAL: Load Infrastructure First & Theme First
 --    We MUST load LSP (which has Mason) before Debug (which needs Mason).
 --    'require' caches modules, so the loop below won't reload them.
+--    We load the Colorscheme explicitly so the "Moon" palette is ready
+--    before any UI plugins (like Scrollbar) try to access it.
+require("plugins.colorscheme")
 require("plugins.lsp")
 
 -- 2. Automatic Plugin Loader

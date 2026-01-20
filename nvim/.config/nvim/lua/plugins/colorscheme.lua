@@ -10,6 +10,7 @@ vim.pack.add({
 
 -- 2. Configure the theme before loading it.
 require("rose-pine").setup({
+	variant = "moon",
 	-- Define styles for different syntax elements.
 	styles = {
 		bold = true, -- Enable bold text.

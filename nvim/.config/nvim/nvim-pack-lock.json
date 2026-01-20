@@ -93,6 +93,10 @@
       "rev": "cf91d5e2d07c72903d052f5207511bf7ecdb7122",
       "src": "https://github.com/rcarriga/nvim-dap-ui"
     },
+    "nvim-hlslens": {
+      "rev": "be2d7b2be01860b5445a007ff2bc72b29896db6b",
+      "src": "https://github.com/kevinhwang91/nvim-hlslens"
+    },
     "nvim-lint": {
       "rev": "1e6b2ac034d1a7588d11b0b8e862a7ad89368376",
       "src": "https://github.com/mfussenegger/nvim-lint"
@@ -104,6 +108,10 @@
     "nvim-nio": {
       "rev": "21f5324bfac14e22ba26553caf69ec76ae8a7662",
       "src": "https://github.com/nvim-neotest/nvim-nio"
+    },
+    "nvim-scrollbar": {
+      "rev": "f8e87b96cd6362ef8579be456afee3b38fd7e2a8",
+      "src": "https://github.com/petertriho/nvim-scrollbar"
     },
     "nvim-treesitter": {
       "rev": "c6dd314086f7b471bf6c9110092a94ce1c06d220",
