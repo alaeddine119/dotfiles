@@ -62,3 +62,12 @@ end, { desc = "Prev [D]iagnostic" })
 vim.keymap.set("n", "]d", function()
 	vim.diagnostic.jump({ count = 1, float = true })
 end, { desc = "Next [D]iagnostic" })
+
+-- -------------------------------------------------------------------------- --
+--  Tiny Inline Diagnostic Toggle
+-- -------------------------------------------------------------------------- --
+
+-- Toggle the new inline diagnostics on/off
+vim.keymap.set("n", "<leader>td", function()
+	require("tiny-inline-diagnostic").toggle()
+end, { desc = "[T]oggle [D]iagnostics (Inline)" })
