@@ -40,7 +40,7 @@ while true; do
         usage=$(( (100 * (diff_total - diff_idle)) / diff_total ))
         # Fixed width: 3 characters (e.g., "  5%" or " 50%" or "100%")
         # We use %3d because CPU can hit 100
-        cpu_pct=$(printf "%2d%%" $usage)
+        cpu_pct=$(printf "%d%%" $usage)
     else
         cpu_pct="  0%"
     fi
@@ -88,10 +88,10 @@ while true; do
                 # %2d adds space for hours < 10 (e.g. " 4h")
                 # %02d adds zero for minutes < 10 (e.g. "05m")
                 # Result: "( 4h 05m)"
-                time_str=$(printf " (%2dh %02dm)" $h $m)
+                time_str=$(printf "(%dh %02dm)" $h $m)
             fi
 
-            bat_text="$icon $cap_str$time_str"
+            bat_text="$time_str $cap_str $icon"
         else
             bat_text="No Bat"
         fi
@@ -101,7 +101,7 @@ while true; do
             ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes' | cut -d: -f2)
             [ -z "$ssid" ] && ssid=$(iwgetid -r 2>/dev/null)
             [ -z "$ssid" ] && ssid="Connected"
-            wifi_text="󰖩 $ssid"
+            wifi_text="$ssid 󰖩"
         else
             wifi_text="󰖪 Off"
         fi
@@ -110,7 +110,7 @@ while true; do
         if bluetoothctl show | grep -q "Powered: yes"; then
             bt_dev=$(bluetoothctl info | grep "Alias" | head -n 1 | cut -d: -f2 | xargs)
             if [ -n "$bt_dev" ]; then
-                bt_text="󰂱 $bt_dev"
+                bt_text="$bt_dev 󰂱"
             else
                 bt_text="󰂯 On"
             fi
@@ -123,7 +123,7 @@ while true; do
     # ==========================================
     # OUTPUT
     # ==========================================
-    echo "$wifi_text | $bt_text |   $cpu_pct |   $ram_pct | $bat_text | $date_time"
+    echo "$wifi_text | $bt_text | $cpu_pct  | $ram_pct  | $bat_text | $date_time"
 
     timer=$(( (timer + 1) % 5 ))
     sleep 1
