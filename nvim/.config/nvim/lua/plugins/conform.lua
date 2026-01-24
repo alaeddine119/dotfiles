@@ -34,6 +34,10 @@ conform.setup({
 		-- Use rustfmt, but allow fallback to LSP if rustfmt isn't found
 		rust = { "rustfmt", lsp_format = "fallback" },
 
+		-- BASH
+		bash = { "shfmt" },
+		sh = { "shfmt" },
+
 		-- Fallback for everything else
 		["_"] = { "trim_whitespace" },
 	},
@@ -50,6 +54,12 @@ conform.setup({
 		rustfmt = {
 			-- Rustfmt default is 100
 			prepend_args = { "--config", "max_width=80" },
+		},
+		shfmt = {
+			-- "-i 4"  : Indent 4 spaces
+			-- "-ci"   : Case indent (switch cases indented)
+			-- "-bn"   : Binary ops (like &&, ||, |) start a new line
+			prepend_args = { "-i", "4", "-ci", "-bn" },
 		},
 	},
 

@@ -20,7 +20,7 @@ end
 --    We define a specific handle color to ensure it's visible but subtle against the Rose Pine background.
 local palette = require("rose-pine.palette")
 local colors = {
-	handle = palette.subtle, -- Subtle highlight for the bar itself
+	handle = palette.pine, -- Subtle highlight for the bar itself
 	search = palette.gold, -- Gold for search results
 	error = palette.love, -- Red for errors
 	warn = palette.gold, -- Yellow for warnings
@@ -35,13 +35,13 @@ local colors = {
 scrollbar.setup({
 	show = true,
 	show_in_active_only = true, -- Only show in the focused window
-	set_highlights = false,
+	set_highlights = true,
 	folds = 1000, -- Handle folds
 
 	-- Visual Configuration
 	handle = {
 		text = " ",
-		blend = 0, -- Transparency (0-100)
+		blend = 30, -- Transparency (0-100)
 		color = colors.handle,
 		hide_if_all_visible = true,
 	},

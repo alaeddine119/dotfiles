@@ -58,6 +58,8 @@ require("mason-tool-installer").setup({
 		"htmlhint", -- HTML Linter
 		"stylelint", -- CSS Linter
 		"commitlint", -- Git Linter
+		"bash-language-server", -- Bash LSP
+		"shfmt", -- Bash formatter
 	},
 })
 
@@ -74,6 +76,14 @@ require("mason-lspconfig").setup({
 			local ok, blink = pcall(require, "blink.cmp")
 			if ok then
 				capabilities = blink.get_lsp_capabilities(capabilities)
+			end
+
+			-- Stop Mason from setting up Rust, let Rustaceanvim do it
+			if
+				server_name == "rust_analyzer"
+				or server_name == "rust-analyzer"
+			then
+				return
 			end
 
 			-- SPECIAL SETUP: Biome

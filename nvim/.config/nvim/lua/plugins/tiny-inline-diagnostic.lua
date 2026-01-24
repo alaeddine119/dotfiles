@@ -43,7 +43,7 @@ tiny.setup({
 		-- Break long messages into separate lines automatically
 		break_line = {
 			enabled = true,
-			after = 80, -- Wrap after 80 chars
+			after = 30, -- Wrap after 80 chars
 		},
 
 		-- If you want to see the error code (e.g. E501)
