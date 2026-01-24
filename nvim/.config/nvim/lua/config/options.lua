@@ -50,6 +50,14 @@ vim.o.termguicolors = true
 -- Screen column highlight 80 characters
 vim.o.colorcolumn = "80"
 
+-- This tells Neovim: "Every file has a max width of 80."
+vim.o.textwidth = 80
+
+-- This appends 't' to the default options.
+-- 't' = Auto-wrap text using textwidth while typing.
+-- 'c' = Auto-wrap comments using textwidth while typing.
+vim.opt.formatoptions:append("tc")
+
 -- Decrease update time (default is 4000ms).
 -- Faster updates help plugins that rely on "CursorHold" events (like highlighting
 -- the word under cursor or refreshing diagnostics).
@@ -112,6 +120,12 @@ vim.schedule(function()
 	vim.o.clipboard = "unnamedplus"
 end)
 
+-- Add filetype detection for ble.sh config
+vim.filetype.add({
+	filename = {
+		[".blerc"] = "bash",
+	},
+})
 -- -------------------------------------------------------------------------- --
 --  Autocommands
 -- -------------------------------------------------------------------------- --
