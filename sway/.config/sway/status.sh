@@ -112,10 +112,11 @@ while true; do
             if [ -n "$bt_dev" ]; then
                 bt_text="$bt_dev 󰂱"
             else
-                bt_text="󰂯 On"
+                bt_text="On 󰂯"
+
             fi
         else
-            bt_text="󰂲 Off"
+            bt_text="Off 󰂲"
         fi
 
     fi
