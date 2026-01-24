@@ -8,17 +8,22 @@ shutdown="⏻ Shutdown"
 logout="🚪 Logout"
 
 # Show the menu using Fuzzel
-selected=$(echo -e "$lock\n$suspend\n$reboot\n$shutdown\n$logout" | fuzzel -d -p "Power: " -w 15 -l 5)
+selected=$(echo -e "$lock\n$suspend\n$reboot\n$shutdown\n$logout" | rofi -dmenu -p "Power" -theme-str 'window {width: 20%;} listview {lines: 5;}')
 
 case $selected in
     "$lock")
-        swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2 ;;
+        swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2
+        ;;
     "$suspend")
-        systemctl suspend ;;
+        systemctl suspend
+        ;;
     "$reboot")
-        systemctl reboot ;;
+        systemctl reboot
+        ;;
     "$shutdown")
-        systemctl poweroff ;;
+        systemctl poweroff
+        ;;
     "$logout")
-        niri msg action quit ;;
+        niri msg action quit
+        ;;
 esac

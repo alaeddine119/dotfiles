@@ -34,7 +34,7 @@ layout {
     preset-column-widths {
         proportion 0.5
         proportion 0.66667
-	proportion 1.0
+        proportion 1.0
     }
     default-column-width {
         proportion 1.0
@@ -208,9 +208,13 @@ binds {
     Mod+Return hotkey-overlay-title="Open a Terminal: Foot" {
         spawn "foot"
     }
-    Mod+Space hotkey-overlay-title="Run an Application: fuzzel" {
-        spawn "fuzzel"
+
+    // --- ROFI REPLACEMENT ---
+    Mod+Space hotkey-overlay-title="Run an Application: Rofi" {
+        spawn "rofi" "-show" "combi" "-modes" "combi" "-combi-modes" "drun,calc" "-show-icons"
     }
+    // ------------------------
+
     Mod+B hotkey-overlay-title="Run an Application: zen-browser" {
         spawn "zen-browser"
     }
@@ -576,9 +580,13 @@ binds {
     Mod+Shift+V {
         switch-focus-between-floating-and-tiling
     }
+
+    // --- ROFI CLIPBOARD INTEGRATION ---
     Mod+V {
-        spawn "bash" "-c" "cliphist list | fuzzel -d -w 50 | cliphist decode | wl-copy"
+        spawn "bash" "-c" "cliphist list | rofi -dmenu -p 'Clipboard' -theme-str 'window {width: 50%;}' | cliphist decode | wl-copy"
     }
+    // ----------------------------------
+
     Mod+Grave {
         spawn "bemoji" "-t" "-c" "-n"
     }

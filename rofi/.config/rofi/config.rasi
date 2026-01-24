@@ -1,0 +1,91 @@
+configuration {
+    /* 1. Enable Modi: We must include 'combi' here */
+    modi: "combi,drun,calc";
+
+    /* 2. Define Combi: This tells Combi exactly what to show */
+    combi-modes: "drun,calc";
+
+    /* 3. Formatting */
+    font: "JetBrainsMono Nerd Font 16";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+
+    /* 4. Display Names */
+    display-drun: "Apps";
+    display-calc: "Calc";
+    display-combi: "Go";
+
+    /* 5. Critical: Disable sorting so the Calc result stays at the top */
+    sort: false;
+
+    /* 6. Calc specific format: Force the result to be simple */
+    calc-display-format: "{mode} {expression} = {result}";
+    calc-command: "echo -n '{result}' | wl-copy";
+
+    kb-cancel: "Escape,Control+g,Control+bracketleft,Alt+q";
+}
+
+@theme "/dev/null"
+
+* {
+    bg: #111111;
+    fg: #bbbbbb;
+    sel-bg: #313244;
+    sel-fg: #ffffff;
+    accent: #89b4fa;
+
+    background-color: @bg;
+    text-color: @fg;
+    border-color: #eeeeee;
+}
+
+window {
+    width: 40%;
+    padding: 20px;
+    border: 1px;
+    border-radius: 15px;
+    location: center;
+    anchor: center;
+}
+
+inputbar {
+    padding: 10px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    padding: 0 10px 0 0;
+    text-color: @accent;
+}
+
+entry {
+    text-color: @fg;
+}
+
+listview {
+    lines: 7;
+    columns: 1;
+    padding: 10px 0;
+}
+
+element {
+    padding: 10px;
+    border-radius: 8px;
+}
+
+element selected {
+    background-color: @sel-bg;
+    text-color: @sel-fg;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+element-icon {
+    size: 1.0em;
+    padding: 0 10px 0 0;
+    background-color: transparent;
+}

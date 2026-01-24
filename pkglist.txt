@@ -30,7 +30,6 @@ eza
 fastfetch
 fd
 firefox
-fuzzel
 fzf
 git
 git-delta
@@ -94,6 +93,8 @@ powertop
 qalculate-gtk
 qt6-multimedia-ffmpeg
 ripgrep
+rofi-wayland
+rofi-calc
 rsync
 rustup
 scdoc

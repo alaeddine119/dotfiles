@@ -1,17 +1,18 @@
 #!/bin/bash
 
 # Check if recording is already running
-if pgrep -x "wf-recorder" > /dev/null; then
+if pgrep -x "wf-recorder" >/dev/null; then
     # If running, show "Stop" option
-    CHOICE=$(echo -e "⏹️ Stop Recording" | fuzzel -d -p "Recording Active: " -w 20)
-    
+    # Rofi: -dmenu mode, custom prompt, and constrained window size
+    CHOICE=$(echo -e "⏹️ Stop Recording" | rofi -dmenu -p "Recording Active" -theme-str 'window {width: 25%;} listview {lines: 1;}')
+
     if [[ "$CHOICE" == "⏹️ Stop Recording" ]]; then
         killall -s SIGINT wf-recorder
         notify-send "Recording Saved" "Video saved to ~/Videos"
     fi
 else
     # If not running, show Start options
-    CHOICE=$(echo -e "🖥️ Full Screen (No Audio)\n🔊 Full Screen (With Audio)\n✂️ Select Region (No Audio)" | fuzzel -d -p "Start Recording: " -w 30)
+    CHOICE=$(echo -e "🖥️ Full Screen (No Audio)\n🔊 Full Screen (With Audio)\n✂️ Select Region (No Audio)" | rofi -dmenu -p "Start Recording" -theme-str 'window {width: 30%;} listview {lines: 3;}')
 
     TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
     FILENAME="$HOME/Videos/Rec_$TIMESTAMP.mp4"
