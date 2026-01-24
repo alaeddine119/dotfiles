@@ -1,0 +1,80 @@
+# ~/.blerc
+
+# =========================================================================== #
+#  1. UI CLEANUP (Silence Everything)                                         #
+# =========================================================================== #
+# Kill the bottom status bar (Removes "(nsearch...)", time, exit codes)
+bleopt prompt_status_line=
+
+# Kill inline markers (Removes "[ble: EOF]", "[ble: exit]")
+bleopt prompt_eol_mark=''
+bleopt exec_errexit_mark=
+bleopt exec_elapsed_mark=
+bleopt exec_exit_mark=
+bleopt edit_marker=
+bleopt edit_marker_error=
+
+# =========================================================================== #
+#  2. KEY BINDINGS & FZF                                                      #
+# =========================================================================== #
+# FZF Integration (Loads asynchronously)
+ble-import -d integration/fzf-completion
+ble-import -d integration/fzf-key-bindings
+
+# Fix Up/Down to be "Prefix Search" only
+ble-bind -f up history-search-backward
+ble-bind -f down history-search-forward
+
+# Emacs-style cycling (Alt-p / Alt-n)
+ble-bind -f M-p history-search-backward
+ble-bind -f M-n history-search-forward
+
+# =========================================================================== #
+#  3. ROSE PINE MOON THEME                                                    #
+# =========================================================================== #
+# Palette:
+# Base:    #232136 (Overlay) / #2a273f (Surface)
+# Text:    #e0def4
+# Love:    #eb6f92 (Error)
+# Gold:    #f6c177 (Quote)
+# Rose:    #ea9a97 (Param)
+# Pine:    #3e8fb0 (Escape)
+# Foam:    #9ccfd8 (Keyword)
+# Iris:    #c4a7e7 (Command)
+# Subtle:  #908caa (Comment/Grey)
+
+# --- Main Syntax ---
+ble-face -s syntax_default fg=#e0def4
+ble-face -s syntax_command fg=#c4a7e7
+ble-face -s command_function fg=#c4a7e7
+ble-face -s command_builtin fg=#c4a7e7
+ble-face -s command_alias fg=#c4a7e7
+ble-face -s command_keyword fg=#9ccfd8
+ble-face -s syntax_delimiter fg=#e0def4
+ble-face -s syntax_quoted fg=#f6c177
+ble-face -s syntax_quotation fg=#f6c177
+ble-face -s syntax_varname fg=#ea9a97
+ble-face -s syntax_param_expansion fg=#ea9a97
+ble-face -s argument_option fg=#ea9a97
+ble-face -s syntax_error fg=#eb6f92
+ble-face -s syntax_escape fg=#3e8fb0
+ble-face -s syntax_expr fg=#3e8fb0
+ble-face -s syntax_comment fg=#908caa
+
+# --- Ghost Text (Autosuggestions) ---
+ble-face -s auto_complete fg=#908caa
+
+# --- Selection & Matching ---
+# Highlight matches in "Pine" color background
+ble-face -s region_match bg=#3e8fb0,fg=#232136
+# Visual selection in "Overlay" background
+ble-face -s region bg=#2a273f,fg=#e0def4
+ble-face -s region_target bg=#2a273f,fg=#e0def4
+
+# --- Tab Menu (Menu-Complete) ---
+# The text that matches what you typed (Foam)
+ble-face -s menu_complete_match fg=#9ccfd8,bold
+# The selected item (Overlay High background)
+ble-face -s menu_complete_selected bg=#393552,fg=#e0def4
+# Descriptions (Subtle)
+ble-face -s menu_desc_default fg=#908caa
