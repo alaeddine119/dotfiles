@@ -67,7 +67,7 @@ require("mini.animate").setup({
 
 	-- Keep Cursor animation (smooth movement within buffer)
 	cursor = {
-		enable = true,
+		enable = false,
 		timing = require("mini.animate").gen_timing.linear({
 			duration = 100,
 			unit = "total",
