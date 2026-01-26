@@ -136,6 +136,8 @@ vim.api.nvim_create_autocmd("FileType", {
 				"--completion-style=detailed",
 				"--function-arg-placeholders",
 				"--fallback-style=llvm",
+				"--all-scopes-completion", -- [NEW] Suggests items from un-included headers
+				"--completion-parse=always", -- [NEW] Always try to parse for completion
 			},
 			root_dir = project_root or current_file_dir,
 			capabilities = capabilities,
@@ -244,16 +246,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			return
 		end
 
-		-- Enable Native Autocomplete if the server supports it.
-		if client:supports_method("textDocument/completion") then
-			-- Enable completion triggers (like typing '.').
-			vim.lsp.completion.enable(
-				true,
-				client.id,
-				ev.buf,
-				{ autotrigger = true }
-			)
-		end
 		-- SHOW ERROR: Open a floating window with the error message
 		map("<leader>te", vim.diagnostic.open_float, "Show [E]rror message")
 
@@ -287,7 +279,3 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		end
 	end,
 })
-
--- 7. Completion Options.
---    'noselect' prevents the menu from automatically selecting the first item (prevents accidental enters).
-vim.cmd("set completeopt+=noselect")
