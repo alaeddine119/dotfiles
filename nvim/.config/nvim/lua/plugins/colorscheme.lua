@@ -27,10 +27,10 @@ require("rose-pine").setup({
 			subtle = "#cccccc", -- Color for subtle indicators.
 			text = "#E0E0E0", -- Main text color.
 			overlay = "#121212", -- Main color for highliting
+			highlight_low = "#000000",
 		},
 	},
 })
-
 -- 3. Actually apply the colorscheme to Neovim.
 --    This command must run after the setup() call above.
 vim.cmd("colorscheme rose-pine-moon")
