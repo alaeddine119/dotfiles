@@ -147,3 +147,14 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 		vim.hl.on_yank()
 	end,
 })
+
+-- -------------------------------------------------------------------------- --
+--  COMPLETION SETTINGS (Disable Native Menu)
+-- -------------------------------------------------------------------------- --
+
+-- We use Blink.cmp for completion, so we must disable Neovim's native popup menu.
+-- Setting completeopt to an empty string ensures the native menu never appears automatically.
+vim.opt.completeopt = ""
+
+-- As a backup safety measure, set the popup menu height to 0.
+vim.opt.pumheight = 0
