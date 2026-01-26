@@ -120,11 +120,61 @@ vim.keymap.set("n", "]d", function()
 	vim.diagnostic.jump({ count = 1, float = true })
 end, { desc = "Next [D]iagnostic" })
 
--- -------------------------------------------------------------------------- --
---  Tiny Inline Diagnostic Toggle
--- -------------------------------------------------------------------------- --
+-- ========================================================================== --
+--  SEAMLESS BUILD & RUN SYSTEM
+-- ========================================================================== --
 
--- Toggle the new inline diagnostics on/off
-vim.keymap.set("n", "<leader>td", function()
-	require("tiny-inline-diagnostic").toggle()
-end, { desc = "[T]oggle [D]iagnostics (Inline)" })
+local function build_and_run_project()
+	vim.cmd("write")
+	local build_cmd = ""
+	local title = ""
+
+	if vim.fn.filereadable("CMakeLists.txt") == 1 then
+		-- 1. Build using CMake
+		-- 2. Find the newest executable in build/ and run it
+		build_cmd =
+			"cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && cmake --build build"
+
+		-- Shell magic: finds the newest file in build/ that has executable permissions
+		local run_cmd =
+			" && exe=$(find build -maxdepth 2 -type f -executable -not -path '*/.*' | xargs ls -t | head -n1); if [ -n \"$exe\" ]; then echo -e '\\n🚀 Running: '$exe'\\n'; ./\"$exe\"; else echo '\\n⚠️ No executable found in build/'; fi"
+
+		build_cmd = build_cmd .. run_cmd
+		title = " CMake Build & Run "
+	elseif vim.fn.filereadable("Makefile") == 1 then
+		-- Standard make assumes the binary is in the current directory or defined by target
+		build_cmd =
+			"make && echo -e '\\n🚀 Running Project...\\n' && ./$(ls -t | grep -v '\\.' | head -n1)"
+		title = " Make Build & Run "
+	else
+		vim.notify("No build file found!", vim.log.levels.WARN)
+		return
+	end
+
+	local final_cmd = string.format(
+		"%s; echo ''; read -n 1 -s -r -p 'Process finished. Press any key to close...'",
+		build_cmd
+	)
+
+	require("snacks").terminal(final_cmd, {
+		win = {
+			position = "bottom",
+			height = 0.4,
+			border = "rounded",
+			title = title,
+			title_pos = "center",
+			style = "minimal",
+		},
+		interactive = true,
+	})
+end
+
+-- Map it to <leader>cr ([C]ode [R]un Project)
+-- Note: You might want to move your single-file runner to <leader>cx
+-- and keep <leader>cr for project-level execution.
+vim.keymap.set(
+	"n",
+	"<leader>cb",
+	build_and_run_project,
+	{ desc = "[C]ode [B]uild and Run Project" }
+)

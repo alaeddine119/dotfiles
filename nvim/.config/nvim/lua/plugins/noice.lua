@@ -93,16 +93,6 @@ noice.setup({
 })
 
 -- 4. KEYMAPS
--- History and Dismiss
--- History and Dismiss (Aligned with Snacks keymaps, or use Snacks instead)
-vim.keymap.set("n", "<leader>nh", function()
-	require("noice").cmd("history")
-end, { desc = "[N]otification [H]istory" })
-
-vim.keymap.set("n", "<leader>nd", function()
-	require("noice").cmd("dismiss")
-end, { desc = "[N]otification [D]ismiss" })
-
 -- Redirect Cmdline (Shift+Enter in command mode redirects output to a split)
 vim.keymap.set("c", "<S-Enter>", function()
 	require("noice").redirect(vim.fn.getcmdline())

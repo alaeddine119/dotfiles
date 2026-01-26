@@ -62,22 +62,32 @@ MiniIcons.mock_nvim_web_devicons() -- Let other plugins use MiniIcons
 
 -- Smooth scrolling and cursor movement.
 require("mini.animate").setup({
-	-- Disable Scroll animation to fix touchpad lag
+	-- 1. Disable to fix touchpad lag and cursor conflicts
 	scroll = { enable = false },
+	cursor = { enable = false },
 
-	-- Keep Cursor animation (smooth movement within buffer)
-	cursor = {
-		enable = false,
+	-- 2. Snapier Window Animations (50ms instead of 100ms)
+	resize = {
+		enable = true,
 		timing = require("mini.animate").gen_timing.linear({
-			duration = 100,
+			duration = 50,
 			unit = "total",
 		}),
 	},
-
-	-- Enable Resize/Open/Close animations if you like them
-	resize = { enable = true },
-	open = { enable = true },
-	close = { enable = true },
+	open = {
+		enable = true,
+		timing = require("mini.animate").gen_timing.linear({
+			duration = 50,
+			unit = "total",
+		}),
+	},
+	close = {
+		enable = true,
+		timing = require("mini.animate").gen_timing.linear({
+			duration = 50,
+			unit = "total",
+		}),
+	},
 })
 
 -- Highlight trailing whitespace (red blocks at end of line)
@@ -215,52 +225,6 @@ require("mini.hipatterns").setup({
 		hex_color = require("mini.hipatterns").gen_highlighter.hex_color(),
 	},
 })
-
--- Helper function for expression mappings
-local function map_blink(lhs, rhs)
-	vim.keymap.set(
-		"i",
-		lhs,
-		rhs,
-		{ expr = true, silent = true, replace_keycodes = true }
-	)
-end
-
--- Ctrl+N: Select Next (Navigation)
-map_blink("<C-n>", function()
-	local blink = require("blink.cmp")
-	if blink.is_menu_visible() then
-		return blink.select_next()
-	end
-	return "<C-n>"
-end)
-
--- Ctrl+P: Select Previous (Navigation)
-map_blink("<C-p>", function()
-	local blink = require("blink.cmp")
-	if blink.is_menu_visible() then
-		return blink.select_prev()
-	end
-	return "<C-p>"
-end)
-
--- Ctrl+Y: Accept Completion (Yes)
-map_blink("<C-y>", function()
-	local blink = require("blink.cmp")
-	if blink.is_menu_visible() then
-		return blink.accept()
-	end
-	return "<C-y>"
-end)
-
--- Ctrl+E: Cancel / Close Menu (Exit)
-map_blink("<C-e>", function()
-	local blink = require("blink.cmp")
-	if blink.is_menu_visible() then
-		return blink.hide()
-	end
-	return "<C-e>"
-end)
 
 -- ========================================================================== --
 --  5. EXTRAS

@@ -101,24 +101,18 @@ end, { desc = "Prev Reference" })
 
 -- 5. INIT (Debug globals and Toggles)
 --    Equivalent to the 'init' block in lazy.nvim
-vim.api.nvim_create_autocmd("User", {
-	pattern = "VeryLazy",
-	callback = function()
-		_G.dd = function(...)
-			snacks.debug.inspect(...)
-		end
-		_G.bt = function(...)
-			snacks.debug.backtrace(...)
-		end
+_G.dd = function(...)
+	snacks.debug.inspect(...)
+end
+_G.bt = function(...)
+	snacks.debug.backtrace(...)
+end
 
-		-- Mapped to <leader>t... for Toggles
-		snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>ts")
-		snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>tw")
-		snacks.toggle.line_number():map("<leader>tl")
-		snacks.toggle.diagnostics():map("<leader>td")
-		snacks.toggle.dim():map("<leader>tD")
-	end,
-})
+-- Mapped to <leader>t... for Toggles
+snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>ts")
+snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>tW")
+snacks.toggle.line_number():map("<leader>tl")
+snacks.toggle.dim():map("<leader>tD")
 
 -- Toggle Terminal (Handles both Ctrl+/ and Ctrl+_)
 map({ "n", "t" }, "<c-/>", function()

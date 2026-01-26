@@ -16,6 +16,10 @@
       "rev": "8314f4c9e205e7f30b62147069729f9a1227d8bf",
       "src": "https://github.com/stevearc/conform.nvim"
     },
+    "cppman.nvim": {
+      "rev": "801c5b178ee1246bc8ee044984d5758933b2baca",
+      "src": "https://github.com/madskjeldgaard/cppman.nvim"
+    },
     "fidget.nvim": {
       "rev": "64463022a1f2ff1318ab22a2ea4125ed9313a483",
       "src": "https://github.com/j-hui/fidget.nvim"

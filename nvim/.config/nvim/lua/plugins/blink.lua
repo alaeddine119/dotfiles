@@ -43,14 +43,18 @@ end
 -- 4. CONFIGURE
 blink.setup({
 	keymap = {
-		preset = "none",
+		preset = "none", -- We want full control
 		["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-		["<C-e>"] = { "hide" },
+		["<C-e>"] = { "hide", "fallback" },
+		["<C-y>"] = { "select_and_accept" },
+
+		-- Navigation
 		["<C-n>"] = { "select_next", "fallback" },
 		["<C-p>"] = { "select_prev", "fallback" },
 		["<Down>"] = { "select_next", "fallback" },
 		["<Up>"] = { "select_prev", "fallback" },
-		["<C-y>"] = { "select_and_accept" },
+
+		-- Accept with Enter
 		["<CR>"] = { "accept", "fallback" },
 	},
 

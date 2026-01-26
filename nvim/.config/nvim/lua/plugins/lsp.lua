@@ -10,6 +10,8 @@ vim.pack.add({
 	"https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim", -- Helper to auto-install a list of tools.
 	"https://github.com/folke/lazydev.nvim", -- Improves Lua development (provides vim global types).
 	"https://git.sr.ht/~chinmay/clangd_extensions.nvim", --
+	"https://github.com/MunifTanjim/nui.nvim",
+	"https://github.com/madskjeldgaard/cppman.nvim",
 })
 
 -- 2. Configure Diagnostic Visuals (How errors appear).
@@ -73,6 +75,8 @@ local ok, blink = pcall(require, "blink.cmp")
 if ok then
 	capabilities = blink.get_lsp_capabilities(capabilities)
 end
+
+-- Force documentation support for ALL servers (System + Mason)
 capabilities.textDocument.completion.completionItem.resolveSupport = {
 	properties = { "documentation", "detail", "additionalTextEdits" },
 }
@@ -119,7 +123,11 @@ require("mason-lspconfig").setup({
 -- ========================================================================== --
 --  7. ROBUST C++ SETUP (The "Out of the Box" Fix)
 -- ========================================================================== --
-
+-- PLUGIN INITIALIZATION
+local ok_cppman, cppman = pcall(require, "cppman")
+if ok_cppman then
+	cppman.setup()
+end
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "c", "cpp", "objc", "objcpp" },
 	callback = function(ev)
@@ -129,16 +137,6 @@ vim.api.nvim_create_autocmd("FileType", {
 			ev.buf,
 			{ "compile_commands.json", "compile_flags.txt", ".git" }
 		)
-
-		-- [CRITICAL] Re-apply the Documentation Fix
-		local clangd_caps = vim.lsp.protocol.make_client_capabilities()
-		local ok, blink = pcall(require, "blink.cmp")
-		if ok then
-			clangd_caps = blink.get_lsp_capabilities(clangd_caps)
-		end
-		clangd_caps.textDocument.completion.completionItem.resolveSupport = {
-			properties = { "documentation", "detail", "additionalTextEdits" },
-		}
 
 		vim.lsp.start({
 			name = "clangd",
@@ -152,7 +150,7 @@ vim.api.nvim_create_autocmd("FileType", {
 				"--completion-style=detailed",
 				"--header-insertion=iwyu",
 				"--all-scopes-completion", -- Suggests un-included headers
-				"--completion-parse=always",
+				"--completion-parse=auto",
 
 				-- 3. Formatting & Snippets
 				"--fallback-style=llvm",
@@ -163,7 +161,7 @@ vim.api.nvim_create_autocmd("FileType", {
 				"--pch-storage=memory", -- Store headers in RAM (faster opening)
 			},
 			root_dir = project_root or current_file_dir, -- Important: Finding the project root
-			capabilities = clangd_caps, -- Important: Enabling the Documentation Fix
+			capabilities = capabilities, -- Important: Enabling the Documentation Fix
 			init_options = {
 				usePlaceholders = true,
 				completeUnimported = true,
@@ -272,14 +270,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- SHOW ERROR: Open a floating window with the error message
 		map("<leader>te", vim.diagnostic.open_float, "Show [E]rror message")
 
-		--  TOGGLE GHOST TEXT: If you sometimes want to turn inline text back on
-		map("<leader>td", function()
-			local current_config = vim.diagnostic.config() or {}
-			local new_state = not current_config.virtual_text
-			vim.diagnostic.config({ virtual_text = new_state })
-			print("Diagnostic Virtual Text: " .. (new_state and "ON" or "OFF"))
-		end, "[T]oggle [D]iagnostic Text")
-
 		-- The following code creates a keymap to toggle inlay hints in your
 		-- code, if the language server you are using supports them
 		--
@@ -292,13 +282,35 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			end, "[T]oggle Inlay [H]ints")
 		end
 
-		-- Switch between Source and Header file (.cpp <-> .h)
+		-- Clangd-specific enhancements
+		-- Clangd-specific enhancements
 		if client and client.name == "clangd" then
+			-- 1. Check for cppman ONCE at the start of the block
+			local has_cppman, cp = pcall(require, "cppman")
+
+			-- 2. Standard Clangd Mappings
 			map(
-				"<leader>cs",
+				"<leader>ch",
 				"<cmd>ClangdSwitchSourceHeader<cr>",
-				"[C]langd [S]witch Header/Source"
+				"Switch Header/Source"
 			)
+			map("<leader>cht", "<cmd>ClangdTypeHierarchy<cr>", "Type Hierarchy")
+			map("<leader>chc", "<cmd>ClangdCallHierarchy<cr>", "Call Hierarchy")
+			map("<leader>ca", "<cmd>ClangdAST<cr>", "Clangd AST View")
+			map("<leader>ci", "<cmd>ClangdSymbolInfo<cr>", "Clangd Symbol Info")
+
+			-- 3. Cppman Mappings (using the 'cp' variable we defined above)
+			if has_cppman then
+				map("<leader>k", function()
+					cp.open_cppman_for(vim.fn.expand("<cword>"))
+				end, "Open Cppman Manual")
+				map("<leader>cm", function()
+					cp.open_cppman_for(vim.fn.expand("<cword>"))
+				end, "Cppman Manual (Hover)")
+				map("<leader>cc", function()
+					cp.input()
+				end, "Cppman Search Box")
+			end
 		end
 	end,
 })

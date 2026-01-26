@@ -153,9 +153,11 @@ dap.configurations.cpp = {
 		request = "launch",
 		program = function()
 			-- Asks you to select the executable to debug
+			-- Default to the current file name without the extension
+			local default_path = vim.fn.expand("%:p:h") .. "/" .. vim.fn.expand("%:t:r")
 			return vim.fn.input(
 				"Path to executable: ",
-				vim.fn.getcwd() .. "/",
+				default_path,
 				"file"
 			)
 		end,
