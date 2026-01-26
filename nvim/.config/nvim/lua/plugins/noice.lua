@@ -72,11 +72,10 @@ noice.setup({
 		override = {
 			["vim.lsp.util.convert_input_to_markdown_lines"] = true,
 			["vim.lsp.util.stylize_markdown"] = true,
-			["cmp.entry.get_documentation"] = true,
 		},
 		-- Hover & Signature Help (Modern floating windows)
 		hover = { enabled = true },
-		signature = { enabled = true },
+		signature = { enabled = false },
 
 		-- PROGRESS -> DISABLED
 		-- We disable this because you are using 'fidget.nvim'
