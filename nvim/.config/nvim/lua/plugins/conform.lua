@@ -66,7 +66,10 @@ conform.setup({
 			prepend_args = { "-i", "4", "-ci", "-bn" },
 		},
 		["clang-format"] = {
-			prepend_args = { "--style=file", "--fallback-style=LLVM" },
+			prepend_args = {
+				"--style=file",
+				"--fallback-style=LLVM",
+			},
 		},
 	},
 
