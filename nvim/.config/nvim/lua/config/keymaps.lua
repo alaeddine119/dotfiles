@@ -26,12 +26,57 @@ vim.keymap.set("n", "<leader>w", ":write<CR>", { desc = "[W]rite File" })
 vim.keymap.set("n", "<leader>q", ":quit<CR>", { desc = "[Q]uit Window" })
 
 -- Map <leader>cx to source the current file (:source %)
-vim.keymap.set(
-	"n",
-	"<leader>cx",
-	":source %<CR>",
-	{ desc = "[C]ode E[x]ecute (Source)" }
-)
+-- Execute the current file based on file type
+vim.keymap.set("n", "<leader>cx", function()
+	vim.cmd("write")
+	local ft = vim.bo.filetype
+	local file = vim.fn.expand("%")
+	local out = vim.fn.expand("%<")
+
+	if ft == "cpp" then
+		-- Cmd: Compile -> Run -> Wait
+		-- We use 'printf' instead of 'echo' to avoid weird artifacts in the prompt
+		local cmd = string.format(
+			"if clang++ -std=c++20 '%s' -o '%s'; then ./'%s'; else echo '\n❌ Compilation Failed'; fi; echo ''; read -n 1 -s -r -p 'Press any key to close...'",
+			file,
+			out,
+			out
+		)
+
+		require("snacks").terminal(cmd, {
+			win = {
+				position = "bottom",
+				height = 0.3,
+				border = "rounded",
+				title = " Code Output ", -- <--- THIS FIXES THE CONFUSION
+				title_pos = "center",
+				style = "minimal",
+			},
+			interactive = true,
+		})
+	elseif ft == "lua" then
+		vim.cmd("source %")
+	elseif ft == "python" then
+		local cmd = string.format(
+			"python3 '%s'; echo ''; read -n 1 -s -r -p 'Press any key to close...'",
+			file
+		)
+		require("snacks").terminal(cmd, {
+			win = {
+				position = "bottom",
+				height = 0.3,
+				title = " Python Output ",
+				title_pos = "center",
+			},
+			interactive = true,
+		})
+	else
+		vim.notify(
+			"No execution command for filetype: " .. ft,
+			vim.log.levels.WARN
+		)
+	end
+end, { desc = "[C]ode E[x]ecute" })
 
 -- Map <leader><leader> to open the built-in file explorer (Netrw).
 -- NOTE: This is now handled by lua/plugins/oil.lua (Replaces Netrw)
@@ -47,6 +92,18 @@ vim.keymap.set(
 	{ desc = "Clear search highlights" }
 )
 
+-- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
+-- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
+-- is not what someone will guess without a bit more experience.
+--
+-- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
+-- or just use <C-\><C-n> to exit terminal mode
+vim.keymap.set(
+	"t",
+	"<Esc><Esc>",
+	"<C-\\><C-n>",
+	{ desc = "Exit terminal mode" }
+)
 -- -------------------------------------------------------------------------- --
 --  Diagnostic Navigation
 -- -------------------------------------------------------------------------- --
