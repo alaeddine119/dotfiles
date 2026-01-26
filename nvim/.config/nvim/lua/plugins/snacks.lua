@@ -119,3 +119,12 @@ vim.api.nvim_create_autocmd("User", {
 		snacks.toggle.dim():map("<leader>tD")
 	end,
 })
+
+-- Toggle Terminal (Handles both Ctrl+/ and Ctrl+_)
+map({ "n", "t" }, "<c-/>", function()
+	snacks.terminal()
+end, { desc = "Toggle Terminal" })
+
+map({ "n", "t" }, "<c-_>", function()
+	snacks.terminal()
+end, { desc = "Toggle Terminal (Alt)" })
