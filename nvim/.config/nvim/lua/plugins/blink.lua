@@ -61,11 +61,11 @@ blink.setup({
 
 	completion = {
 		menu = { auto_show = false },
-		ghost_text = { enabled = false },
+		ghost_text = { enabled = true },
 		documentation = { auto_show = true, auto_show_delay_ms = 0 },
 	},
 
-	signature = { enabled = false },
+	signature = { enabled = true },
 
 	-- [THE FIX] PRIORITY CONFIGURATION
 	-- [UPDATED] PRIORITY CONFIGURATION

@@ -73,6 +73,10 @@ local ok, blink = pcall(require, "blink.cmp")
 if ok then
 	capabilities = blink.get_lsp_capabilities(capabilities)
 end
+capabilities.textDocument.completion.completionItem.resolveSupport = {
+	properties = { "documentation", "detail", "additionalTextEdits" },
+}
+
 require("mason-lspconfig").setup({
 	handlers = {
 		function(server_name)
@@ -126,21 +130,40 @@ vim.api.nvim_create_autocmd("FileType", {
 			{ "compile_commands.json", "compile_flags.txt", ".git" }
 		)
 
+		-- [CRITICAL] Re-apply the Documentation Fix
+		local clangd_caps = vim.lsp.protocol.make_client_capabilities()
+		local ok, blink = pcall(require, "blink.cmp")
+		if ok then
+			clangd_caps = blink.get_lsp_capabilities(clangd_caps)
+		end
+		clangd_caps.textDocument.completion.completionItem.resolveSupport = {
+			properties = { "documentation", "detail", "additionalTextEdits" },
+		}
+
 		vim.lsp.start({
 			name = "clangd",
 			cmd = {
 				"clangd",
+				-- 1. Indexing & Tidy
 				"--background-index",
 				"--clang-tidy",
-				"--header-insertion=iwyu",
+
+				-- 2. Completion Behavior
 				"--completion-style=detailed",
-				"--function-arg-placeholders",
+				"--header-insertion=iwyu",
+				"--all-scopes-completion", -- Suggests un-included headers
+				"--completion-parse=always",
+
+				-- 3. Formatting & Snippets
 				"--fallback-style=llvm",
-				"--all-scopes-completion", -- [NEW] Suggests items from un-included headers
-				"--completion-parse=always", -- [NEW] Always try to parse for completion
+				"--function-arg-placeholders",
+
+				-- 4. [NEW] Performance Boosters
+				"-j=4", -- Use 4 workers (faster indexing)
+				"--pch-storage=memory", -- Store headers in RAM (faster opening)
 			},
-			root_dir = project_root or current_file_dir,
-			capabilities = capabilities,
+			root_dir = project_root or current_file_dir, -- Important: Finding the project root
+			capabilities = clangd_caps, -- Important: Enabling the Documentation Fix
 			init_options = {
 				usePlaceholders = true,
 				completeUnimported = true,
