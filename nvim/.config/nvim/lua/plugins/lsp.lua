@@ -9,6 +9,7 @@ vim.pack.add({
 	"https://github.com/williamboman/mason-lspconfig.nvim", -- Bridges Mason and LSPConfig.
 	"https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim", -- Helper to auto-install a list of tools.
 	"https://github.com/folke/lazydev.nvim", -- Improves Lua development (provides vim global types).
+	"https://git.sr.ht/~chinmay/clangd_extensions.nvim", --
 })
 
 -- 2. Configure Diagnostic Visuals (How errors appear).
@@ -65,24 +66,26 @@ require("mason-tool-installer").setup({
 
 -- 5. Setup LSP Handlers.
 --    This tells Mason-LSPConfig what to do when a server is ready.
+
+-- DEFINE CAPABILITIES (Shared between Mason and System LSPs)
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+local ok, blink = pcall(require, "blink.cmp")
+if ok then
+	capabilities = blink.get_lsp_capabilities(capabilities)
+end
 require("mason-lspconfig").setup({
 	handlers = {
 		function(server_name)
-			-- 1. Get the default capabilities from Neovim
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-			-- 2. Merge them with Blink.cmp capabilities (CRITICAL STEP)
-			--    We use pcall just in case Blink isn't loaded yet
-			local ok, blink = pcall(require, "blink.cmp")
-			if ok then
-				capabilities = blink.get_lsp_capabilities(capabilities)
-			end
-
 			-- Stop Mason from setting up Rust, let Rustaceanvim do it
 			if
 				server_name == "rust_analyzer"
 				or server_name == "rust-analyzer"
 			then
+				return
+			end
+
+			-- Stop Mason from setting up Clangd (We do it manually below)
+			if server_name == "clangd" then
 				return
 			end
 
@@ -108,6 +111,47 @@ require("mason-lspconfig").setup({
 		end,
 	},
 })
+
+-- ========================================================================== --
+--  7. ROBUST C++ SETUP (The "Out of the Box" Fix)
+-- ========================================================================== --
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "c", "cpp", "objc", "objcpp" },
+	callback = function(ev)
+		local current_file_dir =
+			vim.fs.dirname(vim.api.nvim_buf_get_name(ev.buf))
+		local project_root = vim.fs.root(
+			ev.buf,
+			{ "compile_commands.json", "compile_flags.txt", ".git" }
+		)
+
+		vim.lsp.start({
+			name = "clangd",
+			cmd = {
+				"clangd",
+				"--background-index",
+				"--clang-tidy",
+				"--header-insertion=iwyu",
+				"--completion-style=detailed",
+				"--function-arg-placeholders",
+				"--fallback-style=llvm",
+			},
+			root_dir = project_root or current_file_dir,
+			capabilities = capabilities,
+			init_options = {
+				usePlaceholders = true,
+				completeUnimported = true,
+				clangdFileStatus = true,
+				fallbackFlags = { "-std=c++20" },
+			},
+		})
+	end,
+})
+
+-- ========================================================================== --
+--  8. Global LSP Keymaps (LspAttach)
+-- ========================================================================== --
 
 -- 6. Configure behavior when an LSP attaches to a buffer.
 --    This autocommand runs every time you open a file supported by an LSP.
@@ -195,6 +239,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- Get the client object that just attached.
 		local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
+		-- [FIX] Safety check: ensure client exists before using it
+		if not client then
+			return
+		end
+
 		-- Enable Native Autocomplete if the server supports it.
 		if client:supports_method("textDocument/completion") then
 			-- Enable completion triggers (like typing '.').
@@ -210,7 +259,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		--  TOGGLE GHOST TEXT: If you sometimes want to turn inline text back on
 		map("<leader>td", function()
-			local current_config = vim.diagnostic.config()
+			local current_config = vim.diagnostic.config() or {}
 			local new_state = not current_config.virtual_text
 			vim.diagnostic.config({ virtual_text = new_state })
 			print("Diagnostic Virtual Text: " .. (new_state and "ON" or "OFF"))
@@ -220,12 +269,21 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- code, if the language server you are using supports them
 		--
 		-- This may be unwanted, since they displace some of your code
-		if client then
+		if client:supports_method("textDocument/inlayHint") then
 			map("<leader>th", function()
 				vim.lsp.inlay_hint.enable(
 					not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf })
 				)
 			end, "[T]oggle Inlay [H]ints")
+		end
+
+		-- Switch between Source and Header file (.cpp <-> .h)
+		if client and client.name == "clangd" then
+			map(
+				"<leader>cs",
+				"<cmd>ClangdSwitchSourceHeader<cr>",
+				"[C]langd [S]witch Header/Source"
+			)
 		end
 	end,
 })

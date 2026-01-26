@@ -8,6 +8,10 @@
       "rev": "6a4914ca987453464a7dfc7fc237a992adb567d0",
       "src": "https://github.com/saghen/blink.cmp"
     },
+    "clangd_extensions.nvim": {
+      "rev": "e84eaea7ca79610d7047fb1c9d74f15bb1c9db34",
+      "src": "https://github.com/p00f/clangd_extensions.nvim"
+    },
     "conform.nvim": {
       "rev": "8314f4c9e205e7f30b62147069729f9a1227d8bf",
       "src": "https://github.com/stevearc/conform.nvim"

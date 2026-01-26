@@ -27,6 +27,10 @@ conform.setup({
 		html = { "biome", "rustywind" },
 		css = { "biome", "rustywind" },
 
+		-- C/C++
+		c = { "clang-format" },
+		cpp = { "clang-format" },
+
 		-- LUA
 		lua = { "stylua" },
 
@@ -60,6 +64,9 @@ conform.setup({
 			-- "-ci"   : Case indent (switch cases indented)
 			-- "-bn"   : Binary ops (like &&, ||, |) start a new line
 			prepend_args = { "-i", "4", "-ci", "-bn" },
+		},
+		["clang-format"] = {
+			prepend_args = { "--style=file", "--fallback-style=LLVM" },
 		},
 	},
 

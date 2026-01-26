@@ -143,3 +143,27 @@ vim.keymap.set(
 	{ desc = "[D]ebug [U]I Toggle" }
 )
 vim.keymap.set("n", "<leader>de", dapui.eval, { desc = "[D]ebug [E]val" })
+
+-- 6. MANUAL CONFIGURATIONS
+-- Mason installs the adapter ('codelldb'), but we need to tell Neovim how to use it for C++.
+dap.configurations.cpp = {
+	{
+		name = "Launch file",
+		type = "codelldb",
+		request = "launch",
+		program = function()
+			-- Asks you to select the executable to debug
+			return vim.fn.input(
+				"Path to executable: ",
+				vim.fn.getcwd() .. "/",
+				"file"
+			)
+		end,
+		cwd = "${workspaceFolder}",
+		stopOnEntry = false,
+	},
+}
+
+-- Apply the same config to C and Objective-C
+dap.configurations.c = dap.configurations.cpp
+dap.configurations.objc = dap.configurations.cpp

@@ -26,6 +26,7 @@ configs.setup({
 	ensure_installed = {
 		"bash",
 		"c",
+		"cpp",
 		"diff",
 		"html",
 		"lua",
@@ -36,6 +37,8 @@ configs.setup({
 		"vim",
 		"vimdoc",
 		"rust",
+		"yaml",
+		"regex",
 	},
 	auto_install = true,
 	highlight = { enable = true },

@@ -39,7 +39,6 @@ markdown.setup({
 
 	checkbox = {
 		enabled = true,
-		position = "inline",
 		unchecked = { icon = "󰄱 " },
 		checked = { icon = "󰱒 " },
 	},
