@@ -17,7 +17,6 @@ get_cpu_stats() {
 }
 
 # --- Network Helper: Initialize Baseline ---
-# We read this once before the loop to calculate the delta correctly in the first second
 if [ -r "/sys/class/net/$WIFI_IFACE/statistics/rx_bytes" ]; then
     read prev_rx <"/sys/class/net/$WIFI_IFACE/statistics/rx_bytes"
     read prev_tx <"/sys/class/net/$WIFI_IFACE/statistics/tx_bytes"
@@ -36,6 +35,7 @@ bat_text="Loading..."
 wifi_text=""
 bt_text=""
 net_speed_text=""
+vol_text=""
 wifi_up=0
 
 while true; do
@@ -60,39 +60,53 @@ while true; do
     # --- RAM ---
     ram_pct=$(free -m | awk '/^Mem/ { printf("%2d%%", $3/$2 * 100) }')
 
-    # --- Network Speed (Upload/Download) ---
-    # Only calculate if Wifi was detected as UP in the slow loop
+    # --- Volume (wpctl) ---
+    # Get volume data (e.g., "Volume: 0.45 [MUTED]")
+    raw_vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
+
+    if [ -n "$raw_vol" ]; then
+        # Extract percentage (0.45 -> 45)
+        vol_pct=$(echo "$raw_vol" | awk '{print int($2 * 100)}')
+
+        # Determine Icon
+        if [[ "$raw_vol" == *"[MUTED]"* ]] || [ "$vol_pct" -eq 0 ]; then
+            vol_icon=""
+        elif [ "$vol_pct" -lt 30 ]; then
+            vol_icon=""
+        elif [ "$vol_pct" -lt 70 ]; then
+            vol_icon=""
+        else
+            vol_icon=""
+        fi
+
+        # Format string (fixed width for consistency)
+        vol_text="${vol_pct}% $vol_icon"
+    else
+        vol_text=" --%"
+    fi
+
+    # --- Network Speed ---
     if [ $wifi_up -eq 1 ] && [ -r "/sys/class/net/$WIFI_IFACE/statistics/rx_bytes" ]; then
         read curr_rx <"/sys/class/net/$WIFI_IFACE/statistics/rx_bytes"
         read curr_tx <"/sys/class/net/$WIFI_IFACE/statistics/tx_bytes"
 
-        # Calculate bytes per second (since sleep is 1s)
         down_speed=$((curr_rx - prev_rx))
         up_speed=$((curr_tx - prev_tx))
 
-        # Determine if we show Download or Upload (whichever is significant)
         if [ $down_speed -ge $up_speed ]; then
             bytes=$down_speed
-            # Icon: Download ()
             icon=""
         else
             bytes=$up_speed
-            # Icon: Upload ()
             icon=""
         fi
 
-        # Format: 450Kb/s (no decimal) or 1.24Mb/s (2 decimals)
         formatted_speed=$(awk -v b="$bytes" 'BEGIN {
-            if (b >= 1048576) {
-                printf "%.2fMb/s", b/1048576
-            } else {
-                printf "%.0fKb/s", b/1024
-            }
+            if (b >= 1048576) { printf "%.2fMb/s", b/1048576 } 
+            else { printf "%.0fKb/s", b/1024 }
         }')
 
-        net_speed_text="$formatted_speed $icon"
-
-        # Update baselines
+        net_speed_text="$icon $formatted_speed"
         prev_rx=$curr_rx
         prev_tx=$curr_tx
     else
@@ -111,8 +125,8 @@ while true; do
         if [ -d "$BAT_PATH" ]; then
             status=$(cat "$BAT_PATH/status")
             capacity=$(cat "$BAT_PATH/capacity")
-
             seconds=0
+
             if [ "$status" = "Discharging" ]; then
                 seconds=$(cat "$BAT_PATH/time_to_empty_now" 2>/dev/null || echo 0)
                 icon="󱟞"
@@ -124,14 +138,12 @@ while true; do
             fi
 
             cap_str=$(printf "%2d%%" "$capacity")
-
             time_str=""
             if [ "$seconds" -gt 0 ]; then
                 h=$((seconds / 3600))
                 m=$(((seconds % 3600) / 60))
                 time_str=$(printf "(%dh %02dm)" $h $m)
             fi
-
             bat_text="$time_str $cap_str $icon"
         else
             bat_text="No Bat"
@@ -147,7 +159,7 @@ while true; do
         else
             wifi_up=0
             wifi_text="󰖪 Off"
-            net_speed_text="" # Clear speed immediately if wifi drops
+            net_speed_text=""
         fi
 
         # --- Bluetooth ---
@@ -167,8 +179,8 @@ while true; do
     # ==========================================
     # OUTPUT
     # ==========================================
-    # Added $net_speed_text next to $wifi_text
-    echo "$net_speed_text | $wifi_text | $bt_text | $cpu_pct  | $ram_pct  | $bat_text | $date_time"
+    # Added $vol_text between RAM and Battery
+    echo "$net_speed_text | $wifi_text | $bt_text | $cpu_pct  | $ram_pct  | $vol_text | $bat_text | $date_time"
 
     timer=$(((timer + 1) % 5))
     sleep 1
