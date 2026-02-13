@@ -3,10 +3,10 @@
 # =========================================================================== #
 #  1. UI CLEANUP (Silence Everything)                                         #
 # =========================================================================== #
-# Kill the bottom status bar (Removes "(nsearch...)", time, exit codes)
+# Disable the bottom status line to remove (nsearch...), time, and exit codes
 bleopt prompt_status_line=
 
-# Kill inline markers (Removes "[ble: EOF]", "[ble: exit]")
+# Remove inline markers like "[ble: EOF]" and "[ble: exit]" for a cleaner look
 bleopt prompt_eol_mark=''
 bleopt exec_errexit_mark=
 bleopt exec_elapsed_mark=
@@ -14,36 +14,66 @@ bleopt exec_exit_mark=
 bleopt edit_marker=
 bleopt edit_marker_error=
 
+# --- COMPLETION CONFIGURATION ---
+# Completion settings must be inside this callback to load correctly.
+# 'suppress-inside-line' helps prevent Copilot from triggering line-by-line execution.
+function my/set-up-completion {
+    bleopt complete_auto_delay=300
+    bleopt complete_auto_complete_opts=syntax-unique:suppress-inside-line
+}
+# Register the callback for completion setup
+ble-import core-complete -C 'my/set-up-completion'
+
 # =========================================================================== #
-#  2. KEY BINDINGS & FZF                                                      #
+#  2. KEY BINDINGS & INPUT TUNING (Conflict-Free)                             #
 # =========================================================================== #
-# FZF Integration (Loads asynchronously)
+# Load FZF integration for fuzzy completion and history
 ble-import -d integration/fzf-completion
 ble-import -d integration/fzf-key-bindings
 
-# Fix Up/Down to be "Prefix Search" only
+# --- HISTORY NAVIGATION ---
+# Map Up/Down to prefix-based history search
 ble-bind -f up history-search-backward
 ble-bind -f down history-search-forward
 
-# Emacs-style cycling (Alt-p / Alt-n)
+# Emacs-style Meta keys for cycling history (Alt+p and Alt+n)
 ble-bind -f M-p history-search-backward
 ble-bind -f M-n history-search-forward
+
+# --- INPUT RESILIENCE ---
+# Increase recursion limit to handle long scripts from Copilot/Macros
+bleopt decode_macro_limit=8192
+
+# Ensure bracketed paste is forced on for manual pastes
+bleopt term_bracketed_paste_mode=on
+
+# Check for user input more frequently during heavy processing
+bleopt complete_polling_cycle=10
+
+# Allow more time for "slow" input from VS Code extensions
+bleopt complete_timeout_auto=5000
+
+# --- EXECUTION & ESCAPE ---
+# Use Alt+Enter (M-RET) to force-execute and avoid VS Code's C-j conflict
+ble-bind -f 'M-RET' 'accept-line'
+
+# Map both C-m and RET to ensure Enter works across all terminal modes
+ble-bind -f 'C-m' accept-line
+ble-bind -f 'RET' accept-line
+
+# Treat isolated ESC as a character (faster Vim-mode feel)
+bleopt decode_isolated_esc=esc
+
+# --- UTILS ---
+# Quick reload of this config file using Alt+r
+ble-bind -f 'M-r' 'ble-reload'
 
 # =========================================================================== #
 #  3. ROSE PINE MOON THEME                                                    #
 # =========================================================================== #
-# Palette:
-# Base:    #232136 (Overlay) / #2a273f (Surface)
-# Text:    #e0def4
-# Love:    #eb6f92 (Error)
-# Gold:    #f6c177 (Quote)
-# Rose:    #ea9a97 (Param)
-# Pine:    #3e8fb0 (Escape)
-# Foam:    #9ccfd8 (Keyword)
-# Iris:    #c4a7e7 (Command)
-# Subtle:  #908caa (Comment/Grey)
+# Palette: Iris (#c4a7e7), Foam (#9ccfd8), Pine (#3e8fb0), Subtle (#908caa)
 
-# --- Main Syntax ---
+# --- Main Syntax Highlighting ---
 ble-face -s syntax_default fg=#e0def4
 ble-face -s syntax_command fg=#c4a7e7
 ble-face -s command_function fg=#c4a7e7
@@ -65,16 +95,25 @@ ble-face -s syntax_comment fg=#908caa
 ble-face -s auto_complete fg=#908caa
 
 # --- Selection & Matching ---
-# Highlight matches in "Pine" color background
 ble-face -s region_match bg=#3e8fb0,fg=#232136
-# Visual selection in "Overlay" background
 ble-face -s region bg=#2a273f,fg=#e0def4
 ble-face -s region_target bg=#2a273f,fg=#e0def4
 
-# --- Tab Menu (Menu-Complete) ---
-# The text that matches what you typed (Foam)
+# --- Tab Completion Menu ---
 ble-face -s menu_complete_match fg=#9ccfd8,bold
-# The selected item (Overlay High background)
 ble-face -s menu_complete_selected bg=#393552,fg=#e0def4
-# Descriptions (Subtle)
 ble-face -s menu_desc_default fg=#908caa
+
+# =========================================================================== #
+#  4. PASTE & PERFORMANCE TUNING (FIX FOR COPILOT/LONG SCRIPTS)               #
+# =========================================================================== #
+
+# 1. Increase the input limit
+# This is the most critical setting. It tells ble.sh to accept much larger
+# chunks of text (like Copilot's E2E scripts) without cutting them off.
+bleopt decode_macro_limit=500000
+
+# 2. Relax syntax highlighting limits
+# If a single line is massive (common in minified code or big SQL dumps),
+# stop trying to highlight it to prevent freezing.
+bleopt line_limit_length=5000
