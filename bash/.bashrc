@@ -57,6 +57,22 @@ export NVM_DIR="$HOME/.nvm"
 # Rust/Cargo
 . "$HOME/.cargo/env"
 
+# --- BUN SETUP ---
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# --- DOOM SETUP ---
+if [ -d "$HOME/.config/emacs/bin" ]; then # Changed -f to -d
+    export PATH="$HOME/.config/emacs/bin:$PATH"
+fi
+
+if [ -d "$HOME/.config/emacs/bin" ]; then # Changed -f to -d
+    export PATH="$HOME/.config/emacs/bin:$PATH"
+fi
+
+# --- UV
+eval "$(uv generate-shell-completion bash)"
+
 # Load custom user scripts from ~/.bashrc.d if they exist
 if [ -d ~/.bashrc.d ]; then
     for rc in ~/.bashrc.d/*; do
@@ -120,4 +136,13 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # =========================================================================== #
 # Now that paths, completions, starship, and env vars are set,
 # we tell ble.sh to take control of the terminal line editor.
+bind 'set enable-bracketed-paste on'
 [[ ! ${BLE_VERSION-} ]] || ble-attach
+
+# pnpm
+export PNPM_HOME="/home/alaeddine/.local/share/pnpm"
+case ":$PATH:" in
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
