@@ -3,10 +3,7 @@
 # =========================================================================== #
 #  1. UI CLEANUP (Silence Everything)                                         #
 # =========================================================================== #
-# Disable the bottom status line to remove (nsearch...), time, and exit codes
 bleopt prompt_status_line=
-
-# Remove inline markers like "[ble: EOF]" and "[ble: exit]" for a cleaner look
 bleopt prompt_eol_mark=''
 bleopt exec_errexit_mark=
 bleopt exec_elapsed_mark=
@@ -15,65 +12,45 @@ bleopt edit_marker=
 bleopt edit_marker_error=
 
 # --- COMPLETION CONFIGURATION ---
-# Completion settings must be inside this callback to load correctly.
-# 'suppress-inside-line' helps prevent Copilot from triggering line-by-line execution.
 function my/set-up-completion {
     bleopt complete_auto_delay=300
     bleopt complete_auto_complete_opts=syntax-unique:suppress-inside-line
 }
-# Register the callback for completion setup
 ble-import core-complete -C 'my/set-up-completion'
 
 # =========================================================================== #
 #  2. KEY BINDINGS & INPUT TUNING (Conflict-Free)                             #
 # =========================================================================== #
-# Load FZF integration for fuzzy completion and history
 ble-import -d integration/fzf-completion
 ble-import -d integration/fzf-key-bindings
 
 # --- HISTORY NAVIGATION ---
-# Map Up/Down to prefix-based history search
 ble-bind -f up history-search-backward
 ble-bind -f down history-search-forward
-
-# Emacs-style Meta keys for cycling history (Alt+p and Alt+n)
 ble-bind -f M-p history-search-backward
 ble-bind -f M-n history-search-forward
 
 # --- INPUT RESILIENCE ---
-# Increase recursion limit to handle long scripts from Copilot/Macros
-bleopt decode_macro_limit=8192
-
-# Ensure bracketed paste is forced on for manual pastes
+# 1 Million characters to handle large pastes without truncation
+bleopt decode_macro_limit=1000000
 bleopt term_bracketed_paste_mode=on
 
-# Check for user input more frequently during heavy processing
-bleopt complete_polling_cycle=10
-
-# Allow more time for "slow" input from VS Code extensions
+# Give VS Code more time to respond, but don't poll too aggressively
 bleopt complete_timeout_auto=5000
+# Removed 'complete_polling_cycle=10' to prevent CPU choking during fast input
 
 # --- EXECUTION & ESCAPE ---
-# Use Alt+Enter (M-RET) to force-execute and avoid VS Code's C-j conflict
 ble-bind -f 'M-RET' 'accept-line'
-
-# Map both C-m and RET to ensure Enter works across all terminal modes
 ble-bind -f 'C-m' accept-line
 ble-bind -f 'RET' accept-line
-
-# Treat isolated ESC as a character (faster Vim-mode feel)
 bleopt decode_isolated_esc=esc
 
 # --- UTILS ---
-# Quick reload of this config file using Alt+r
-ble-bind -f 'M-r' 'ble-reload'
+ble-bind -c 'M-r' 'source ~/.blerc'
 
 # =========================================================================== #
 #  3. ROSE PINE MOON THEME                                                    #
 # =========================================================================== #
-# Palette: Iris (#c4a7e7), Foam (#9ccfd8), Pine (#3e8fb0), Subtle (#908caa)
-
-# --- Main Syntax Highlighting ---
 ble-face -s syntax_default fg=#e0def4
 ble-face -s syntax_command fg=#c4a7e7
 ble-face -s command_function fg=#c4a7e7
@@ -90,30 +67,28 @@ ble-face -s syntax_error fg=#eb6f92
 ble-face -s syntax_escape fg=#3e8fb0
 ble-face -s syntax_expr fg=#3e8fb0
 ble-face -s syntax_comment fg=#908caa
-
-# --- Ghost Text (Autosuggestions) ---
 ble-face -s auto_complete fg=#908caa
-
-# --- Selection & Matching ---
 ble-face -s region_match bg=#3e8fb0,fg=#232136
 ble-face -s region bg=#2a273f,fg=#e0def4
 ble-face -s region_target bg=#2a273f,fg=#e0def4
-
-# --- Tab Completion Menu ---
 ble-face -s menu_complete_match fg=#9ccfd8,bold
 ble-face -s menu_complete_selected bg=#393552,fg=#e0def4
 ble-face -s menu_desc_default fg=#908caa
 
 # =========================================================================== #
-#  4. PASTE & PERFORMANCE TUNING (FIX FOR COPILOT/LONG SCRIPTS)               #
+#  4. PASTE & PERFORMANCE TUNING (COMPATIBLE MODE)                            #
 # =========================================================================== #
 
-# 1. Increase the input limit
-# This is the most critical setting. It tells ble.sh to accept much larger
-# chunks of text (like Copilot's E2E scripts) without cutting them off.
-bleopt decode_macro_limit=500000
+# 1. Increase input limit (The Buffer)
+# Ensures ble.sh accepts the full block of text from Copilot.
+bleopt decode_macro_limit=1000000
 
-# 2. Relax syntax highlighting limits
-# If a single line is massive (common in minified code or big SQL dumps),
-# stop trying to highlight it to prevent freezing.
-bleopt line_limit_length=5000
+# 2. Increase Line Length Limit (The Editor)
+# FIX: Increased to 1,000,000 so the script isn't cut off before the 'PY' heredoc close.
+bleopt line_limit_length=1000000
+bleopt line_limit_type=none
+
+# 3. Aggressive Syntax Highlighting Timeout
+# Since we are allowing huge lines, we MUST kill highlighting quickly
+# if it starts lagging, otherwise the terminal will freeze.
+bleopt highlight_timeout_sync=500
