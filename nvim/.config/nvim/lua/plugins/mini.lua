@@ -201,7 +201,44 @@ miniclue.setup({
 -- require('mini.git').setup()
 
 -- REPLACES: lualine.lua
-require("mini.statusline").setup()
+local statusline = require("mini.statusline")
+statusline.setup({
+	content = {
+		-- We override the 'active' function to inject our Copilot icon
+		active = function()
+			local mode, mode_hl = statusline.section_mode({ trunc_width = 120 })
+			local git = statusline.section_git({ trunc_width = 75 })
+			local diff = statusline.section_diff({ trunc_width = 75 })
+			local diagnostics =
+				statusline.section_diagnostics({ trunc_width = 75 })
+			local filename = statusline.section_filename({ trunc_width = 140 })
+			local fileinfo = statusline.section_fileinfo({ trunc_width = 120 })
+			local location = statusline.section_location({ trunc_width = 75 })
+
+			-- OUR CUSTOM PIECE: Check if Copilot is enabled
+			local ai_icon = ""
+			if
+				vim.fn.exists("*copilot#Enabled") == 1
+				and vim.fn["copilot#Enabled"]() == 1
+			then
+				ai_icon = " " -- Purple/Iris icon when active
+			end
+
+			return statusline.combine_groups({
+				{ hl = mode_hl, strings = { mode } },
+				{
+					hl = "MiniStatuslineDevinfo",
+					strings = { git, diff, diagnostics, ai_icon },
+				},
+				"%<", -- Mark for truncating
+				{ hl = "MiniStatuslineFilename", strings = { filename } },
+				"%=", -- End left alignment
+				{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
+				{ hl = mode_hl, strings = { location } },
+			})
+		end,
+	},
+})
 
 -- REPLACES: todo-comments.lua (Hipatterns can do highlighing)
 require("mini.hipatterns").setup({

@@ -9,6 +9,8 @@ vim.pack.add({
 		version = "master",
 	},
 	"https://github.com/nvim-treesitter/nvim-treesitter-context",
+	"https://github.com/windwp/nvim-ts-autotag",
+	"https://github.com/NvChad/nvim-colorizer.lua",
 })
 
 -- 2. Guarded Configuration
@@ -39,6 +41,14 @@ configs.setup({
 		"rust",
 		"yaml",
 		"regex",
+		"jsx",
+		"tsx",
+		"css",
+		"dockerfile",
+		"json",
+		"sql",
+		"embedded_template", -- For better CSS/SQL in JS handling
+		"matlab",
 	},
 	auto_install = true,
 	highlight = { enable = true },
@@ -59,4 +69,15 @@ vim.api.nvim_create_autocmd("FileType", {
 			vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 		end
 	end,
+})
+
+-- Use treesitter to autoclose and autorename html tag
+require("nvim-ts-autotag").setup()
+
+-- Visual Color Previews (Tailwind & CSS)
+require("colorizer").setup({
+	user_default_options = {
+		tailwind = true, -- Enable tailwind colors
+		mode = "background", -- Show color as background of the text
+	},
 })

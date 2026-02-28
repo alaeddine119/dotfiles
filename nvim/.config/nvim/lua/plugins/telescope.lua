@@ -62,6 +62,14 @@ telescope.setup({
 			i = { ["<c-t>"] = trouble.open }, -- Press Ctrl+t in Insert mode
 			n = { ["<c-t>"] = trouble.open }, -- Press Ctrl+t in Normal mode
 		},
+		file_ignore_patterns = {
+			"node_modules",
+			".next/",
+			".git/",
+			"dist/",
+			"build/",
+			"target/", -- for your Rust/C++ builds
+		},
 	},
 	extensions = {
 		-- Configure the UI-Select extension to use the dropdown theme.

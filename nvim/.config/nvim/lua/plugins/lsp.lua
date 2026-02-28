@@ -52,6 +52,10 @@ require("mason-tool-installer").setup({
 		"dockerfile-language-server",
 		"biome",
 		"rustywind",
+		"vtsls", -- Better version of typescript-language-server for monorepos
+		"tailwindcss-language-server",
+		"eslint-lsp",
+		"matlab-language-server",
 
 		-- Formatters (Keep stylua)
 		"stylua",
@@ -84,17 +88,20 @@ capabilities.textDocument.completion.completionItem.resolveSupport = {
 require("mason-lspconfig").setup({
 	handlers = {
 		function(server_name)
-			-- Stop Mason from setting up Rust, let Rustaceanvim do it
-			if
-				server_name == "rust_analyzer"
-				or server_name == "rust-analyzer"
-			then
-				return
-			end
+			-- Add these exact strings to the ignore list
+			local ignore_list = {
+				"rust_analyzer",
+				"rust-analyzer",
+				"clangd",
+				"tsserver", -- Old name
+				"typescript-language-server", -- New name
+				"ts_ls",
+			}
 
-			-- Stop Mason from setting up Clangd (We do it manually below)
-			if server_name == "clangd" then
-				return
+			for _, name in ipairs(ignore_list) do
+				if server_name == name then
+					return
+				end
 			end
 
 			-- SPECIAL SETUP: Biome
@@ -117,26 +124,112 @@ require("mason-lspconfig").setup({
 				capabilities = capabilities,
 			})
 		end,
+
+		["vtsls"] = function()
+			require("lspconfig").vtsls.setup({
+				capabilities = capabilities,
+				-- Use a function to ensure we find the absolute root
+				root_dir = function(fname)
+					local util = require("lspconfig.util")
+					return util.root_pattern(
+						"pnpm-workspace.yaml",
+						"turbo.json",
+						".git"
+					)(fname) or util.fs.dirname(fname)
+				end,
+				settings = {
+					vtsls = {
+						experimental = {
+							completion = { enableServerSideFuzzyMatch = true },
+						},
+						autoUseWorkspaceTsdk = true,
+					},
+					typescript = {
+						-- This is the critical setting for monorepos
+						tsserver = {
+							maxTsServerMemory = 8192,
+						},
+						preferences = {
+							includePackageJsonAutoImports = "on",
+						},
+					},
+				},
+			})
+		end,
+
+		["tailwindcss"] = function()
+			require("lspconfig").tailwindcss.setup({
+				capabilities = capabilities,
+				filetypes = {
+					"html",
+					"css",
+					"javascriptreact",
+					"typescriptreact",
+					"javascript",
+					"typescript",
+				},
+				settings = {
+					tailwindCSS = {
+						experimental = {
+							classRegex = {
+								{
+									"cva\\(([^)]*)\\)",
+									"[\"'`]([^\"'`]*)\"['`]",
+								},
+								{ "cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*)\"['`]" }, -- For shadcn/ui
+							},
+						},
+					},
+				},
+			})
+		end,
+		["matlab_ls"] = function()
+			require("lspconfig").matlab_ls.setup({
+				capabilities = capabilities,
+				settings = {
+					MATLAB = {
+						-- This MUST point to the folder containing the dummy 'matlab' script
+						installPath = "/home/alaeddine/.local",
+						indexWorkspace = true,
+						telemetry = false,
+					},
+				},
+				single_file_support = true,
+			})
+		end,
 	},
 })
 
 -- ========================================================================== --
---  7. ROBUST C++ SETUP (The "Out of the Box" Fix)
+--  7. ROBUST C/C++ SETUP (The "Out of the Box" Fix)
 -- ========================================================================== --
 -- PLUGIN INITIALIZATION
 local ok_cppman, cppman = pcall(require, "cppman")
 if ok_cppman then
 	cppman.setup()
 end
+
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "c", "cpp", "objc", "objcpp" },
 	callback = function(ev)
 		local current_file_dir =
 			vim.fs.dirname(vim.api.nvim_buf_get_name(ev.buf))
-		local project_root = vim.fs.root(
-			ev.buf,
-			{ "compile_commands.json", "compile_flags.txt", ".git" }
-		)
+		local project_root = vim.fs.root(ev.buf, {
+			"compile_commands.json",
+			"compile_flags.txt",
+			".git",
+		})
+
+		-- DYNAMIC FALLBACK FLAGS
+		-- Check the filetype to determine which standard to use
+		local filetype = vim.bo[ev.buf].filetype
+		local fallback_flags = {}
+
+		if filetype == "c" or filetype == "objc" then
+			fallback_flags = { "-std=c17" } -- Use C17 for .c files
+		else
+			fallback_flags = { "-std=c++23" } -- Use C++23 for .cpp files
+		end
 
 		vim.lsp.start({
 			name = "clangd",
@@ -149,24 +242,25 @@ vim.api.nvim_create_autocmd("FileType", {
 				-- 2. Completion Behavior
 				"--completion-style=detailed",
 				"--header-insertion=iwyu",
-				"--all-scopes-completion", -- Suggests un-included headers
+				"--all-scopes-completion",
 				"--completion-parse=auto",
 
 				-- 3. Formatting & Snippets
 				"--fallback-style=llvm",
 				"--function-arg-placeholders",
 
-				-- 4. [NEW] Performance Boosters
-				"-j=4", -- Use 4 workers (faster indexing)
-				"--pch-storage=memory", -- Store headers in RAM (faster opening)
+				-- 4. Performance Boosters
+				"-j=4",
+				"--pch-storage=memory",
 			},
-			root_dir = project_root or current_file_dir, -- Important: Finding the project root
-			capabilities = capabilities, -- Important: Enabling the Documentation Fix
+			root_dir = project_root or current_file_dir,
+			capabilities = capabilities,
 			init_options = {
 				usePlaceholders = true,
 				completeUnimported = true,
 				clangdFileStatus = true,
-				fallbackFlags = { "-std=c++20" },
+				-- FIXED: Now uses the correct flag based on filetype
+				fallbackFlags = fallback_flags,
 			},
 		})
 	end,

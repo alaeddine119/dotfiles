@@ -20,7 +20,7 @@ end
 --    We define a specific handle color to ensure it's visible but subtle against the Rose Pine background.
 local palette = require("rose-pine.palette")
 local colors = {
-	handle = palette.pine, -- Subtle highlight for the bar itself
+	handle = palette.rose, -- Subtle highlight for the bar itself
 	search = palette.gold, -- Gold for search results
 	error = palette.love, -- Red for errors
 	warn = palette.gold, -- Yellow for warnings

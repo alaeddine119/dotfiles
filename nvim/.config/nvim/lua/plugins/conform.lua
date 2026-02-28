@@ -42,14 +42,27 @@ conform.setup({
 		bash = { "shfmt" },
 		sh = { "shfmt" },
 
+		--Matlab
+		matlab = { "mh_style" },
+
 		-- Fallback for everything else
 		["_"] = { "trim_whitespace" },
 	},
 	-- 4. CUSTOMIZE FORMATTERS (Force 80 char width)
 	formatters = {
 		biome = {
+			-- This ensures Biome uses the config at the monorepo root
+			require_cwd = true,
 			-- Biome default is 80, but this forces it if a config file says otherwise
-			prepend_args = { "--line-width", "80" },
+			prepend_args = {
+				"format",
+				"--indent-style",
+				"space",
+				"--indent-width",
+				"2",
+				"--line-width",
+				"80",
+			},
 		},
 		stylua = {
 			-- Stylua default is often 120
@@ -70,6 +83,25 @@ conform.setup({
 				"--style=file",
 				"--fallback-style=LLVM",
 			},
+		},
+
+		-- MATLAB Formatter (Miss Hit)
+		-- In your formatters table:
+		mh_style = {
+			command = "uv",
+			-- ADDED: '--from miss_hit' tells uv which package owns the command
+			-- ADDED: '-q' ensures uv doesn't print download logs that break the file
+			args = {
+				"-q",
+				"tool",
+				"run",
+				"--from",
+				"miss_hit",
+				"mh_style",
+				"--fix",
+				"$FILENAME",
+			},
+			stdin = false,
 		},
 	},
 

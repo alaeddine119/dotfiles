@@ -27,35 +27,77 @@ vim.keymap.set("n", "<leader>q", ":quit<CR>", { desc = "[Q]uit Window" })
 
 -- Map <leader>cx to source the current file (:source %)
 -- Execute the current file based on file type
+-- Helper function to read compile_flags.txt if it exists
+local function get_compile_flags(default_flags)
+	local f = io.open("compile_flags.txt", "r")
+	if f then
+		local content = f:read("*a")
+		f:close()
+		-- Replace newlines with spaces to form a single command string
+		local flags = content:gsub("\n", " ")
+		return flags
+	end
+	return default_flags
+end
+
 vim.keymap.set("n", "<leader>cx", function()
 	vim.cmd("write")
 	local ft = vim.bo.filetype
 	local file = vim.fn.expand("%")
 	local out = vim.fn.expand("%<")
 
+	-- 1. C++ FILES
 	if ft == "cpp" then
-		-- Cmd: Compile -> Run -> Wait
-		-- We use 'printf' instead of 'echo' to avoid weird artifacts in the prompt
+		-- Default fallback if no file exists
+		local flags = get_compile_flags("-std=c++23")
+
 		local cmd = string.format(
-			"if clang++ -std=c++20 '%s' -o '%s'; then ./'%s'; else echo '\n❌ Compilation Failed'; fi; echo ''; read -n 1 -s -r -p 'Press any key to close...'",
+			"if clang++ %s '%s' -o '%s'; then ./'%s'; else echo '\n❌ Compilation Failed'; fi; echo ''; read -n 1 -s -r -p 'Press any key to close...'",
+			flags,
 			file,
 			out,
 			out
 		)
-
 		require("snacks").terminal(cmd, {
 			win = {
 				position = "bottom",
 				height = 0.3,
 				border = "rounded",
-				title = " Code Output ", -- <--- THIS FIXES THE CONFUSION
+				title = " C++ Output ",
 				title_pos = "center",
 				style = "minimal",
 			},
 			interactive = true,
 		})
+
+	-- 2. C FILES
+	elseif ft == "c" then
+		-- Default fallback: Standard C17 + Math library
+		local flags = get_compile_flags("-std=c17 -lm")
+
+		local cmd = string.format(
+			"if clang %s '%s' -o '%s'; then ./'%s'; else echo '\n❌ Compilation Failed'; fi; echo ''; read -n 1 -s -r -p 'Press any key to close...'",
+			flags,
+			file,
+			out,
+			out
+		)
+		require("snacks").terminal(cmd, {
+			win = {
+				position = "bottom",
+				height = 0.3,
+				border = "rounded",
+				title = " C Output ",
+				title_pos = "center",
+				style = "minimal",
+			},
+			interactive = true,
+		})
+
+	-- 3. LUA
 	elseif ft == "lua" then
 		vim.cmd("source %")
+	-- 4. PYTHON
 	elseif ft == "python" then
 		local cmd = string.format(
 			"python3 '%s'; echo ''; read -n 1 -s -r -p 'Press any key to close...'",

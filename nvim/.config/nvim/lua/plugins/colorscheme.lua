@@ -23,11 +23,12 @@ require("rose-pine").setup({
 		moon = {
 			base = "#000000", -- Darker background color.
 			surface = "#000000", -- Darker background for status bars and menus.
-			muted = "#bbbbbb", -- Color for comments/ignored text.
-			subtle = "#cccccc", -- Color for subtle indicators.
+			muted = "#BBBBBB", -- Color for comments/ignored text.
+			subtle = "#CCCCCC", -- Color for subtle indicators.
 			text = "#E0E0E0", -- Main text color.
 			overlay = "#121212", -- Main color for highliting
 			highlight_low = "#000000",
+			highlight_med = "#444444",
 		},
 	},
 })
