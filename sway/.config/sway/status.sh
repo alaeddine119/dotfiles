@@ -8,19 +8,19 @@ BAT_PATH="/sys/class/power_supply/macsmc-battery"
 # Wifi Interface
 WIFI_IFACE="wlan0"
 
+# Invisible Left-To-Right Mark (U+200E) to prevent RTL languages (Arabic) from breaking the bar layout
+LRM=$'\u200E'
+
 # --- CPU Helper Function ---
 get_cpu_stats() {
-    # SC2034 Fix: Use '_' for unused 'cpu' and 'guest' variables
     read -r _ user nice system idle iowait irq softirq steal _ </proc/stat
     total=$((user + nice + system + idle + iowait + irq + softirq + steal))
     idle_sum=$((idle + iowait))
-    # Quote to prevent word splitting
     echo "$total $idle_sum"
 }
 
 # --- Network Helper: Initialize Baseline ---
 if [ -r "/sys/class/net/$WIFI_IFACE/statistics/rx_bytes" ]; then
-    # SC2162 Fix: Add -r to read
     read -r prev_rx <"/sys/class/net/$WIFI_IFACE/statistics/rx_bytes"
     read -r prev_tx <"/sys/class/net/$WIFI_IFACE/statistics/tx_bytes"
 else
@@ -29,18 +29,23 @@ else
 fi
 
 # Initialize CPU baseline
-# SC2162 and SC2046 Fix: Add -r and quote the subshell
 read -r prev_total prev_idle <<<"$(get_cpu_stats)"
 sleep 0.5
 
 # Loop variables
 timer=0
+loop_count=0
 bat_text="Loading..."
 wifi_text=""
 bt_text=""
 net_speed_text=""
 vol_text=""
 disk_text=""
+bright_text=""
+temp_text=""
+power_text=""
+media_text=""
+update_text="0 󰚰"
 wifi_up=0
 
 while true; do
@@ -59,18 +64,26 @@ while true; do
     else
         cpu_pct="  0%"
     fi
+    cpu_text="$cpu_pct "
     prev_total=$curr_total
     prev_idle=$curr_idle
 
     # --- RAM ---
     ram_pct=$(free -m | awk '/^Mem/ { printf("%2d%%", $3/$2 * 100) }')
+    ram_text="$ram_pct "
 
-    # --- Volume (wpctl) ---
+    # --- Brightness ---
+    raw_bright=$(brightnessctl -m 2>/dev/null | awk -F, '{print $4}')
+    if [ -n "$raw_bright" ]; then
+        bright_text="$raw_bright 󰃠"
+    else
+        bright_text="--% 󰃠"
+    fi
+
+    # --- Volume ---
     raw_vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
-
     if [ -n "$raw_vol" ]; then
         vol_pct=$(echo "$raw_vol" | awk '{print int($2 * 100)}')
-
         if [[ "$raw_vol" == *"[MUTED]"* ]] || [ "$vol_pct" -eq 0 ]; then
             vol_icon=""
         elif [ "$vol_pct" -lt 30 ]; then
@@ -80,10 +93,9 @@ while true; do
         else
             vol_icon=""
         fi
-
         vol_text="${vol_pct}% $vol_icon"
     else
-        vol_text=" --%"
+        vol_text="--% "
     fi
 
     # --- Network Speed ---
@@ -102,12 +114,17 @@ while true; do
             icon=""
         fi
 
+        # Force strict X.XX formatting by upshifting the unit early
+        # Thresholds are set to 9.995 to prevent rounding up to 10.00
         formatted_speed=$(awk -v b="$bytes" 'BEGIN {
-            if (b >= 1048576) { printf "%.2fMb/s", b/1048576 }
-            else { printf "%.0fKb/s", b/1024 }
+            if (b >= 10480517) { printf "%4.2f Gb/s", b/1073741824 }
+            else if (b >= 10235) { printf "%4.2f Mb/s", b/1048576 }
+            else if (b >= 10) { printf "%4.2f Kb/s", b/1024 }
+            else { printf "%4.2f  B/s", b }
         }')
 
-        net_speed_text="$icon $formatted_speed"
+        # Formatted as $text $icon
+        net_speed_text="$formatted_speed $icon"
         prev_rx=$curr_rx
         prev_tx=$curr_tx
     else
@@ -115,16 +132,57 @@ while true; do
     fi
 
     # --- Date ---
-    date_time=$(date +'%Y-%m-%d %H:%M:%S')
+    date_text="$(date +'%a %-d %H:%M:%S')"
 
     # ==========================================
     # 2. SLOW UPDATES (Every 5 seconds)
     # ==========================================
     if [ "$timer" -eq 0 ]; then
 
+        # --- Media Player ---
+        media_status=$(playerctl status 2>/dev/null)
+        if [ "$media_status" = "Playing" ]; then
+            # Grab raw strings first without cutting
+            raw_artist=$(playerctl metadata --format '{{artist}}' 2>/dev/null)
+            raw_title=$(playerctl metadata --format '{{title}}' 2>/dev/null)
+
+            if [ -n "$raw_artist" ]; then
+                # 15 chars + " - " + 27 chars = 45 max length
+                short_artist=$(echo "$raw_artist" | cut -c 1-15)
+                short_title=$(echo "$raw_title" | cut -c 1-25)
+                media_text="${LRM}${short_artist}${LRM} - ${LRM}${short_title}${LRM}"
+            else
+                # If no artist, give the title the full 45 chars
+                short_title=$(echo "$raw_title" | cut -c 1-45)
+                media_text="${LRM}${short_title}${LRM}"
+            fi
+        elif [ "$media_status" = "Paused" ]; then
+            media_text="Paused 󰏤"
+        else
+            media_text=""
+        fi
+        # --- Sensors (Temperature & Power) ---
+        sensors_out=$(sensors 2>/dev/null)
+
+        # Temperature
+        raw_temp=$(echo "$sensors_out" | awk -F: '/Charge Regulator Temp/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
+        if [ -n "$raw_temp" ]; then
+            temp_text="${raw_temp}°C "
+        else
+            temp_text="--°C "
+        fi
+
+        # Power Draw (Watts)
+        raw_power=$(echo "$sensors_out" | awk -F: '/Total System Power/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
+        if [ -n "$raw_power" ]; then
+            power_text="${raw_power}W "
+        else
+            power_text="--W "
+        fi
+
         # --- Disk Space ---
-        disk_free=$(df -m / | awk 'NR==2 { printf "%.1f GB", $4/1024 }')
-        disk_text="$disk_free "
+        disk_free=$(df -m / | awk 'NR==2 { v=$4/1024; print (v == int(v) ? v : int(v)-1) }')
+        disk_text="${disk_free}GB "
 
         # --- Battery ---
         if [ -d "$BAT_PATH" ]; then
@@ -163,7 +221,7 @@ while true; do
             wifi_text="$ssid 󰖩"
         else
             wifi_up=0
-            wifi_text="󰖪 Off"
+            wifi_text="Off 󰖪"
             net_speed_text=""
         fi
 
@@ -182,10 +240,42 @@ while true; do
     fi
 
     # ==========================================
+    # 3. ULTRA SLOW UPDATES (Every 1 hour / 3600 loops)
+    # ==========================================
+    if [ "$loop_count" -eq 0 ]; then
+        updates=$(checkupdates 2>/dev/null | wc -l)
+        if [ "$updates" -gt 0 ]; then
+            update_text="$updates 󰚰"
+        else
+            update_text="0 "
+        fi
+    fi
+
+    # ==========================================
     # OUTPUT
     # ==========================================
-    echo "$net_speed_text | $wifi_text | $bt_text | $cpu_pct  | $ram_pct  | $disk_text | $vol_text | $bat_text | $date_time"
+
+    # 1. Add all active slots into an array in logical order
+    slots=()
+    [ -n "$media_text" ] && slots+=("$media_text")
+    slots+=("$update_text")
+    [ -n "$net_speed_text" ] && slots+=("$net_speed_text")
+    slots+=("$wifi_text" "$bt_text" "$cpu_text" "$ram_text" "$temp_text" "$disk_text" "$bright_text" "$vol_text" "$power_text" "$bat_text" "$date_text")
+
+    # 2. Stitch the array together, wrapping the pipe in LRM to enforce left-to-right flow globally
+    final_output=""
+    for slot in "${slots[@]}"; do
+        if [ -z "$final_output" ]; then
+            final_output="$slot"
+        else
+            final_output="${final_output} ${LRM}|${LRM} ${slot}"
+        fi
+    done
+
+    # 3. Print the perfectly formatted bar
+    echo "$final_output"
 
     timer=$(((timer + 1) % 5))
+    loop_count=$(((loop_count + 1) % 3600))
     sleep 1
 done
