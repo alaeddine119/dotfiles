@@ -8,8 +8,21 @@ BAT_PATH="/sys/class/power_supply/macsmc-battery"
 # Wifi Interface
 WIFI_IFACE="wlan0"
 
-# Invisible Left-To-Right Mark (U+200E) to prevent RTL languages (Arabic) from breaking the bar layout
+# Invisible Left-To-Right Mark (U+200E)
 LRM=$'\u200E'
+
+# --- Colors (Catppuccin Macchiato) ---
+C_RED="#ed8796"
+C_YELLOW="#eed49f"
+C_GREEN="#a6da95"
+C_BLUE="#8aadf4"
+C_MAUVE="#c6a0f6"
+C_TEAL="#8bd5ca"
+C_PEACH="#f5a97f"
+C_ROSE="#f4dbd6"
+C_LAVENDER="#b7bdf8"
+C_FLAMINGO="#f0c6c6"
+C_TEXT="#cad3f5"
 
 # --- CPU Helper Function ---
 get_cpu_stats() {
@@ -17,6 +30,18 @@ get_cpu_stats() {
     total=$((user + nice + system + idle + iowait + irq + softirq + steal))
     idle_sum=$((idle + iowait))
     echo "$total $idle_sum"
+}
+
+# --- Escaping for Pango & JSON ---
+# Protects the renderer from crashing if a title contains <, >, &, \, or "
+escape() {
+    local t="$1"
+    t="${t//&/&amp;}"
+    t="${t//</&lt;}"
+    t="${t//>/&gt;}"
+    t="${t//\\/\\\\}"
+    t="${t//\"/\\\"}"
+    echo "$t"
 }
 
 # --- Network Helper: Initialize Baseline ---
@@ -28,11 +53,9 @@ else
     prev_tx=0
 fi
 
-# Initialize CPU baseline
 read -r prev_total prev_idle <<<"$(get_cpu_stats)"
 sleep 0.5
 
-# Loop variables
 timer=0
 loop_count=0
 bat_text="Loading..."
@@ -44,8 +67,16 @@ disk_text=""
 bright_text=""
 temp_text=""
 power_text=""
+media_text=""
 update_text=""
 wifi_up=0
+
+# ==========================================
+# JSON PROTOCOL HEADER (REQUIRED FOR COLORS)
+# ==========================================
+echo '{ "version": 1 }'
+echo '['
+echo '[]'
 
 while true; do
     # ==========================================
@@ -63,20 +94,20 @@ while true; do
     else
         cpu_pct="  0%"
     fi
-    cpu_text="$cpu_pct "
+    cpu_text="<span color='$C_PEACH'>$cpu_pct </span>"
     prev_total=$curr_total
     prev_idle=$curr_idle
 
     # --- RAM ---
     ram_pct=$(free -m | awk '/^Mem/ { printf("%2d%%", $3/$2 * 100) }')
-    ram_text="$ram_pct "
+    ram_text="<span color='$C_MAUVE'>$ram_pct </span>"
 
     # --- Brightness ---
     raw_bright=$(brightnessctl -m 2>/dev/null | awk -F, '{print $4}')
     if [ -n "$raw_bright" ]; then
-        bright_text="$raw_bright 󰃠"
+        bright_text="<span color='$C_ROSE'>$raw_bright 󰃠</span>"
     else
-        bright_text="--% 󰃠"
+        bright_text="<span color='$C_ROSE'>--% 󰃠</span>"
     fi
 
     # --- Volume ---
@@ -92,9 +123,9 @@ while true; do
         else
             vol_icon=""
         fi
-        vol_text="${vol_pct}% $vol_icon"
+        vol_text="<span color='$C_LAVENDER'>${vol_pct}% $vol_icon</span>"
     else
-        vol_text="--% "
+        vol_text="<span color='$C_LAVENDER'>--% </span>"
     fi
 
     # --- Network Speed ---
@@ -120,7 +151,7 @@ while true; do
             else { printf "%4.2f  B/s", b }
         }')
 
-        net_speed_text="$formatted_speed $icon"
+        net_speed_text="<span color='$C_TEXT'>$formatted_speed $icon</span>"
         prev_rx=$curr_rx
         prev_tx=$curr_tx
     else
@@ -128,7 +159,7 @@ while true; do
     fi
 
     # --- Date ---
-    date_text="$(date +'%a %-d %H:%M:%S')"
+    date_text="<span color='$C_TEXT'>$(date +'%a %-d %H:%M:%S') </span>"
 
     # ==========================================
     # 2. SLOW UPDATES (Every 5 seconds)
@@ -140,21 +171,25 @@ while true; do
 
         raw_temp=$(echo "$sensors_out" | awk -F: '/Charge Regulator Temp/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
         if [ -n "$raw_temp" ]; then
-            temp_text="${raw_temp}°C "
+            if [ "$raw_temp" -ge 70 ]; then
+                temp_text="<span color='$C_RED'>${raw_temp}°C </span>"
+            else
+                temp_text="<span color='$C_TEXT'>${raw_temp}°C </span>"
+            fi
         else
-            temp_text="--°C "
+            temp_text="<span color='$C_TEXT'>--°C </span>"
         fi
 
         raw_power=$(echo "$sensors_out" | awk -F: '/Total System Power/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
         if [ -n "$raw_power" ]; then
-            power_text="${raw_power}W "
+            power_text="<span color='$C_FLAMINGO'>${raw_power}W </span>"
         else
-            power_text="--W "
+            power_text="<span color='$C_FLAMINGO'>--W </span>"
         fi
 
         # --- Disk Space ---
         disk_free=$(df -m / | awk 'NR==2 { v=$4/1024; print (v == int(v) ? v : int(v)-1) }')
-        disk_text="${disk_free}GB "
+        disk_text="<span color='$C_TEAL'>${disk_free}GB </span>"
 
         # --- Battery ---
         if [ -d "$BAT_PATH" ]; then
@@ -165,11 +200,18 @@ while true; do
             if [ "$status" = "Discharging" ]; then
                 seconds=$(cat "$BAT_PATH/time_to_empty_now" 2>/dev/null || echo 0)
                 icon="󱟞"
+                if [ "$capacity" -le 20 ]; then
+                    bat_color="$C_RED"
+                else
+                    bat_color="$C_GREEN"
+                fi
             elif [ "$status" = "Charging" ]; then
                 seconds=$(cat "$BAT_PATH/time_to_full_now" 2>/dev/null || echo 0)
                 icon="󱟠"
+                bat_color="$C_YELLOW"
             else
                 icon="󰁹"
+                bat_color="$C_GREEN"
             fi
 
             cap_str=$(printf "%2d%%" "$capacity")
@@ -179,9 +221,9 @@ while true; do
                 m=$(((seconds % 3600) / 60))
                 time_str=$(printf "(%dh %02dm)" "$h" "$m")
             fi
-            bat_text="$time_str $cap_str $icon"
+            bat_text="<span color='$bat_color'>$time_str $cap_str $icon</span>"
         else
-            bat_text="No Bat"
+            bat_text=""
         fi
 
         # --- Wi-Fi ---
@@ -190,10 +232,10 @@ while true; do
             ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes' | cut -d: -f2)
             [ -z "$ssid" ] && ssid=$(iwgetid -r 2>/dev/null)
             [ -z "$ssid" ] && ssid="Connected"
-            wifi_text="$ssid 󰖩"
+            ssid=$(escape "$ssid")
+            wifi_text="<span color='$C_GREEN'>$ssid 󰖩</span>"
         else
             wifi_up=0
-            # Completely hide if Wi-Fi is off
             wifi_text=""
             net_speed_text=""
         fi
@@ -202,26 +244,24 @@ while true; do
         if bluetoothctl show | grep -q "Powered: yes"; then
             bt_dev=$(bluetoothctl info | grep "Alias" | head -n 1 | cut -d: -f2 | xargs)
             if [ -n "$bt_dev" ]; then
-                bt_text="$bt_dev 󰂱"
+                bt_dev=$(escape "$bt_dev")
+                bt_text="<span color='$C_BLUE'>$bt_dev 󰂱</span>"
             else
                 bt_text=""
             fi
         else
-            # Completely hide if Bluetooth is off
             bt_text=""
         fi
-
     fi
 
     # ==========================================
-    # 3. ULTRA SLOW UPDATES (Every 5min / 3600 loops)
+    # 3. ULTRA SLOW UPDATES (Every 5min / 300 loops)
     # ==========================================
     if [ "$loop_count" -eq 0 ]; then
         updates=$(checkupdates 2>/dev/null | wc -l)
         if [ "$updates" -gt 0 ]; then
-            update_text="$updates 󰚰"
+            update_text="<span color='$C_RED'>$updates 󰚰</span>"
         else
-            # Completely hide if there are no updates
             update_text=""
         fi
     fi
@@ -230,8 +270,8 @@ while true; do
     # OUTPUT
     # ==========================================
 
-    # 1. Add slots into the array ONLY if they contain text
     slots=()
+    [ -n "$media_text" ] && slots+=("$media_text")
     [ -n "$update_text" ] && slots+=("$update_text")
     [ -n "$net_speed_text" ] && slots+=("$net_speed_text")
     [ -n "$wifi_text" ] && slots+=("$wifi_text")
@@ -246,18 +286,17 @@ while true; do
     [ -n "$bat_text" ] && slots+=("$bat_text")
     [ -n "$date_text" ] && slots+=("$date_text")
 
-    # 2. Stitch the array together, wrapping the pipe in
     final_output=""
     for slot in "${slots[@]}"; do
         if [ -z "$final_output" ]; then
             final_output="$slot"
         else
-            final_output="${final_output} | ${slot}"
+            final_output="${final_output} <span color='$C_TEXT'>${LRM}|${LRM}</span> ${slot}"
         fi
     done
 
-    # 3. Print the perfectly formatted bar
-    echo "$final_output"
+    # Print using the robust i3bar JSON protocol
+    printf ',[{"full_text": "%s", "markup": "pango"}]\n' "$final_output"
 
     timer=$(((timer + 1) % 5))
     loop_count=$(((loop_count + 1) % 300))

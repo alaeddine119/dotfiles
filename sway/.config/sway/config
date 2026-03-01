@@ -281,6 +281,8 @@ bar {
     # status_command executes your shell script
     status_command ~/.config/sway/status.sh
 
+
+
     # No 'colors' block = Use Sway Defaults (Blue/Grey)
     colors {
         background $bg-color
