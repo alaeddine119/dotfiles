@@ -44,8 +44,7 @@ disk_text=""
 bright_text=""
 temp_text=""
 power_text=""
-media_text=""
-update_text="0 󰚰"
+update_text=""
 wifi_up=0
 
 while true; do
@@ -114,8 +113,6 @@ while true; do
             icon=""
         fi
 
-        # Force strict X.XX formatting by upshifting the unit early
-        # Thresholds are set to 9.995 to prevent rounding up to 10.00
         formatted_speed=$(awk -v b="$bytes" 'BEGIN {
             if (b >= 10480517) { printf "%4.2f Gb/s", b/1073741824 }
             else if (b >= 10235) { printf "%4.2f Mb/s", b/1048576 }
@@ -123,7 +120,6 @@ while true; do
             else { printf "%4.2f  B/s", b }
         }')
 
-        # Formatted as $text $icon
         net_speed_text="$formatted_speed $icon"
         prev_rx=$curr_rx
         prev_tx=$curr_tx
@@ -139,32 +135,9 @@ while true; do
     # ==========================================
     if [ "$timer" -eq 0 ]; then
 
-        # --- Media Player ---
-        media_status=$(playerctl status 2>/dev/null)
-        if [ "$media_status" = "Playing" ]; then
-            # Grab raw strings first without cutting
-            raw_artist=$(playerctl metadata --format '{{artist}}' 2>/dev/null)
-            raw_title=$(playerctl metadata --format '{{title}}' 2>/dev/null)
-
-            if [ -n "$raw_artist" ]; then
-                # 15 chars + " - " + 27 chars = 45 max length
-                short_artist=$(echo "$raw_artist" | cut -c 1-15)
-                short_title=$(echo "$raw_title" | cut -c 1-25)
-                media_text="${LRM}${short_artist}${LRM} - ${LRM}${short_title}${LRM}"
-            else
-                # If no artist, give the title the full 45 chars
-                short_title=$(echo "$raw_title" | cut -c 1-45)
-                media_text="${LRM}${short_title}${LRM}"
-            fi
-        elif [ "$media_status" = "Paused" ]; then
-            media_text="Paused 󰏤"
-        else
-            media_text=""
-        fi
         # --- Sensors (Temperature & Power) ---
         sensors_out=$(sensors 2>/dev/null)
 
-        # Temperature
         raw_temp=$(echo "$sensors_out" | awk -F: '/Charge Regulator Temp/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
         if [ -n "$raw_temp" ]; then
             temp_text="${raw_temp}°C "
@@ -172,7 +145,6 @@ while true; do
             temp_text="--°C "
         fi
 
-        # Power Draw (Watts)
         raw_power=$(echo "$sensors_out" | awk -F: '/Total System Power/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
         if [ -n "$raw_power" ]; then
             power_text="${raw_power}W "
@@ -221,7 +193,8 @@ while true; do
             wifi_text="$ssid 󰖩"
         else
             wifi_up=0
-            wifi_text="Off 󰖪"
+            # Completely hide if Wi-Fi is off
+            wifi_text=""
             net_speed_text=""
         fi
 
@@ -231,23 +204,25 @@ while true; do
             if [ -n "$bt_dev" ]; then
                 bt_text="$bt_dev 󰂱"
             else
-                bt_text="On 󰂯"
+                bt_text=""
             fi
         else
-            bt_text="Off 󰂲"
+            # Completely hide if Bluetooth is off
+            bt_text=""
         fi
 
     fi
 
     # ==========================================
-    # 3. ULTRA SLOW UPDATES (Every 1 hour / 3600 loops)
+    # 3. ULTRA SLOW UPDATES (Every 5min / 3600 loops)
     # ==========================================
     if [ "$loop_count" -eq 0 ]; then
         updates=$(checkupdates 2>/dev/null | wc -l)
         if [ "$updates" -gt 0 ]; then
             update_text="$updates 󰚰"
         else
-            update_text="0 "
+            # Completely hide if there are no updates
+            update_text=""
         fi
     fi
 
@@ -255,20 +230,29 @@ while true; do
     # OUTPUT
     # ==========================================
 
-    # 1. Add all active slots into an array in logical order
+    # 1. Add slots into the array ONLY if they contain text
     slots=()
-    [ -n "$media_text" ] && slots+=("$media_text")
-    slots+=("$update_text")
+    [ -n "$update_text" ] && slots+=("$update_text")
     [ -n "$net_speed_text" ] && slots+=("$net_speed_text")
-    slots+=("$wifi_text" "$bt_text" "$cpu_text" "$ram_text" "$temp_text" "$disk_text" "$bright_text" "$vol_text" "$power_text" "$bat_text" "$date_text")
+    [ -n "$wifi_text" ] && slots+=("$wifi_text")
+    [ -n "$bt_text" ] && slots+=("$bt_text")
+    [ -n "$cpu_text" ] && slots+=("$cpu_text")
+    [ -n "$ram_text" ] && slots+=("$ram_text")
+    [ -n "$temp_text" ] && slots+=("$temp_text")
+    [ -n "$disk_text" ] && slots+=("$disk_text")
+    [ -n "$bright_text" ] && slots+=("$bright_text")
+    [ -n "$vol_text" ] && slots+=("$vol_text")
+    [ -n "$power_text" ] && slots+=("$power_text")
+    [ -n "$bat_text" ] && slots+=("$bat_text")
+    [ -n "$date_text" ] && slots+=("$date_text")
 
-    # 2. Stitch the array together, wrapping the pipe in LRM to enforce left-to-right flow globally
+    # 2. Stitch the array together, wrapping the pipe in
     final_output=""
     for slot in "${slots[@]}"; do
         if [ -z "$final_output" ]; then
             final_output="$slot"
         else
-            final_output="${final_output} ${LRM}|${LRM} ${slot}"
+            final_output="${final_output} | ${slot}"
         fi
     done
 
@@ -276,6 +260,6 @@ while true; do
     echo "$final_output"
 
     timer=$(((timer + 1) % 5))
-    loop_count=$(((loop_count + 1) % 3600))
+    loop_count=$(((loop_count + 1) % 300))
     sleep 1
 done
