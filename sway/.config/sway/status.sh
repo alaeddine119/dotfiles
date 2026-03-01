@@ -8,21 +8,15 @@ BAT_PATH="/sys/class/power_supply/macsmc-battery"
 # Wifi Interface
 WIFI_IFACE="wlan0"
 
-# Invisible Left-To-Right Mark (U+200E)
-LRM=$'\u200E'
-
 # --- Colors (Catppuccin Macchiato) ---
-C_RED="#ed8796"
-C_YELLOW="#eed49f"
-C_GREEN="#a6da95"
-C_BLUE="#8aadf4"
-C_MAUVE="#c6a0f6"
-C_TEAL="#8bd5ca"
-C_PEACH="#f5a97f"
-C_ROSE="#f4dbd6"
-C_LAVENDER="#b7bdf8"
-C_FLAMINGO="#f0c6c6"
-C_TEXT="#cad3f5"
+C_RED="#ed8796"    # Alerts, High Temp, Low Battery
+C_YELLOW="#eed49f" # Charging
+C_GREEN="#a6da95"  # Power Group
+C_BLUE="#8aadf4"   # Network & Wireless Group
+C_MAUVE="#c6a0f6"  # System Hardware Group
+C_PEACH="#f5a97f"  # UI / Peripherals Group
+C_TEXT="#cad3f5"   # Default Text / Date
+C_SEP="#6c7086"    # Muted grey for separators
 
 # --- CPU Helper Function ---
 get_cpu_stats() {
@@ -33,7 +27,6 @@ get_cpu_stats() {
 }
 
 # --- Escaping for Pango & JSON ---
-# Protects the renderer from crashing if a title contains <, >, &, \, or "
 escape() {
     local t="$1"
     t="${t//&/&amp;}"
@@ -67,7 +60,6 @@ disk_text=""
 bright_text=""
 temp_text=""
 power_text=""
-media_text=""
 update_text=""
 wifi_up=0
 
@@ -83,7 +75,7 @@ while true; do
     # 1. FAST UPDATES (Every 1 second)
     # ==========================================
 
-    # --- CPU ---
+    # --- CPU (System Group: Mauve) ---
     read -r curr_total curr_idle <<<"$(get_cpu_stats)"
     diff_idle=$((curr_idle - prev_idle))
     diff_total=$((curr_total - prev_total))
@@ -94,23 +86,23 @@ while true; do
     else
         cpu_pct="  0%"
     fi
-    cpu_text="<span color='$C_PEACH'>$cpu_pct </span>"
+    cpu_text="<span color='$C_MAUVE'>$cpu_pct </span>"
     prev_total=$curr_total
     prev_idle=$curr_idle
 
-    # --- RAM ---
+    # --- RAM (System Group: Mauve) ---
     ram_pct=$(free -m | awk '/^Mem/ { printf("%2d%%", $3/$2 * 100) }')
     ram_text="<span color='$C_MAUVE'>$ram_pct </span>"
 
-    # --- Brightness ---
+    # --- Brightness (UI Group: Peach) ---
     raw_bright=$(brightnessctl -m 2>/dev/null | awk -F, '{print $4}')
     if [ -n "$raw_bright" ]; then
-        bright_text="<span color='$C_ROSE'>$raw_bright 󰃠</span>"
+        bright_text="<span color='$C_PEACH'>$raw_bright 󰃠</span>"
     else
-        bright_text="<span color='$C_ROSE'>--% 󰃠</span>"
+        bright_text="<span color='$C_PEACH'>--% 󰃠</span>"
     fi
 
-    # --- Volume ---
+    # --- Volume (UI Group: Peach) ---
     raw_vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
     if [ -n "$raw_vol" ]; then
         vol_pct=$(echo "$raw_vol" | awk '{print int($2 * 100)}')
@@ -123,12 +115,12 @@ while true; do
         else
             vol_icon=""
         fi
-        vol_text="<span color='$C_LAVENDER'>${vol_pct}% $vol_icon</span>"
+        vol_text="<span color='$C_PEACH'>${vol_pct}% $vol_icon</span>"
     else
-        vol_text="<span color='$C_LAVENDER'>--% </span>"
+        vol_text="<span color='$C_PEACH'>--% </span>"
     fi
 
-    # --- Network Speed ---
+    # --- Network Speed (Network Group: Blue) ---
     if [ $wifi_up -eq 1 ] && [ -r "/sys/class/net/$WIFI_IFACE/statistics/rx_bytes" ]; then
         read -r curr_rx <"/sys/class/net/$WIFI_IFACE/statistics/rx_bytes"
         read -r curr_tx <"/sys/class/net/$WIFI_IFACE/statistics/tx_bytes"
@@ -151,15 +143,15 @@ while true; do
             else { printf "%4.2f  B/s", b }
         }')
 
-        net_speed_text="<span color='$C_TEXT'>$formatted_speed $icon</span>"
+        net_speed_text="<span color='$C_BLUE'>$formatted_speed $icon</span>"
         prev_rx=$curr_rx
         prev_tx=$curr_tx
     else
         net_speed_text=""
     fi
 
-    # --- Date ---
-    date_text="<span color='$C_TEXT'>$(date +'%a %-d %H:%M:%S') </span>"
+    # --- Date (Neutral Text Color, No Icon) ---
+    date_text="<span color='$C_TEXT'>$(date +'%a %-d %H:%M:%S')</span>"
 
     # ==========================================
     # 2. SLOW UPDATES (Every 5 seconds)
@@ -169,29 +161,31 @@ while true; do
         # --- Sensors (Temperature & Power) ---
         sensors_out=$(sensors 2>/dev/null)
 
+        # Temperature (System Group: Mauve, Overrides to Red)
         raw_temp=$(echo "$sensors_out" | awk -F: '/Charge Regulator Temp/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
         if [ -n "$raw_temp" ]; then
             if [ "$raw_temp" -ge 70 ]; then
                 temp_text="<span color='$C_RED'>${raw_temp}°C </span>"
             else
-                temp_text="<span color='$C_TEXT'>${raw_temp}°C </span>"
+                temp_text="<span color='$C_MAUVE'>${raw_temp}°C </span>"
             fi
         else
-            temp_text="<span color='$C_TEXT'>--°C </span>"
+            temp_text="<span color='$C_MAUVE'>--°C </span>"
         fi
 
+        # Power Draw (Power Group: Green)
         raw_power=$(echo "$sensors_out" | awk -F: '/Total System Power/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
         if [ -n "$raw_power" ]; then
-            power_text="<span color='$C_FLAMINGO'>${raw_power}W </span>"
+            power_text="<span color='$C_GREEN'>${raw_power}W </span>"
         else
-            power_text="<span color='$C_FLAMINGO'>--W </span>"
+            power_text="<span color='$C_GREEN'>--W </span>"
         fi
 
-        # --- Disk Space ---
+        # --- Disk Space (System Group: Mauve) ---
         disk_free=$(df -m / | awk 'NR==2 { v=$4/1024; print (v == int(v) ? v : int(v)-1) }')
-        disk_text="<span color='$C_TEAL'>${disk_free}GB </span>"
+        disk_text="<span color='$C_MAUVE'>${disk_free}GB </span>"
 
-        # --- Battery ---
+        # --- Battery (Power Group: Green base, Overrides for charging/low) ---
         if [ -d "$BAT_PATH" ]; then
             status=$(cat "$BAT_PATH/status")
             capacity=$(cat "$BAT_PATH/capacity")
@@ -226,21 +220,21 @@ while true; do
             bat_text=""
         fi
 
-        # --- Wi-Fi ---
+        # --- Wi-Fi (Network Group: Blue) ---
         if [ -f "/sys/class/net/$WIFI_IFACE/operstate" ] && [ "$(cat "/sys/class/net/$WIFI_IFACE/operstate")" = "up" ]; then
             wifi_up=1
             ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes' | cut -d: -f2)
             [ -z "$ssid" ] && ssid=$(iwgetid -r 2>/dev/null)
             [ -z "$ssid" ] && ssid="Connected"
             ssid=$(escape "$ssid")
-            wifi_text="<span color='$C_GREEN'>$ssid 󰖩</span>"
+            wifi_text="<span color='$C_BLUE'>$ssid 󰖩</span>"
         else
             wifi_up=0
             wifi_text=""
             net_speed_text=""
         fi
 
-        # --- Bluetooth ---
+        # --- Bluetooth (Network Group: Blue) ---
         if bluetoothctl show | grep -q "Powered: yes"; then
             bt_dev=$(bluetoothctl info | grep "Alias" | head -n 1 | cut -d: -f2 | xargs)
             if [ -n "$bt_dev" ]; then
@@ -271,7 +265,6 @@ while true; do
     # ==========================================
 
     slots=()
-    [ -n "$media_text" ] && slots+=("$media_text")
     [ -n "$update_text" ] && slots+=("$update_text")
     [ -n "$net_speed_text" ] && slots+=("$net_speed_text")
     [ -n "$wifi_text" ] && slots+=("$wifi_text")
@@ -291,7 +284,7 @@ while true; do
         if [ -z "$final_output" ]; then
             final_output="$slot"
         else
-            final_output="${final_output} <span color='$C_TEXT'>${LRM}|${LRM}</span> ${slot}"
+            final_output="${final_output} <span color='$C_SEP'>•</span> ${slot}"
         fi
     done
 
