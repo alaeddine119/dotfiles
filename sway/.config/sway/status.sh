@@ -12,6 +12,7 @@ WIFI_IFACE="wlan0"
 C_RED="#ed8796"    # Alerts, High Temp, Low Battery
 C_YELLOW="#eed49f" # Charging
 C_GREEN="#a6da95"  # Power Group
+C_TEAL="#8bd5ca"   # Weather Group
 C_BLUE="#8aadf4"   # Network & Wireless Group
 C_MAUVE="#c6a0f6"  # System Hardware Group
 C_PEACH="#f5a97f"  # UI / Peripherals Group
@@ -51,6 +52,7 @@ sleep 0.5
 
 timer=0
 loop_count=0
+weather_loop_count=0
 bat_text="Loading..."
 wifi_text=""
 bt_text=""
@@ -61,6 +63,8 @@ bright_text=""
 temp_text=""
 power_text=""
 update_text=""
+weather_text=""
+layout_text=""
 wifi_up=0
 
 # ==========================================
@@ -74,6 +78,17 @@ while true; do
     # ==========================================
     # 1. FAST UPDATES (Every 1 second)
     # ==========================================
+
+    # --- Keyboard Layout (UI Group: Peach) ---
+    # Quickly parse Sway's internal state to find the active layout name
+    raw_layout=$(swaymsg -t get_inputs 2>/dev/null | grep -m1 'xkb_active_layout_name' | cut -d '"' -f4)
+    if [[ "$raw_layout" == *"Arabic"* ]] || [[ "$raw_layout" == *"Morocco"* ]] || [[ "$raw_layout" == *"ma"* ]]; then
+        layout_text="<span color='$C_TEXT'>AR </span>"
+    elif [[ -n "$raw_layout" ]]; then
+        layout_text="<span color='$C_TEXT'>EN </span>"
+    else
+        layout_text=""
+    fi
 
     # --- CPU (System Group: Mauve) ---
     read -r curr_total curr_idle <<<"$(get_cpu_stats)"
@@ -162,7 +177,7 @@ while true; do
         sensors_out=$(sensors 2>/dev/null)
 
         # Temperature (System Group: Mauve, Overrides to Red)
-        raw_temp=$(echo "$sensors_out" | awk -F: '/Charge Regulator Temp/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
+        raw_temp=$(echo "$sensors_out" | awk -F: '/Charge Regulator Temp/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print int(v) }')
         if [ -n "$raw_temp" ]; then
             if [ "$raw_temp" -ge 70 ]; then
                 temp_text="<span color='$C_RED'>${raw_temp}°C </span>"
@@ -174,7 +189,7 @@ while true; do
         fi
 
         # Power Draw (Power Group: Green)
-        raw_power=$(echo "$sensors_out" | awk -F: '/Total System Power/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print (v == int(v) ? v : int(v)+1) }')
+        raw_power=$(echo "$sensors_out" | awk -F: '/Total System Power/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print int(v) }')
         if [ -n "$raw_power" ]; then
             power_text="<span color='$C_GREEN'>${raw_power}W </span>"
         else
@@ -182,7 +197,7 @@ while true; do
         fi
 
         # --- Disk Space (System Group: Mauve) ---
-        disk_free=$(df -m / | awk 'NR==2 { v=$4/1024; print (v == int(v) ? v : int(v)-1) }')
+        disk_free=$(df -m / | awk 'NR==2 { v=$4/1024; print int(v) }')
         disk_text="<span color='$C_MAUVE'>${disk_free}GB </span>"
 
         # --- Battery (Power Group: Green base, Overrides for charging/low) ---
@@ -252,11 +267,37 @@ while true; do
     # 3. ULTRA SLOW UPDATES (Every 5min / 300 loops)
     # ==========================================
     if [ "$loop_count" -eq 0 ]; then
+        # --- Arch Updates ---
         updates=$(checkupdates 2>/dev/null | wc -l)
         if [ "$updates" -gt 0 ]; then
             update_text="<span color='$C_RED'>$updates 󰚰</span>"
         else
             update_text=""
+        fi
+    fi
+
+    # ==========================================
+    # 4. WEATHER UPDATES (Every 30min / 1800 loops)
+    # ==========================================
+    if [ "$weather_loop_count" -eq 0 ]; then
+        # Timeout set to 5 seconds to prevent bar freezing if API/Network is unreachable
+        # Fetches Temp then Icon, strips empty space, and translates emojis to monochrome Nerd Font icons
+        raw_weather=$(curl -s -m 60 "https://wttr.in/?format=%t%c" 2>/dev/null | sed 's/ //g' | sed \
+            -e 's/☀️/ 󰖙/g' \
+            -e 's/⛅️\|⛅\|🌤️\|🌤/ 󰖕/g' \
+            -e 's/☁️\|☁/󰖐/g' \
+            -e 's/🌧️\|🌧\|🌦️\|🌦/ 󰖖/g' \
+            -e 's/🌨️\|🌨/ 󰖘/g' \
+            -e 's/❄️\|❄/ /g' \
+            -e 's/⛈️\|⛈\|🌩️\|🌩/ 󰖓/g' \
+            -e 's/🌫️\|🌫/ 󰖑/g' \
+            -e 's/🌙\|🌑/ 󰖔/g')
+        # Validate that we got actual weather and not an HTML error page or "Unknown"
+        if [[ -n "$raw_weather" && "$raw_weather" != *"Unknown"* && "$raw_weather" != *"Sorry"* && "$raw_weather" != *"html"* ]]; then
+            weather_text="<span color='$C_TEXT'>$raw_weather</span>"
+        else
+            # Keep the old text if the API fails momentarily, or use a default if it's the first run
+            weather_text=""
         fi
     fi
 
@@ -277,6 +318,8 @@ while true; do
     [ -n "$vol_text" ] && slots+=("$vol_text")
     [ -n "$power_text" ] && slots+=("$power_text")
     [ -n "$bat_text" ] && slots+=("$bat_text")
+    [ -n "$layout_text" ] && slots+=("$layout_text") # Placed right next to volume!
+    [ -n "$weather_text" ] && slots+=("$weather_text")
     [ -n "$date_text" ] && slots+=("$date_text")
 
     final_output=""
@@ -293,5 +336,6 @@ while true; do
 
     timer=$(((timer + 1) % 5))
     loop_count=$(((loop_count + 1) % 300))
+    weather_loop_count=$(((weather_loop_count + 1) % 1800))
     sleep 1
 done

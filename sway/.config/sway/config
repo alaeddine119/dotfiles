@@ -40,7 +40,7 @@ font pango:JetBrainsMono Nerd Font Mono 11
 ### Output & Autostart
 output * bg $wallpaper fill
 # Asahi Mac Resolution/Scale
-output eDP-1 scale 1.5 resolution 2560x1600 pos 0 0
+output eDP-1 scale 1.667 resolution 2560x1600 pos 0 0
 
 
 # Essential Daemons
