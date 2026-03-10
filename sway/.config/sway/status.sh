@@ -9,15 +9,14 @@ BAT_PATH="/sys/class/power_supply/macsmc-battery"
 WIFI_IFACE="wlan0"
 
 # --- Colors (Catppuccin Macchiato) ---
-C_RED="#ed8796"    # Alerts, High Temp, Low Battery
-C_YELLOW="#eed49f" # Charging
-C_GREEN="#a6da95"  # Power Group
-C_TEAL="#8bd5ca"   # Weather Group
-C_BLUE="#8aadf4"   # Network & Wireless Group
-C_MAUVE="#c6a0f6"  # System Hardware Group
-C_PEACH="#f5a97f"  # UI / Peripherals Group
-C_TEXT="#cad3f5"   # Default Text / Date
-C_SEP="#6c7086"    # Muted grey for separators
+C_RED="#eeeeee"    # Alerts, High Temp, Low Battery
+C_YELLOW="#eeeeee" # Charging
+C_GREEN="#eeeeee"  # Power Group
+C_BLUE="#eeeeee"   # Network & Wireless Group
+C_MAUVE="#eeeeee"  # System Hardware Group
+C_PEACH="#eeeeee"  # UI / Peripherals Group
+C_TEXT="#eeeeee"   # Default Text / Date
+C_SEP="#eeeeee"    # Muted grey for separators
 
 # --- CPU Helper Function ---
 get_cpu_stats() {
