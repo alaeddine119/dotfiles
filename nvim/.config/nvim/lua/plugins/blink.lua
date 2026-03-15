@@ -7,40 +7,18 @@
 vim.pack.add({
 	{
 		src = "https://github.com/saghen/blink.cmp",
-		-- version = 'v0.*' -- Keep main branch for latest features
+		version = "*", -- Grabs the absolute latest stable release
 	},
 	"https://github.com/rafamadriz/friendly-snippets",
 })
 
--- 2. SELF-HEALING BUILD SCRIPT
-local function bootstrap_blink()
-	local blink_path = vim.fn.stdpath("data") .. "/site/pack/core/opt/blink.cmp"
-	local binary_path = blink_path .. "/target/release/libblink_cmp_fuzzy.so"
-
-	if
-		vim.fn.isdirectory(blink_path) == 1
-		and vim.fn.filereadable(binary_path) == 0
-	then
-		print("🚧 [Blink] Binary missing. Building from source...")
-		local obj = vim.system(
-			{ "cargo", "build", "--release" },
-			{ cwd = blink_path }
-		)
-			:wait()
-		if obj.code ~= 0 then
-			print("❌ [Blink] Build Failed. Check :messages.")
-		end
-	end
-end
-bootstrap_blink()
-
--- 3. GUARD
+-- 2. GUARD
 local status, blink = pcall(require, "blink.cmp")
 if not status then
 	return
 end
 
--- 4. CONFIGURE
+-- 3. CONFIGURE
 blink.setup({
 	keymap = {
 		preset = "none", -- We want full control
@@ -71,9 +49,7 @@ blink.setup({
 
 	signature = { enabled = true },
 
-	-- [THE FIX] PRIORITY CONFIGURATION
-	-- [UPDATED] PRIORITY CONFIGURATION
-	-- This forces LSP items (like std::cout) to the top of the list.
+	-- PRIORITY CONFIGURATION
 	sources = {
 		default = { "lsp", "path", "snippets", "buffer" },
 
@@ -81,7 +57,7 @@ blink.setup({
 			lsp = {
 				name = "LSP",
 				module = "blink.cmp.sources.lsp",
-				score_offset = 1000, -- Boost LSP suggestions (Main Fix)
+				score_offset = 1000, -- Boost LSP suggestions
 			},
 			snippets = {
 				name = "Snippets",
@@ -100,6 +76,4 @@ blink.setup({
 			},
 		},
 	},
-
-	fuzzy = { implementation = "prefer_rust_with_warning" },
 })
