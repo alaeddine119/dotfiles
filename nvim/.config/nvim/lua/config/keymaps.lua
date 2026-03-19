@@ -25,101 +25,6 @@ vim.keymap.set("n", "N", "Nzzzv", { desc = "Prev search match (centered)" })
 vim.keymap.set("n", "<leader>w", ":write<CR>", { desc = "[W]rite File" })
 vim.keymap.set("n", "<leader>q", ":quit<CR>", { desc = "[Q]uit Window" })
 
--- Map <leader>cx to source the current file (:source %)
--- Execute the current file based on file type
--- Helper function to read compile_flags.txt if it exists
-local function get_compile_flags(default_flags)
-	local f = io.open("compile_flags.txt", "r")
-	if f then
-		local content = f:read("*a")
-		f:close()
-		-- Replace newlines with spaces to form a single command string
-		local flags = content:gsub("\n", " ")
-		return flags
-	end
-	return default_flags
-end
-
-vim.keymap.set("n", "<leader>cx", function()
-	vim.cmd("write")
-	local ft = vim.bo.filetype
-	local file = vim.fn.expand("%")
-	local out = vim.fn.expand("%<")
-
-	-- 1. C++ FILES
-	if ft == "cpp" then
-		-- Default fallback if no file exists
-		local flags = get_compile_flags("-std=c++23")
-
-		local cmd = string.format(
-			"if clang++ %s '%s' -o '%s'; then ./'%s'; else echo '\n❌ Compilation Failed'; fi; echo ''; read -n 1 -s -r -p 'Press any key to close...'",
-			flags,
-			file,
-			out,
-			out
-		)
-		require("snacks").terminal(cmd, {
-			win = {
-				position = "bottom",
-				height = 0.3,
-				border = "rounded",
-				title = " C++ Output ",
-				title_pos = "center",
-				style = "minimal",
-			},
-			interactive = true,
-		})
-
-	-- 2. C FILES
-	elseif ft == "c" then
-		-- Default fallback: Standard C17 + Math library
-		local flags = get_compile_flags("-std=c17 -lm")
-
-		local cmd = string.format(
-			"if clang %s '%s' -o '%s'; then ./'%s'; else echo '\n❌ Compilation Failed'; fi; echo ''; read -n 1 -s -r -p 'Press any key to close...'",
-			flags,
-			file,
-			out,
-			out
-		)
-		require("snacks").terminal(cmd, {
-			win = {
-				position = "bottom",
-				height = 0.3,
-				border = "rounded",
-				title = " C Output ",
-				title_pos = "center",
-				style = "minimal",
-			},
-			interactive = true,
-		})
-
-	-- 3. LUA
-	elseif ft == "lua" then
-		vim.cmd("source %")
-	-- 4. PYTHON
-	elseif ft == "python" then
-		local cmd = string.format(
-			"python3 '%s'; echo ''; read -n 1 -s -r -p 'Press any key to close...'",
-			file
-		)
-		require("snacks").terminal(cmd, {
-			win = {
-				position = "bottom",
-				height = 0.3,
-				title = " Python Output ",
-				title_pos = "center",
-			},
-			interactive = true,
-		})
-	else
-		vim.notify(
-			"No execution command for filetype: " .. ft,
-			vim.log.levels.WARN
-		)
-	end
-end, { desc = "[C]ode E[x]ecute" })
-
 -- Map <leader><leader> to open the built-in file explorer (Netrw).
 -- NOTE: This is now handled by lua/plugins/oil.lua (Replaces Netrw)
 -- vim.keymap.set("n", "<leader><leader>", ":Ex<CR>", { desc = "Open File Explorer (Netrw)" })
@@ -163,60 +68,35 @@ vim.keymap.set("n", "]d", function()
 end, { desc = "Next [D]iagnostic" })
 
 -- ========================================================================== --
---  SEAMLESS BUILD & RUN SYSTEM
+--  COMPILE MODE KEYMAPS
 -- ========================================================================== --
 
-local function build_and_run_project()
-	vim.cmd("write")
-	local build_cmd = ""
-	local title = ""
-
-	if vim.fn.filereadable("CMakeLists.txt") == 1 then
-		-- 1. Build using CMake
-		-- 2. Find the newest executable in build/ and run it
-		build_cmd =
-			"cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && cmake --build build"
-
-		-- Shell magic: finds the newest file in build/ that has executable permissions
-		local run_cmd =
-			" && exe=$(find build -maxdepth 2 -type f -executable -not -path '*/.*' | xargs ls -t | head -n1); if [ -n \"$exe\" ]; then echo -e '\\n🚀 Running: '$exe'\\n'; ./\"$exe\"; else echo '\\n⚠️ No executable found in build/'; fi"
-
-		build_cmd = build_cmd .. run_cmd
-		title = " CMake Build & Run "
-	elseif vim.fn.filereadable("Makefile") == 1 then
-		-- Standard make assumes the binary is in the current directory or defined by target
-		build_cmd =
-			"make && echo -e '\\n🚀 Running Project...\\n' && ./$(ls -t | grep -v '\\.' | head -n1)"
-		title = " Make Build & Run "
-	else
-		vim.notify("No build file found!", vim.log.levels.WARN)
-		return
-	end
-
-	local final_cmd = string.format(
-		"%s; echo ''; read -n 1 -s -r -p 'Process finished. Press any key to close...'",
-		build_cmd
-	)
-
-	require("snacks").terminal(final_cmd, {
-		win = {
-			position = "bottom",
-			height = 0.4,
-			border = "rounded",
-			title = title,
-			title_pos = "center",
-			style = "minimal",
-		},
-		interactive = true,
-	})
-end
-
--- Map it to <leader>cr ([C]ode [R]un Project)
--- Note: You might want to move your single-file runner to <leader>cx
--- and keep <leader>cr for project-level execution.
+-- <leader>cb -> [C]ompile [B]uild: Opens the prompt with your auto-detected command
 vim.keymap.set(
 	"n",
 	"<leader>cb",
-	build_and_run_project,
-	{ desc = "[C]ode [B]uild and Run Project" }
+	"<cmd>Compile<CR>",
+	{ desc = "[C]ompile [B]uild" }
+)
+
+-- <leader>cx -> [C]ompile e[X]ecute: Instantly re-runs the last command without prompting
+vim.keymap.set(
+	"n",
+	"<leader>cx",
+	"<cmd>Recompile<CR>",
+	{ desc = "[C]ompile e[X]ecute (Rerun)" }
+)
+
+-- Navigate through compilation errors easily
+vim.keymap.set(
+	"n",
+	"]e",
+	"<cmd>NextError<CR>",
+	{ desc = "Next compilation [E]rror" }
+)
+vim.keymap.set(
+	"n",
+	"[e",
+	"<cmd>PrevError<CR>",
+	{ desc = "Prev compilation [E]rror" }
 )

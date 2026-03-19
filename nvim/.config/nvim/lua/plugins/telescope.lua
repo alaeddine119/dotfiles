@@ -80,6 +80,12 @@ telescope.setup({
 	pickers = {
 		find_files = {
 			theme = "ivy",
+			hidden = true,
+		},
+		live_grep = {
+			additional_args = function()
+				return { "--hidden" }
+			end,
 		},
 	},
 })

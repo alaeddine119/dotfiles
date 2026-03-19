@@ -81,13 +81,13 @@ vim.o.splitbelow = true
 -- -------------------------------------------------------------------------- --
 
 -- Set the visual width of a tab character to 4 spaces.
-vim.o.tabstop = 4
+vim.o.tabstop = 2
 
 -- Set the number of spaces inserted when you hit the Tab key.
-vim.o.softtabstop = 4
+vim.o.softtabstop = 2
 
 -- Set the size of an indent (when using '>>', '<<', or auto-indenting).
-vim.o.shiftwidth = 4
+vim.o.shiftwidth = 2
 
 -- Convert actual tab characters to spaces. This ensures consistency across editors.
 vim.o.expandtab = true

@@ -11,6 +11,11 @@ vim.pack.add({
 -- 2. CONFIGURE
 --    Rustaceanvim looks for this global variable to configure itself.
 --    We define it here so it is ready when you open a .rs file.
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+local ok, blink = pcall(require, "blink.cmp")
+if ok then
+	capabilities = blink.get_lsp_capabilities(capabilities)
+end
 vim.g.rustaceanvim = {
 	-- TOOLS (The extra commands)
 	tools = {
@@ -21,7 +26,8 @@ vim.g.rustaceanvim = {
 
 	-- SERVER (The LSP configuration)
 	server = {
-		on_attach = function(client, bufnr)
+		capabilities = capabilities,
+		on_attach = function(_, bufnr)
 			-- Keymaps specific to Rust
 			local map = vim.keymap.set
 

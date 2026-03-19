@@ -44,7 +44,6 @@ require("mason-tool-installer").setup({
 
 		-- LSPs (Keep your existing ones)
 		"lua_ls",
-		"rust-analyzer",
 		"tailwindcss-language-server",
 		"typescript-language-server",
 		"html-lsp",
@@ -91,7 +90,6 @@ require("mason-lspconfig").setup({
 			-- Add these exact strings to the ignore list
 			local ignore_list = {
 				"rust_analyzer",
-				"rust-analyzer",
 				"clangd",
 				"tsserver", -- Old name
 				"typescript-language-server", -- New name
