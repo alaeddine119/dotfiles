@@ -23,6 +23,7 @@ configuration {
     calc-command: "echo -n '{result}' | wl-copy";
 
     kb-cancel: "Escape,Control+g,Control+bracketleft,Alt+q";
+    terminal: "foot";
 }
 
 @theme "/dev/null"
