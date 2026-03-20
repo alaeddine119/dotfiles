@@ -13,74 +13,85 @@ map("n", "N", "Nzzzv", { desc = "Prev search result & center" })
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
 map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+map("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+map("n", "<leader><leader>", "<CMD>Oil<CR>", { desc = "File Explorer" })
 
 -- -------------------------------------------------------------------------- --
 --  SNACKS: PICKERS & SEARCH (<leader>s)
 -- -------------------------------------------------------------------------- --
 map("n", "<leader>sf", function()
 	Snacks.picker.files()
-end, { desc = "[S]earch [F]iles" })
+end, { desc = "Files" })
 map("n", "<leader>sr", function()
 	Snacks.picker.recent()
-end, { desc = "[S]earch [R]ecent Files" })
+end, { desc = "Recent Files" })
 map("n", "<leader>sb", function()
 	Snacks.picker.buffers()
-end, { desc = "[S]earch [B]uffers" })
+end, { desc = "Buffers" })
 map("n", "<leader>sg", function()
 	Snacks.picker.grep()
-end, { desc = "[S]earch [G]rep (Workspace)" })
+end, { desc = "Grep (Workspace)" })
 map("n", "<leader>sw", function()
 	Snacks.picker.grep_word()
-end, { desc = "[S]earch [W]ord under cursor" })
+end, { desc = "Word under cursor" })
 map("n", "<leader>sc", function()
 	Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
-end, { desc = "[S]earch [C]onfig" })
+end, { desc = "Neovim Config" })
 map("n", "<leader>sh", function()
 	Snacks.picker.help()
-end, { desc = "[S]earch [H]elp Tags" })
+end, { desc = "Help Tags" })
 map("n", "<leader>sH", function()
 	Snacks.picker.command_history()
-end, { desc = "[S]earch [H]istory (Cmd)" })
+end, { desc = "Command History" })
 map("n", "<leader>sd", function()
 	Snacks.picker.diagnostics()
-end, { desc = "[S]earch [D]iagnostics" })
+end, { desc = "Diagnostics" })
 map("n", "<leader>sp", function()
 	Snacks.picker.projects()
-end, { desc = "[S]earch [P]rojects" })
+end, { desc = "Projects" })
 
 -- -------------------------------------------------------------------------- --
---  SNACKS: BUFFERS, GIT & TERMINAL (<leader>b, <leader>g)
+--  SNACKS: BUFFERS, GIT (<leader>b, <leader>g)
 -- -------------------------------------------------------------------------- --
 map("n", "<leader>bh", function()
 	Snacks.dashboard()
-end, { desc = "Open [H]ome Dashboard" })
+end, { desc = "Dashboard" })
 map("n", "<leader>bd", function()
 	Snacks.bufdelete()
-end, { desc = "[B]uffer [D]elete" })
+end, { desc = "Delete Buffer" })
 map("n", "<leader>b.", function()
 	Snacks.scratch()
-end, { desc = "[B]uffer Scratch" })
+end, { desc = "Scratch Buffer" })
 map("n", "<leader>gg", function()
 	Snacks.lazygit()
-end, { desc = "[G]it Lazy[g]it" })
+end, { desc = "Lazygit" })
 map("n", "<leader>gb", function()
 	Snacks.gitbrowse()
-end, { desc = "[G]it [B]rowse" })
-map({ "n", "t" }, "<c-/>", function()
-	Snacks.terminal()
-end, { desc = "Toggle Terminal" })
+end, { desc = "Git Browse" })
 
 -- -------------------------------------------------------------------------- --
 --  CODE & COMPILATION (<leader>c)
 -- -------------------------------------------------------------------------- --
 map("n", "<leader>cf", function()
 	require("conform").format({ async = true, lsp_format = "fallback" })
-end, { desc = "[C]ode [F]ormat" })
-map("n", "<leader>cb", "<cmd>Compile<CR>", { desc = "[C]ode [B]uild" })
-map("n", "<leader>cx", "<cmd>Recompile<CR>", { desc = "[C]ode Recompile" })
+end, { desc = "Format" })
+map("n", "<leader>cb", "<cmd>Compile<CR>", { desc = "Build" })
+map("n", "<leader>cx", "<cmd>Recompile<CR>", { desc = "Recompile" })
 map("n", "<leader>cr", function()
 	Snacks.rename.rename_file()
-end, { desc = "[C]ode [R]ename File" })
+end, { desc = "Rename File" })
+map(
+	"n",
+	"<leader>cs",
+	"<cmd>Trouble symbols toggle focus=false<cr>",
+	{ desc = "Symbols" }
+)
+map(
+	"n",
+	"<leader>cl",
+	"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+	{ desc = "LSP References" }
+)
 
 -- -------------------------------------------------------------------------- --
 --  DIAGNOSTICS & TROUBLE (<leader>x)
@@ -98,25 +109,13 @@ map(
 	"n",
 	"<leader>xx",
 	"<cmd>Trouble diagnostics toggle<cr>",
-	{ desc = "Project Diagnostics" }
+	{ desc = "Workspace" }
 )
 map(
 	"n",
 	"<leader>xX",
 	"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-	{ desc = "Buffer Diagnostics" }
-)
-map(
-	"n",
-	"<leader>cs",
-	"<cmd>Trouble symbols toggle focus=false<cr>",
-	{ desc = "Symbols (Trouble)" }
-)
-map(
-	"n",
-	"<leader>cl",
-	"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-	{ desc = "LSP References (Trouble)" }
+	{ desc = "Document" }
 )
 map(
 	"n",
@@ -136,43 +135,38 @@ map(
 -- -------------------------------------------------------------------------- --
 map("n", "<leader>ds", function()
 	require("dap").continue()
-end, { desc = "[D]ebug [S]tart/Continue" })
+end, { desc = "Start / Continue" })
 map("n", "<leader>di", function()
 	require("dap").step_into()
-end, { desc = "[D]ebug Step [I]nto" })
+end, { desc = "Step Into" })
 map("n", "<leader>do", function()
 	require("dap").step_over()
-end, { desc = "[D]ebug Step [O]ver" })
+end, { desc = "Step Over" })
 map("n", "<leader>dO", function()
 	require("dap").step_out()
-end, { desc = "[D]ebug Step [O]ut" })
+end, { desc = "Step Out" })
 map("n", "<leader>db", function()
 	require("dap").toggle_breakpoint()
-end, { desc = "[D]ebug [B]reakpoint" })
+end, { desc = "Breakpoint" })
 map("n", "<leader>dB", function()
 	require("dap").set_breakpoint(vim.fn.input("Condition: "))
-end, { desc = "[D]ebug [B]reakpoint (Cond)" })
+end, { desc = "Breakpoint (Cond)" })
 map("n", "<leader>du", function()
 	require("dapui").toggle()
-end, { desc = "[D]ebug [U]I Toggle" })
+end, { desc = "Toggle UI" })
 map("n", "<leader>de", function()
 	require("dapui").eval()
-end, { desc = "[D]ebug [E]val" })
+end, { desc = "Evaluate" })
 
 -- -------------------------------------------------------------------------- --
 --  TESTING (<leader>r)
 -- -------------------------------------------------------------------------- --
-map("n", "<leader>rn", ":TestNearest<CR>", { desc = "[R]un [N]earest Test" })
-map("n", "<leader>rf", ":TestFile<CR>", { desc = "[R]un [F]ile Tests" })
-map("n", "<leader>rs", ":TestSuite<CR>", { desc = "[R]un [S]uite" })
-map("n", "<leader>rl", ":TestLast<CR>", { desc = "[R]un [L]ast Test" })
-map("n", "<leader>rv", ":TestVisit<CR>", { desc = "[R]un [V]isit Test" })
-map(
-	"n",
-	"<leader>ri",
-	":VimuxZoomRunner<CR>",
-	{ desc = "[R]un [I]nspect Output" }
-)
+map("n", "<leader>rn", ":TestNearest<CR>", { desc = "Nearest Test" })
+map("n", "<leader>rf", ":TestFile<CR>", { desc = "File Tests" })
+map("n", "<leader>rs", ":TestSuite<CR>", { desc = "Test Suite" })
+map("n", "<leader>rl", ":TestLast<CR>", { desc = "Last Test" })
+map("n", "<leader>rv", ":TestVisit<CR>", { desc = "Visit Test" })
+map("n", "<leader>ri", ":VimuxZoomRunner<CR>", { desc = "Inspect Output" })
 
 -- -------------------------------------------------------------------------- --
 --  TOGGLES (<leader>t)
@@ -181,12 +175,12 @@ map(
 	"n",
 	"<leader>tv",
 	"<cmd>NvimContextVtToggle<CR>",
-	{ desc = "[T]oggle [V]irtual Context" }
+	{ desc = "Virtual Context" }
 )
 map("n", "<leader>td", function()
 	require("tiny-inline-diagnostic").toggle()
-end, { desc = "[T]oggle Inline [D]iagnostics" })
+end, { desc = "Inline Diagnostics" })
 map("n", "<leader>tw", function()
 	require("mini.trailspace").trim()
-end, { desc = "[T]rim [W]hitespace" })
-map("n", "<leader>U", vim.cmd.UndotreeToggle, { desc = "[U]ndoTree Toggle" })
+end, { desc = "Trim Whitespace" })
+map("n", "<leader>tu", vim.cmd.UndotreeToggle, { desc = "UndoTree" })

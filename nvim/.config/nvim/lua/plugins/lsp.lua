@@ -225,6 +225,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		end
 
 		-- TABLE-DRIVEN MAPPINGS
+		-- TABLE-DRIVEN MAPPINGS
 		local standard_maps = {
 			-- Navigating with Snacks
 			{
@@ -274,13 +275,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			{ "grn", vim.lsp.buf.rename, "Rename" },
 			{ "grD", vim.lsp.buf.declaration, "Declaration" },
 			{ "K", vim.lsp.buf.hover, "Hover" },
-			{ "<leader>te", vim.diagnostic.open_float, "Show Error" },
+
+			-- CLEANED THESE DESCRIPTIONS:
+			{ "<leader>te", vim.diagnostic.open_float, "LSP Error Float" },
 		}
 
 		for _, m in ipairs(standard_maps) do
-			map(m[1], m[2], m[3])
+			-- Notice I removed the 'LSP: ' prefix from the function call here:
+			vim.keymap.set("n", m[1], m[2], { buffer = ev.buf, desc = m[3] })
 		end
-
 		-- CODE ACTIONS (Special handling for Rust)
 		if client.name == "rust_analyzer" then
 			map("gra", function()
@@ -292,11 +295,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		-- INLAY HINTS
 		if client:supports_method("textDocument/inlayHint") then
-			map("<leader>th", function()
+			vim.keymap.set("n", "<leader>th", function()
 				vim.lsp.inlay_hint.enable(
 					not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf })
 				)
-			end, "Toggle Hints")
+			end, { buffer = ev.buf, desc = "LSP Inlay Hints" })
 			vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 		end
 

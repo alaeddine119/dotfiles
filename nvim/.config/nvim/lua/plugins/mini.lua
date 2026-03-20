@@ -93,14 +93,15 @@ miniclue.setup({
 
 		-- Custom <Leader> Prefix Descriptions
 		{ mode = "n", keys = "<Leader>b", desc = "+Buffers" },
-		{ mode = "n", keys = "<Leader>c", desc = "+Code & Compile" },
+		{ mode = "n", keys = "<Leader>c", desc = "+Code" },
 		{ mode = "n", keys = "<Leader>d", desc = "+Debug" },
-		{ mode = "n", keys = "<Leader>f", desc = "+Find Files" },
 		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
-		{ mode = "n", keys = "<Leader>r", desc = "+Run / Test" },
-		{ mode = "n", keys = "<Leader>s", desc = "+Search Pickers" },
+		{ mode = "n", keys = "<Leader>h", desc = "+Hunks" },
+		{ mode = "n", keys = "<leader>p", desc = "+Packages" },
+		{ mode = "n", keys = "<Leader>r", desc = "+Run" },
+		{ mode = "n", keys = "<Leader>s", desc = "+Search" },
 		{ mode = "n", keys = "<Leader>t", desc = "+Toggles" },
-		{ mode = "n", keys = "<Leader>x", desc = "+Trouble / Diagnostics" },
+		{ mode = "n", keys = "<Leader>x", desc = "+Trouble" },
 	},
 	window = {
 		config = { width = "auto" },
@@ -164,7 +165,6 @@ hipatterns.setup({
 })
 
 -- 7. EXTRAS
-vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("n", "<leader>tw", function()
 	require("mini.trailspace").trim()
-end, { desc = "Trim Whitespace" })
+end, { desc = "[T]rim [W]hitespace" })

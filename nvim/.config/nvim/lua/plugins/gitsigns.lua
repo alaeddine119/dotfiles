@@ -33,19 +33,19 @@ gitsigns.setup({
 
 		-- Actions (Normal)
 		local n_actions = {
-			{ "<leader>hs", gs.stage_hunk, "Stage" },
-			{ "<leader>hr", gs.reset_hunk, "Reset" },
-			{ "<leader>hp", gs.preview_hunk, "Preview" },
-			{ "<leader>hb", gs.blame_line, "Blame" },
-			{ "<leader>hd", gs.diffthis, "Diff Index" },
-			{ "<leader>hR", gs.reset_buffer, "Reset Buffer" },
+			{ "<leader>hs", gs.stage_hunk, "[S]tage" },
+			{ "<leader>hr", gs.reset_hunk, "[R]eset" },
+			{ "<leader>hp", gs.preview_hunk, "[P]review" },
+			{ "<leader>hb", gs.blame_line, "[B]lame" },
+			{ "<leader>hd", gs.diffthis, "[D]iff Index" },
+			{ "<leader>hR", gs.reset_buffer, "[^R]eset Buffer" },
 		}
 		for _, a in ipairs(n_actions) do
 			map("n", a[1], a[2], a[3])
 		end
 
 		-- Toggles
-		map("n", "<leader>tb", gs.toggle_current_line_blame, "Toggle Blame")
-		map("n", "<leader>tD", gs.toggle_deleted, "Toggle Deleted")
+		map("n", "<leader>tb", gs.toggle_current_line_blame, "[B]lame")
+		map("n", "<leader>tD", gs.toggle_deleted, "[^D]eleted")
 	end,
 })

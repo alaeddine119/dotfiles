@@ -76,7 +76,7 @@ map("n", "<leader>tc", function()
 			{ title = "AI Assistant" }
 		)
 	end
-end, { desc = "[T]oggle [C]opilot" })
+end, { desc = "[C]opilot" })
 
 -- 4. UTILITY
 map("n", "<leader>gc", function()

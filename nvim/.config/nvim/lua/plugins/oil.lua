@@ -28,9 +28,3 @@ local ok_git, oil_git = pcall(require, "oil-git-status")
 if ok_git then
 	oil_git.setup({ show_ignored = true }) -- Symbols default to ASCII; no need to redefine them
 end
-
--- 5. KEYMAPS
-local map = vim.keymap.set
-map("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
-map("n", "<leader><leader>", "<CMD>Oil<CR>", { desc = "Open File Explorer" })
-map("n", "<leader>-", oil.toggle_float, { desc = "Floating explorer" })
