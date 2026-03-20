@@ -45,6 +45,12 @@ vim.g.rustaceanvim = {
 			map("<leader>rd", function()
 				vim.cmd.RustLsp("renderDiagnostic")
 			end, "[R]ender [D]iagnostic")
+
+			vim.defer_fn(function()
+				if vim.api.nvim_buf_is_valid(bufnr) then
+					vim.cmd.RustLsp("flyCheck")
+				end
+			end, 10)
 		end,
 	},
 	dap = { autoload_configurations = true },
