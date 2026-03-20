@@ -2,47 +2,25 @@
 --  TESTING: Vim-Test + Vimux
 -- ========================================================================== --
 
--- 1. Install Plugins
+-- 1. INSTALL
 vim.pack.add({
 	"https://github.com/vim-test/vim-test",
 	"https://github.com/preservim/vimux",
 })
 
--- 2. Configure Vim-Test to use Vimux
---    This tells vim-test: "Don't run in a builtin terminal, send text to Vimux"
+-- 2. CONFIGURE
 vim.g["test#strategy"] = "vimux"
+vim.g.VimuxOrientation = "h"
+vim.g.VimuxHeight = "35"
 
--- Optional: Configure Vimux to zoom the runner pane when there is an error
-vim.g["VimuxZoomRunnerOnFailure"] = 0
+-- 3. KEYMAPS (Using <leader>r prefix to avoid toggle collisions)
+local map = function(keys, func, desc)
+	vim.keymap.set("n", keys, func, { desc = "Test: " .. desc })
+end
 
--- Set Orientation to "h" (Horizontal split = Side-by-Side)
-vim.g["VimuxOrientation"] = "h"
-
--- Optional: Width of the tmux pane (percentage)
-vim.g["VimuxHeight"] = "35"
-
--- 3. Keymaps
-local map = vim.keymap.set
-
--- Run the test nearest to the cursor (e.g., the specific function)
-map("n", "<leader>tn", ":TestNearest<CR>", { desc = "[T]est [N]earest" })
-
--- Run the file
-map("n", "<leader>tf", ":TestFile<CR>", { desc = "[T]est [F]ile" })
-
--- Run the whole suite
-map("n", "<leader>ts", ":TestSuite<CR>", { desc = "[T]est [S]uite" })
-
--- Re-run the last test (very useful for TDD loops)
-map("n", "<leader>tl", ":TestLast<CR>", { desc = "[T]est [L]ast" })
-
--- Visit the last test file (if you are deep in code and want to go back)
-map("n", "<leader>tv", ":TestVisit<CR>", { desc = "[T]est [V]isit" })
-
--- Vimux specific: Inspect the runner pane (zooms into the tmux pane)
-map(
-	"n",
-	"<leader>ti",
-	":VimuxZoomRunner<CR>",
-	{ desc = "[T]est [I]nspect Output" }
-)
+map("<leader>rn", ":TestNearest<CR>", "Nearest")
+map("<leader>rf", ":TestFile<CR>", "File")
+map("<leader>rs", ":TestSuite<CR>", "Suite")
+map("<leader>rl", ":TestLast<CR>", "Last")
+map("<leader>rv", ":TestVisit<CR>", "Visit")
+map("<leader>ri", ":VimuxZoomRunner<CR>", "Inspect Output")

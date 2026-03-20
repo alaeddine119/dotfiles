@@ -14,12 +14,12 @@ vim.pack.add({
 -- 2. Helper function to read compile_flags.txt
 local function get_compile_flags(default_flags)
 	local f = io.open("compile_flags.txt", "r")
-	if f then
-		local content = f:read("*a")
-		f:close()
-		return content:gsub("\n", " ")
+	if not f then
+		return default_flags
 	end
-	return default_flags
+	local content = f:read("*a")
+	f:close()
+	return content:gsub("\n", " ")
 end
 
 -- 3. Configure Compile Mode
@@ -32,9 +32,7 @@ vim.g.compile_mode = {
 		local file = vim.fn.expand("%")
 		local out = vim.fn.expand("%<")
 
-		-- ========================================== --
-		--  PROJECT LEVEL (Build Systems)
-		-- ========================================== --
+		-- Project Level (Build Systems)
 		if vim.fn.filereadable("Cargo.toml") == 1 then
 			return "cargo run"
 		elseif vim.fn.filereadable("CMakeLists.txt") == 1 then
@@ -43,9 +41,7 @@ vim.g.compile_mode = {
 			return "make && ./$(ls -t | grep -v '\\.' | head -n1)"
 		end
 
-		-- ========================================== --
-		--  SINGLE FILE LEVEL (Scripts & Compilers)
-		-- ========================================== --
+		-- Single File Level (Scripts & Compilers)
 		if ft == "cpp" then
 			local flags =
 				get_compile_flags("-std=c++23 -Wall -Wextra -pedantic")
@@ -80,7 +76,6 @@ vim.g.compile_mode = {
 			return string.format("nvim -l '%s'", file)
 		end
 
-		-- Fallback if nothing matches
 		return "make "
 	end,
 }

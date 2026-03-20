@@ -10,63 +10,22 @@ vim.pack.add({
 })
 
 -- 2. GUARD
-local status, trouble = pcall(require, "trouble")
-if not status then
+local ok, trouble = pcall(require, "trouble")
+if not ok then
 	return
 end
 
 -- 3. CONFIGURE
-trouble.setup({
-	-- We keep defaults as requested.
-	-- Trouble v3 defaults are excellent out of the box.
-	focus = true,
-})
+trouble.setup({ focus = true })
 
--- 4. KEYMAPS (Global triggers)
--- Diagnostics (Project)
-vim.keymap.set(
-	"n",
-	"<leader>xx",
-	"<cmd>Trouble diagnostics toggle<cr>",
-	{ desc = "[X] Trouble (Project)" }
-)
+-- 4. KEYMAPS
+local map = function(keys, cmd, desc)
+	vim.keymap.set("n", keys, "<cmd>Trouble " .. cmd .. "<cr>", { desc = desc })
+end
 
--- Diagnostics (Current Buffer)
-vim.keymap.set(
-	"n",
-	"<leader>xX",
-	"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-	{ desc = "[X] Trouble (Buffer)" }
-)
-
--- Symbols (Like an outline)
-vim.keymap.set(
-	"n",
-	"<leader>cs",
-	"<cmd>Trouble symbols toggle focus=false<cr>",
-	{ desc = "[C]ode [S]ymbols" }
-)
-
--- LSP References/Definitions
-vim.keymap.set(
-	"n",
-	"<leader>cl",
-	"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-	{ desc = "[C]ode [L]SP Definitions" }
-)
-
--- Location List
-vim.keymap.set(
-	"n",
-	"<leader>xL",
-	"<cmd>Trouble loclist toggle<cr>",
-	{ desc = "[X] Trouble [L]ocation List" }
-)
-
--- Quickfix List
-vim.keymap.set(
-	"n",
-	"<leader>xQ",
-	"<cmd>Trouble qflist toggle<cr>",
-	{ desc = "[X] Trouble [Q]uickfix List" }
-)
+map("<leader>xx", "diagnostics toggle", "Project Diagnostics")
+map("<leader>xX", "diagnostics toggle filter.buf=0", "Buffer Diagnostics")
+map("<leader>cs", "symbols toggle focus=false", "Symbols")
+map("<leader>cl", "lsp toggle focus=false win.position=right", "LSP References")
+map("<leader>xL", "loclist toggle", "Location List")
+map("<leader>xQ", "qflist toggle", "Quickfix List")

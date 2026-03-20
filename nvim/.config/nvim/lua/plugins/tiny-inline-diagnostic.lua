@@ -4,61 +4,32 @@
 -- ========================================================================== --
 
 -- 1. INSTALL
-vim.pack.add({
-	"https://github.com/rachartier/tiny-inline-diagnostic.nvim",
-})
+vim.pack.add({ "https://github.com/rachartier/tiny-inline-diagnostic.nvim" })
 
 -- 2. GUARD
-local status, tiny = pcall(require, "tiny-inline-diagnostic")
-if not status then
+local ok, tiny = pcall(require, "tiny-inline-diagnostic")
+if not ok then
 	return
 end
 
 -- 3. CONFIGURE
 tiny.setup({
-	-- Style preset (modern, classic, minimal, powerline, ghost, amongus)
 	preset = "modern",
-
 	options = {
-		-- Show the source (e.g., "rust-analyzer") next to the error
-		show_source = {
-			enabled = true,
-			if_many = true,
-		},
-
-		-- Throttle updates for performance (ms)
+		show_source = { enabled = true, if_many = true },
 		throttle = 20,
-
-		-- WRAPPING SETTINGS (Solves your main issue)
-		overflow = {
-			mode = "wrap", -- Wrap long lines instead of truncating them
-		},
-
-		-- Multiline diagnostic support
-		multilines = {
-			enabled = true,
-			always_show = true,
-		},
-
-		-- Break long messages into separate lines automatically
-		break_line = {
-			enabled = true,
-			after = 30, -- Wrap after 80 chars
-		},
-
-		-- If you want to see the error code (e.g. E501)
+		overflow = { mode = "wrap" },
+		multilines = { enabled = true, always_show = true },
+		break_line = { enabled = true, after = 80 }, -- Fixed: matched comment to value
 		show_code = true,
 	},
-
-	-- Custom Highlights (Optional, matches your Rose Pine theme roughly)
-	-- The plugin usually auto-detects colors from your theme's Diagnostic groups.
 })
 
--- 4. DISABLE NATIVE VIRTUAL TEXT
--- This plugin renders its own text, so we must disable Neovim's built-in one.
+-- 4. INTEGRATION
 vim.diagnostic.config({ virtual_text = false })
-
--- 5. KEYMAPS
-vim.keymap.set("n", "<leader>td", function()
-	tiny.toggle()
-end, { desc = "[T]oggle [D]iagnostics (Inline)" })
+vim.keymap.set(
+	"n",
+	"<leader>td",
+	tiny.toggle,
+	{ desc = "Toggle Inline Diagnostics" }
+)

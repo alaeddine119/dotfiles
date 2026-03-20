@@ -1,35 +1,34 @@
--- ========================================================================== --
---  NEOVIM ENTRY POINT (init.lua)
--- ========================================================================== --
+-- 1. CORE CONFIGURATION
+-- Ensure Leader is set in options/keymaps before plugins load
+require("config.options")
+require("config.keymaps")
 
--- 1. Load Core Configuration
---    We require these files first to ensure basic settings (like the Leader key)
---    are active before any plugins try to load or map keys.
-require("config.options") -- Load options like line numbers, tabs, and mouse support
-require("config.keymaps") -- Load global keybindings (Save, Quit, Explorer)
+-- 2. PRIORITY PLUGINS
+-- We boot these manually to ensure the UI looks right and LSP is ready immediately
+local priority = { "colorscheme", "lsp" }
+for _, name in ipairs(priority) do
+	require("plugins." .. name)
+end
 
--- 2. CRITICAL: Load Infrastructure First & Theme First
---    We MUST load LSP (which has Mason) before Debug (which needs Mason).
---    'require' caches modules, so the loop below won't reload them.
---    We load the Colorscheme explicitly so the "Moon" palette is ready
---    before any UI plugins (like Scrollbar) try to access it.
-require("plugins.colorscheme")
-require("plugins.lsp")
+-- 3. DYNAMIC PLUGIN LOADER
+local plugin_path = vim.fn.stdpath("config") .. "/lua/plugins"
 
--- 2. Automatic Plugin Loader
---    We define the path to the 'lua/plugins' directory where our modular files live.
---    This allows us to dynamically load every file in that folder.
-local plugin_dir = vim.fn.stdpath("config") .. "/lua/plugins"
+for file, type in vim.fs.dir(plugin_path) do
+	local name = file:sub(1, -5) -- Remove '.lua'
 
---    We iterate over every item in that directory.
-for file, type in vim.fs.dir(plugin_dir) do
-	-- We check if the item is a file (not a folder) and ends with ".lua".
-	if type == "file" and file:match("%.lua$") then
-		-- We construct the module name required by Lua.
-		-- Example: "telescope.lua" becomes "plugins.telescope"
-		local module_name = "plugins." .. file:sub(1, -5)
-
-		-- We load the file, executing its 'vim.pack.add' and 'setup' code.
-		require(module_name)
+	-- Only load files, and skip the ones we already loaded in Step 2
+	if
+		type == "file"
+		and file:match("%.lua$")
+		and name ~= "colorscheme"
+		and name ~= "lsp"
+	then
+		local ok, err = pcall(require, "plugins." .. name)
+		if not ok then
+			vim.notify(
+				"Error loading " .. name .. ":\n" .. err,
+				vim.log.levels.ERROR
+			)
+		end
 	end
 end

@@ -4,75 +4,48 @@
 -- ========================================================================== --
 
 -- 1. INSTALL
-vim.pack.add({
-	"https://github.com/mrcjkb/rustaceanvim",
-})
+vim.pack.add({ "https://github.com/mrcjkb/rustaceanvim" })
 
 -- 2. CONFIGURE
---    Rustaceanvim looks for this global variable to configure itself.
---    We define it here so it is ready when you open a .rs file.
-local capabilities = vim.lsp.protocol.make_client_capabilities()
+local caps = vim.lsp.protocol.make_client_capabilities()
 local ok, blink = pcall(require, "blink.cmp")
 if ok then
-	capabilities = blink.get_lsp_capabilities(capabilities)
+	caps = blink.get_lsp_capabilities(caps)
 end
+
 vim.g.rustaceanvim = {
-	-- TOOLS (The extra commands)
 	tools = {
-		hover_actions = {
-			auto_focus = true, -- Auto-focus the hover window
+		hover_actions = { auto_focus = true },
+		float_win_config = {
+			border = "rounded",
+			auto_focus = true,
 		},
 	},
-
-	-- SERVER (The LSP configuration)
 	server = {
-		capabilities = capabilities,
+		capabilities = caps,
 		on_attach = function(_, bufnr)
-			-- Keymaps specific to Rust
-			local map = vim.keymap.set
+			local map = function(keys, func, desc)
+				vim.keymap.set(
+					"n",
+					keys,
+					func,
+					{ buffer = bufnr, desc = "Rust: " .. desc }
+				)
+			end
 
-			-- Code Actions (Grouped better than standard LSP)
-			map("n", "<leader>ca", function()
-				vim.cmd.RustLsp("codeAction")
-			end, { desc = "Rust: Code Action", buffer = bufnr })
-
-			-- Debuggables (Auto-finds tests/main and runs debugger)
-			map("n", "<leader>dr", function()
+			map("<leader>dr", function()
 				vim.cmd.RustLsp("debuggables")
-			end, { desc = "Rust: Debug Runnables", buffer = bufnr })
-
-			-- Expand Macro (The killer feature)
-			map("n", "<leader>em", function()
+			end, "[D]ebug [R]unnables")
+			map("<leader>em", function()
 				vim.cmd.RustLsp("expandMacro")
-			end, { desc = "Rust: Expand Macro", buffer = bufnr })
-
-			-- Explain Error (Docs for the error under cursor)
-			map("n", "<leader>ee", function()
+			end, "[E]xpand [M]acro")
+			map("<leader>ee", function()
 				vim.cmd.RustLsp("explainError")
-			end, { desc = "Rust: Explain Error", buffer = bufnr })
-
-			-- Render Diagnostic (Pretty print error)
-			map("n", "<leader>rd", function()
+			end, "[E]xplain [E]rror")
+			map("<leader>rd", function()
 				vim.cmd.RustLsp("renderDiagnostic")
-			end, { desc = "Rust: Render Diagnostic", buffer = bufnr })
+			end, "[R]ender [D]iagnostic")
 		end,
-
-		default_settings = {
-			-- rust-analyzer settings
-			["rust-analyzer"] = {
-				cargo = {
-					allFeatures = true,
-				},
-				checkOnSave = {
-					command = "clippy",
-				},
-			},
-		},
 	},
-
-	-- DAP (Debug Adapter)
-	-- It will automatically detect 'codelldb' if Mason installed it.
-	dap = {
-		autoload_configurations = true,
-	},
+	dap = { autoload_configurations = true },
 }

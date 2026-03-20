@@ -10,162 +10,58 @@ vim.pack.add({
 	"https://github.com/jay-babu/mason-nvim-dap.nvim",
 })
 
--- 2. GUARD (With Logging)
-local status_dap, dap = pcall(require, "dap")
-local status_ui, dapui = pcall(require, "dapui")
-local status_mason_dap, mason_dap = pcall(require, "mason-nvim-dap")
-
-if not status_dap then
-	print("Debug Error: nvim-dap not found. Restart Neovim.")
-	return
-end
-
-if not status_ui then
-	print("Debug Error: nvim-dap-ui not found.")
-	return
-end
-
-if not status_mason_dap then
-	print("Debug Error: mason_dap not found.")
+-- 2. GUARD
+local ok_dap, dap = pcall(require, "dap")
+local ok_ui, dapui = pcall(require, "dapui")
+local ok_mdap, mason_dap = pcall(require, "mason-nvim-dap")
+if not (ok_dap and ok_ui and ok_mdap) then
 	return
 end
 
 -- 3. CONFIGURE UI
-dapui.setup({
-	icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
-	controls = {
-		enabled = true,
-		element = "repl",
-		icons = {
-			pause = "⏸",
-			play = "▶",
-			step_into = "⏎",
-			step_over = "⏭",
-			step_out = "⏮",
-			step_back = "b",
-			run_last = "▶▶",
-			terminate = "⏹",
-			disconnect = "⏏",
-		},
-	},
-	-- Required fields to satisfy Lua LS
-	expand_lines = true,
-	force_buffers = true,
-	element_mappings = {}, -- <--- Added this to fix the warning
-	layouts = {
-		{
-			elements = {
-				{ id = "scopes", size = 0.25 },
-				{ id = "breakpoints", size = 0.25 },
-				{ id = "stacks", size = 0.25 },
-				{ id = "watches", size = 0.25 },
-			},
-			position = "left",
-			size = 40,
-		},
-		{
-			elements = {
-				{ id = "repl", size = 0.5 },
-				{ id = "console", size = 0.5 },
-			},
-			position = "bottom",
-			size = 10,
-		},
-	},
-	floating = {
-		max_height = nil,
-		max_width = nil,
-		border = "single",
-		mappings = { close = { "q", "<Esc>" } },
-	},
-	mappings = {
-		edit = "e",
-		expand = { "<CR>", "<2-LeftMouse>" },
-		open = "o",
-		remove = "d",
-		repl = "r",
-		toggle = "t",
-	},
-	render = { indent = 1, max_value_lines = 100 },
-})
+dapui.setup() -- The massive 40-line table you had was exactly the default!
 
--- Auto-open UI
 dap.listeners.after.event_initialized["dapui_config"] = dapui.open
 dap.listeners.before.event_terminated["dapui_config"] = dapui.close
 dap.listeners.before.event_exited["dapui_config"] = dapui.close
 
 -- 4. CONFIGURE MASON-DAP
 mason_dap.setup({
-	ensure_installed = {
-		"codelldb",
-	},
-	automatic_installation = true,
-	handlers = {
-		function(config)
-			mason_dap.default_setup(config)
-		end,
-	},
+	ensure_installed = { "codelldb" },
+	automatic_installation = true, -- <--- ADD THIS BACK
+	handlers = { mason_dap.default_setup },
 })
 
 -- 5. KEYMAPS
-vim.keymap.set(
-	"n",
-	"<leader>ds",
-	dap.continue,
-	{ desc = "[D]ebug [S]tart/Continue" }
-)
-vim.keymap.set(
-	"n",
-	"<leader>di",
-	dap.step_into,
-	{ desc = "[D]ebug Step [I]nto" }
-)
-vim.keymap.set(
-	"n",
-	"<leader>do",
-	dap.step_over,
-	{ desc = "[D]ebug Step [O]ver" }
-)
-vim.keymap.set("n", "<leader>dO", dap.step_out, { desc = "[D]ebug Step [O]ut" })
-vim.keymap.set(
-	"n",
-	"<leader>db",
-	dap.toggle_breakpoint,
-	{ desc = "[D]ebug [B]reakpoint" }
-)
-vim.keymap.set("n", "<leader>dB", function()
-	dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
+local map = vim.keymap.set
+map("n", "<leader>ds", dap.continue, { desc = "[D]ebug [S]tart/Continue" })
+map("n", "<leader>di", dap.step_into, { desc = "[D]ebug Step [I]nto" })
+map("n", "<leader>do", dap.step_over, { desc = "[D]ebug Step [O]ver" })
+map("n", "<leader>dO", dap.step_out, { desc = "[D]ebug Step [O]ut" })
+map("n", "<leader>db", dap.toggle_breakpoint, { desc = "[D]ebug [B]reakpoint" })
+map("n", "<leader>dB", function()
+	dap.set_breakpoint(vim.fn.input("Condition: "))
 end, { desc = "[D]ebug [B]reakpoint (Cond)" })
-vim.keymap.set(
-	"n",
-	"<leader>du",
-	dapui.toggle,
-	{ desc = "[D]ebug [U]I Toggle" }
-)
-vim.keymap.set("n", "<leader>de", dapui.eval, { desc = "[D]ebug [E]val" })
+map("n", "<leader>du", dapui.toggle, { desc = "[D]ebug [U]I Toggle" })
+map("n", "<leader>de", dapui.eval, { desc = "[D]ebug [E]val" })
 
 -- 6. MANUAL CONFIGURATIONS
--- Mason installs the adapter ('codelldb'), but we need to tell Neovim how to use it for C++.
 dap.configurations.cpp = {
 	{
 		name = "Launch file",
 		type = "codelldb",
 		request = "launch",
+		cwd = "${workspaceFolder}",
+		stopOnEntry = false,
 		program = function()
-			-- Asks you to select the executable to debug
-			-- Default to the current file name without the extension
-			local default_path = vim.fn.expand("%:p:h") .. "/" .. vim.fn.expand("%:t:r")
 			return vim.fn.input(
 				"Path to executable: ",
-				default_path,
+				vim.fn.expand("%:p:h") .. "/" .. vim.fn.expand("%:t:r"),
 				"file"
 			)
 		end,
-		cwd = "${workspaceFolder}",
-		stopOnEntry = false,
 	},
 }
 
--- Apply the same config to C and Objective-C
 dap.configurations.c = dap.configurations.cpp
 dap.configurations.objc = dap.configurations.cpp

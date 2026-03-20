@@ -42,4 +42,6 @@ markdown.setup({
 		unchecked = { icon = "󰄱 " },
 		checked = { icon = "󰱒 " },
 	},
+
+	latex = { enabled = false },
 })
