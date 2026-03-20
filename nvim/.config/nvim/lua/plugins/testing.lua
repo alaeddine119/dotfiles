@@ -12,15 +12,3 @@ vim.pack.add({
 vim.g["test#strategy"] = "vimux"
 vim.g.VimuxOrientation = "h"
 vim.g.VimuxHeight = "35"
-
--- 3. KEYMAPS (Using <leader>r prefix to avoid toggle collisions)
-local map = function(keys, func, desc)
-	vim.keymap.set("n", keys, func, { desc = "Test: " .. desc })
-end
-
-map("<leader>rn", ":TestNearest<CR>", "Nearest")
-map("<leader>rf", ":TestFile<CR>", "File")
-map("<leader>rs", ":TestSuite<CR>", "Suite")
-map("<leader>rl", ":TestLast<CR>", "Last")
-map("<leader>rv", ":TestVisit<CR>", "Visit")
-map("<leader>ri", ":VimuxZoomRunner<CR>", "Inspect Output")

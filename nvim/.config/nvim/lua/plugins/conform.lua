@@ -82,8 +82,3 @@ conform.setup({
 		lsp_format = "fallback",
 	},
 })
-
--- 6. KEYMAPS
-vim.keymap.set("", "<leader>cf", function()
-	conform.format({ async = true, lsp_format = "fallback" })
-end, { desc = "[C]ode [F]ormat" })

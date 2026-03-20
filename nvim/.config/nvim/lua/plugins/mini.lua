@@ -61,34 +61,51 @@ require("mini.animate").setup({
 local miniclue = require("mini.clue")
 miniclue.setup({
 	triggers = {
-		{ mode = "n", keys = "<Leader>" },
-		{ mode = "x", keys = "<Leader>" },
+		-- Leader triggers
+		{ mode = { "n", "x" }, keys = "<Leader>" },
+		-- `[` and `]` keys (Next/Prev)
+		{ mode = "n", keys = "[" },
+		{ mode = "n", keys = "]" },
+		-- Built-in completion
 		{ mode = "i", keys = "<C-x>" },
-		{ mode = "n", keys = "g" },
-		{ mode = "x", keys = "g" },
-		{ mode = "n", keys = "'" },
-		{ mode = "n", keys = "`" },
-		{ mode = "n", keys = '"' },
+		-- `g` key (LSP / Goto)
+		{ mode = { "n", "x" }, keys = "g" },
+		-- Marks & Registers
+		{ mode = { "n", "x" }, keys = "'" },
+		{ mode = { "n", "x" }, keys = "`" },
+		{ mode = { "n", "x" }, keys = '"' },
+		{ mode = { "i", "c" }, keys = "<C-r>" },
+		-- Window commands
 		{ mode = "n", keys = "<C-w>" },
-		{ mode = "n", keys = "z" },
+		-- Folds & Spelling
+		{ mode = { "n", "x" }, keys = "z" },
 	},
+
 	clues = {
+		-- Native Neovim Clues
+		miniclue.gen_clues.square_brackets(),
 		miniclue.gen_clues.builtin_completion(),
 		miniclue.gen_clues.g(),
 		miniclue.gen_clues.marks(),
 		miniclue.gen_clues.registers(),
 		miniclue.gen_clues.windows(),
 		miniclue.gen_clues.z(),
+
+		-- Custom <Leader> Prefix Descriptions
 		{ mode = "n", keys = "<Leader>b", desc = "+Buffers" },
-		{ mode = "n", keys = "<Leader>c", desc = "+Code" },
+		{ mode = "n", keys = "<Leader>c", desc = "+Code & Compile" },
 		{ mode = "n", keys = "<Leader>d", desc = "+Debug" },
+		{ mode = "n", keys = "<Leader>f", desc = "+Find Files" },
 		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
-		{ mode = "n", keys = "<Leader>h", desc = "+Hunks" },
-		{ mode = "n", keys = "<Leader>s", desc = "+Search" },
+		{ mode = "n", keys = "<Leader>r", desc = "+Run / Test" },
+		{ mode = "n", keys = "<Leader>s", desc = "+Search Pickers" },
 		{ mode = "n", keys = "<Leader>t", desc = "+Toggles" },
-		{ mode = "n", keys = "<Leader>x", desc = "+Trouble" },
+		{ mode = "n", keys = "<Leader>x", desc = "+Trouble / Diagnostics" },
 	},
-	window = { config = { width = "auto" }, delay = 300 },
+	window = {
+		config = { width = "auto" },
+		delay = 300,
+	},
 })
 
 -- 5. STATUSLINE (With Copilot integration)

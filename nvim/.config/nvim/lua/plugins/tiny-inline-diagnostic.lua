@@ -17,9 +17,3 @@ tiny.setup({})
 
 -- 4. INTEGRATION
 vim.diagnostic.config({ virtual_text = false })
-vim.keymap.set(
-	"n",
-	"<leader>td",
-	tiny.toggle,
-	{ desc = "Toggle Inline Diagnostics" }
-)

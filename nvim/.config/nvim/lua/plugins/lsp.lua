@@ -85,7 +85,18 @@ require("mason-lspconfig").setup({
 			end
 			lspconfig[server].setup(opts)
 		end,
-
+		["lua_ls"] = function()
+			lspconfig.lua_ls.setup({
+				capabilities = caps,
+				settings = {
+					Lua = {
+						diagnostics = {
+							globals = { "vim", "Snacks" },
+						},
+					},
+				},
+			})
+		end,
 		["vtsls"] = function()
 			lspconfig.vtsls.setup({
 				capabilities = caps,

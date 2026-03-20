@@ -17,15 +17,3 @@ end
 
 -- 3. CONFIGURE
 trouble.setup({ focus = true })
-
--- 4. KEYMAPS
-local map = function(keys, cmd, desc)
-	vim.keymap.set("n", keys, "<cmd>Trouble " .. cmd .. "<cr>", { desc = desc })
-end
-
-map("<leader>xx", "diagnostics toggle", "Project Diagnostics")
-map("<leader>xX", "diagnostics toggle filter.buf=0", "Buffer Diagnostics")
-map("<leader>cs", "symbols toggle focus=false", "Symbols")
-map("<leader>cl", "lsp toggle focus=false win.position=right", "LSP References")
-map("<leader>xL", "loclist toggle", "Location List")
-map("<leader>xQ", "qflist toggle", "Quickfix List")

@@ -14,11 +14,3 @@ end
 
 -- 3. CONFIGURE (Relying 100% on native smart defaults)
 context_vt.setup({})
-
--- 4. KEYMAPS (Tied to your Toggle prefix)
-vim.keymap.set(
-	"n",
-	"<leader>tv",
-	"<cmd>NvimContextVtToggle<CR>",
-	{ desc = "Toggle [V]irtual Text Context" }
-)
