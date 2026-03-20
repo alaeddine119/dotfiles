@@ -18,11 +18,15 @@ local modules = {
 	"move",
 	"pairs",
 	"comment",
-	"trailspace",
 }
 for _, mod in ipairs(modules) do
 	require("mini." .. mod).setup()
 end
+
+-- Delay trailspace so it doesn't paint the Snacks dashboard pink!
+vim.schedule(function()
+	require("mini.trailspace").setup()
+end)
 
 -- 3. UI ENHANCEMENTS
 require("mini.icons").setup()

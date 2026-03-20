@@ -57,7 +57,7 @@ blink.setup({
 		documentation = { auto_show = true, auto_show_delay_ms = 0 },
 	},
 
-	signature = { enabled = true },
+	signature = { enabled = true, window = { border = "rounded" } },
 
 	sources = {
 		providers = {
