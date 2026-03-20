@@ -22,6 +22,9 @@ snacks.setup({
 	input = { enabled = true },
 	words = { enabled = true },
 	statuscolumn = { enabled = true },
+	picker = {
+		enabled = true,
+	},
 	dashboard = {
 		enabled = true,
 		sections = {

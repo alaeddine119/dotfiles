@@ -204,7 +204,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			return
 		end -- Guard: Silences "need-check-nil" warnings
 
-		local tb = require("telescope.builtin")
 		local function map(keys, func, desc, mode)
 			vim.keymap.set(
 				mode or "n",
@@ -216,17 +215,57 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		-- TABLE-DRIVEN MAPPINGS
 		local standard_maps = {
-			{ "gd", vim.lsp.buf.definition, "Definition" },
-			{ "grr", tb.lsp_references, "References" },
-			{ "gri", tb.lsp_implementations, "Implementation" },
-			{ "grt", tb.lsp_type_definitions, "Type Definition" },
-			{ "gO", tb.lsp_document_symbols, "Symbols" },
-			{ "gW", tb.lsp_dynamic_workspace_symbols, "Workspace Symbols" },
+			-- Navigating with Snacks
+			{
+				"gd",
+				function()
+					Snacks.picker.lsp_definitions()
+				end,
+				"Definition",
+			},
+			{
+				"gr",
+				function()
+					Snacks.picker.lsp_references()
+				end,
+				"References",
+			},
+			{
+				"gri",
+				function()
+					Snacks.picker.lsp_implementations()
+				end,
+				"Implementation",
+			},
+			{
+				"grt",
+				function()
+					Snacks.picker.lsp_type_definitions()
+				end,
+				"Type Definition",
+			},
+			{
+				"gO",
+				function()
+					Snacks.picker.lsp_symbols()
+				end,
+				"Document Symbols",
+			},
+			{
+				"gW",
+				function()
+					Snacks.picker.lsp_workspace_symbols()
+				end,
+				"Workspace Symbols",
+			},
+
+			-- Native LSP Actions
 			{ "grn", vim.lsp.buf.rename, "Rename" },
 			{ "grD", vim.lsp.buf.declaration, "Declaration" },
 			{ "K", vim.lsp.buf.hover, "Hover" },
 			{ "<leader>te", vim.diagnostic.open_float, "Show Error" },
 		}
+
 		for _, m in ipairs(standard_maps) do
 			map(m[1], m[2], m[3])
 		end
