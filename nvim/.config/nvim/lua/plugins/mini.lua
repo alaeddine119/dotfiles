@@ -97,6 +97,7 @@ miniclue.setup({
 		{ mode = "n", keys = "<Leader>d", desc = "+Debug" },
 		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
 		{ mode = "n", keys = "<Leader>h", desc = "+Hunks" },
+		{ mode = "n", keys = "<leader>n", desc = "+Notifications" },
 		{ mode = "n", keys = "<leader>p", desc = "+Packages" },
 		{ mode = "n", keys = "<Leader>r", desc = "+Run" },
 		{ mode = "n", keys = "<Leader>s", desc = "+Search" },
