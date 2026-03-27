@@ -6,7 +6,7 @@ input {
     keyboard {
         xkb {
             layout "us,ma"
-            options "grp:alt_shift_toggle"
+            options "grp:alt_shift_toggle,lv3:ralt_alt,caps:escape"
             variant "mac,"
         }
         track-layout "global"
@@ -70,7 +70,7 @@ spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 spawn-at-startup "swaync"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
-spawn-at-startup "swayosd-server"
+// spawn-at-startup "swayosd-server"
 spawn-at-startup "swayidle" "-w" "timeout" "300" "swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2" "timeout" "601" "niri msg action power-off-monitors" "resume" "niri msg action power-on-monitors" "before-sleep" "swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2"
 environment {
     XDG_CURRENT_DESKTOP "niri"
@@ -191,12 +191,12 @@ window-rule {
     match app-id="Rofi"
     open-floating true
     draw-border-with-background false
-    default-column-width {
-        fixed 600
-     }
-    default-window-height {
-        fixed 400
-    }
+    // default-column-width {
+    //     fixed 600
+    //  }
+    // default-window-height {
+    //     fixed 400
+    // }
 }
 // stremio
 window-rule {
@@ -212,24 +212,22 @@ binds {
         show-hotkey-overlay
     }
     Mod+N hotkey-overlay-title="Open notification center" {
-        spawn "swaync-client" "-t" "-sw"
+        spawn-sh "swaync-client -t -sw"
     }
-    // Toggle Waybar visibility with Mod + B
+    // Toggle Waybar visibility with Mod + T
     Mod+T {
-        spawn "pkill" "-SIGUSR1" "waybar"
+        spawn-sh "pkill -SIGUSR1 waybar"
     }
-    Mod+Return hotkey-overlay-title="Open a Terminal: Foot" {
-        spawn "foot"
+    Mod+Return hotkey-overlay-title="Open a Terminal: Ghostty" {
+        spawn "ghostty"
     }
 
-    // --- ROFI REPLACEMENT ---
     Mod+Space hotkey-overlay-title="Run an Application: Rofi" {
-        spawn "rofi" "-show" "combi" "-modes" "combi" "-combi-modes" "drun,calc" "-show-icons"
+        spawn-sh "rofi -show combi -modes combi -combi-modes drun,calc -show-icons"
     }
-    // ------------------------
 
-    Mod+B hotkey-overlay-title="Run an Application: zen-browser" {
-        spawn "zen-browser"
+    Mod+B hotkey-overlay-title="Run an Application: Helium" {
+        spawn "helium-browser" "--profile-directory=Profile 1"
     }
     Mod+E hotkey-overlay-title="Run an Application: File Browser" {
         spawn "nautilus"
@@ -238,66 +236,72 @@ binds {
         spawn "code"
     }
     Mod+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" {
-        spawn "swaylock" "-f" "--screenshots" "--effect-scale" "0.5" "--effect-blur" "7x5" "--effect-scale" "2" "--clock" "--indicator"
+        spawn-sh "swaylock -f --screenshots --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2 --clock --indicator"
     }
     Mod+Alt+S allow-when-locked=true hotkey-overlay-title=null {
         spawn-sh "pkill orca || exec orca"
     }
     Mod+Alt+B {
-        spawn "foot" "--title" "Bluetooth TUI" "bluetui"
+        spawn-sh "foot --title 'Bluetooth TUI' bluetui"
     }
     Mod+Shift+B {
-        spawn "~/.local/bin/light-control.sh"
+        spawn-sh "~/.local/bin/light-control.sh"
     }
     Mod+Shift+S {
-        spawn "~/.local/bin/audio-control.sh"
+        spawn-sh "~/.local/bin/audio-control.sh"
     }
     Mod+Shift+Backspace {
-        spawn "foot" "--title" "Task Manager" "btop"
+        spawn-sh "foot --title 'Task Manager' btop"
     }
     Mod+Alt+W {
-        spawn "foot" "--title" "Wifi TUI" "impala"
+        spawn-sh "foot --title 'Wifi TUI' impala"
     }
-    // AUDIO CONTROLS
+
+    // --- AUDIO CONTROLS (Native wpctl) ---
     XF86AudioRaiseVolume allow-when-locked=true {
-        spawn "swayosd-client" "--output-volume" "raise"
+        spawn-sh "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
     }
     XF86AudioLowerVolume allow-when-locked=true {
-        spawn "swayosd-client" "--output-volume" "lower"
+        spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
     }
     XF86AudioMute allow-when-locked=true {
-        spawn "swayosd-client" "--output-volume" "mute-toggle"
+        spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
     }
     XF86AudioMicMute allow-when-locked=true {
-        spawn "swayosd-client" "--input-volume" "mute-toggle"
+        spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
     }
-    // MEDIA PLAYBACK
-    XF86AudioPlay allow-when-locked=true {
-        spawn "swayosd-client" "--playerctl" "play-pause"
-    }
-    XF86AudioStop allow-when-locked=true {
-        spawn "swayosd-client" "--playerctl" "stop"
-    }
-    XF86AudioPrev allow-when-locked=true {
-        spawn "swayosd-client" "--playerctl" "previous"
-    }
-    XF86AudioNext allow-when-locked=true {
-        spawn "swayosd-client" "--playerctl" "next"
-    }
-    // SCREEN BRIGHTNESS
+
+    // --- SCREEN BRIGHTNESS (Native brightnessctl) ---
     XF86MonBrightnessUp allow-when-locked=true {
-        spawn "swayosd-client" "--brightness" "raise"
+        spawn-sh "brightnessctl set 5%+"
     }
     XF86MonBrightnessDown allow-when-locked=true {
-        spawn "swayosd-client" "--brightness" "lower"
+        spawn-sh "brightnessctl set 5%-"
     }
-    // KEYBOARD BACKLIGHT
+
+    // --- KEYBOARD BACKLIGHT ---
     XF86KbdBrightnessUp allow-when-locked=true {
-        spawn "brightnessctl" "--device" "kbd_backlight" "set" "+2%"
+        spawn-sh "brightnessctl --device='*kbd_backlight' set 5%+"
     }
     XF86KbdBrightnessDown allow-when-locked=true {
-        spawn "brightnessctl" "--device" "kbd_backlight" "set" "2%-"
+        spawn-sh "brightnessctl --device='*kbd_backlight' set 5%-"
     }
+
+    // --- MEDIA PLAYBACK ---
+    XF86AudioPlay allow-when-locked=true {
+        spawn-sh "playerctl play-pause"
+    }
+    XF86AudioStop allow-when-locked=true {
+        spawn-sh "playerctl stop"
+    }
+    XF86AudioPrev allow-when-locked=true {
+        spawn-sh "playerctl previous"
+    }
+    XF86AudioNext allow-when-locked=true {
+        spawn-sh "playerctl next"
+    }
+
+
     Mod+O repeat=false {
         toggle-overview
     }
@@ -586,7 +590,7 @@ binds {
     Mod+Shift+Equal {
         set-window-height "+10%"
     }
-    // Mod+V       { toggle-window-floating; }
+    // Mod+V        { toggle-window-floating; }
     Mod+Shift+Space {
         toggle-window-floating
     }
@@ -596,29 +600,29 @@ binds {
 
     // --- ROFI CLIPBOARD INTEGRATION ---
     Mod+V {
-        spawn "bash" "-c" "cliphist list | rofi -dmenu -p 'Clipboard' -theme-str 'window {width: 50%;}' | cliphist decode | wl-copy"
+        spawn-sh "cliphist list | rofi -dmenu -p 'Clipboard' -theme-str 'window {width: 50%;}' | cliphist decode | wl-copy"
     }
     // ----------------------------------
 
     Mod+Grave {
-        spawn "bemoji" "-t" "-c" "-n"
+        spawn-sh "bemoji -t -c -n"
     }
     Mod+W {
         toggle-column-tabbed-display
     }
     // Launch WhatsApp (Helium PWA) with Mod+M
     Mod+M {
-        spawn "bash" "-c" "~/.config/niri/scripts/toggle-whatsapp"
+        spawn-sh "~/.config/niri/scripts/toggle-whatsapp"
     }
     // Launch Gemini (Helium PWA) with Mod+G
     Mod+G {
-        spawn "bash" "-c" "~/.config/niri/scripts/toggle-gemini"
+        spawn-sh "~/.config/niri/scripts/toggle-gemini"
     }
     Mod+Shift+4 {
         screenshot
     }
     Mod+Shift+5 {
-        spawn "bash" "-c" "~/.config/niri/scripts/recorder-menu"
+        spawn-sh "~/.config/niri/scripts/recorder-menu"
     }
     Ctrl+Print {
         screenshot-screen
@@ -636,7 +640,7 @@ binds {
         quit
     }
     Mod+Shift+P hotkey-overlay-title="Power Menu" {
-        spawn "~/.config/niri/scripts/powermenu"
+        spawn-sh "~/.config/niri/scripts/powermenu"
     }
 }
 overview {
