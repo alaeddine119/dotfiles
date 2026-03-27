@@ -12,7 +12,7 @@
 #  SECTION 1: GLOBAL DEFINITIONS                                              #
 # =========================================================================== #
 if [ -f /etc/bashrc ]; then
-    . /etc/bashrc
+  . /etc/bashrc
 fi
 
 # =========================================================================== #
@@ -20,7 +20,7 @@ fi
 # =========================================================================== #
 # Standard path hygiene
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+  PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 export PATH="$PATH:/opt/nvim-linux-arm64/bin"
 
@@ -34,9 +34,9 @@ export VISUAL='nvim'
 # ble.sh and fzf-integration rely on the system's bash_completion being
 # loaded BEFORE they initialize.
 if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
+  . /usr/share/bash-completion/bash_completion
 elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
+  . /etc/bash_completion
 fi
 
 # =========================================================================== #
@@ -63,11 +63,11 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # --- DOOM SETUP ---
 if [ -d "$HOME/.config/emacs/bin" ]; then # Changed -f to -d
-    export PATH="$HOME/.config/emacs/bin:$PATH"
+  export PATH="$HOME/.config/emacs/bin:$PATH"
 fi
 
 if [ -d "$HOME/.config/emacs/bin" ]; then # Changed -f to -d
-    export PATH="$HOME/.config/emacs/bin:$PATH"
+  export PATH="$HOME/.config/emacs/bin:$PATH"
 fi
 
 # --- UV
@@ -75,9 +75,9 @@ eval "$(uv generate-shell-completion bash)"
 
 # Load custom user scripts from ~/.bashrc.d if they exist
 if [ -d ~/.bashrc.d ]; then
-    for rc in ~/.bashrc.d/*; do
-        if [ -f "$rc" ]; then . "$rc"; fi
-    done
+  for rc in ~/.bashrc.d/*; do
+    if [ -f "$rc" ]; then . "$rc"; fi
+  done
 fi
 unset rc
 
@@ -108,8 +108,8 @@ export FZF_COMPLETION_OPTS="--preview 'eval v={1} 2>/dev/null; if [ -d \"\$v\" ]
 # If ble.sh is NOT running (e.g., inside a script or older bash),
 # we load the standard FZF bindings as a backup.
 if [[ ! ${BLE_VERSION-} ]]; then
-    [ -f /usr/share/fzf/key-bindings.bash ] && source /usr/share/fzf/key-bindings.bash
-    [ -f /usr/share/fzf/completion.bash ] && source /usr/share/fzf/completion.bash
+  [ -f /usr/share/fzf/key-bindings.bash ] && source /usr/share/fzf/key-bindings.bash
+  [ -f /usr/share/fzf/completion.bash ] && source /usr/share/fzf/completion.bash
 fi
 # NOTE: If ble.sh IS running, the settings in ~/.blerc take over.
 
@@ -117,9 +117,9 @@ fi
 #  SECTION 8: VS CODE INTEGRATION                                             #
 # =========================================================================== #
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
-    if [ -f "/opt/visual-studio-code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh" ]; then
-        . "/opt/visual-studio-code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh"
-    fi
+  if [ -f "/opt/visual-studio-code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh" ]; then
+    . "/opt/visual-studio-code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh"
+  fi
 fi
 
 # =========================================================================== #
@@ -142,7 +142,9 @@ bind 'set enable-bracketed-paste on'
 # pnpm
 export PNPM_HOME="/home/alaeddine/.local/share/pnpm"
 case ":$PATH:" in
-    *":$PNPM_HOME:"*) ;;
-    *) export PATH="$PNPM_HOME:$PATH" ;;
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+eval "$(/home/alaeddine/.local/bin/mise activate bash)"
