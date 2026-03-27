@@ -24,6 +24,12 @@ snacks.setup({
 	statuscolumn = { enabled = true },
 	picker = {
 		enabled = true,
+		sources = {
+			files = {
+				hidden = true,
+				ignored = false,
+			},
+		},
 	},
 	dashboard = {
 		enabled = true,
