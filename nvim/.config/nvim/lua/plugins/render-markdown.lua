@@ -43,5 +43,5 @@ markdown.setup({
 		checked = { icon = "󰱒 " },
 	},
 
-	latex = { enabled = false },
+	latex = { enabled = true },
 })
