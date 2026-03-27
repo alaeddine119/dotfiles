@@ -52,8 +52,8 @@ blink.setup({
 	},
 
 	completion = {
-		menu = { auto_show = false },
-		ghost_text = { enabled = true },
+		menu = { auto_show = true },
+		ghost_text = { enabled = false },
 		documentation = { auto_show = true, auto_show_delay_ms = 0 },
 	},
 
@@ -64,7 +64,7 @@ blink.setup({
 			lsp = { score_offset = 1000 },
 			path = { score_offset = 90 },
 			snippets = { score_offset = 80 },
-			buffer = { score_offset = 50 },
+			-- buffer = { score_offset = 50 },
 		},
 	},
 })
