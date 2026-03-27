@@ -47,6 +47,7 @@ configs.setup({
 		"embedded_template",
 		"matlab",
 		"latex",
+		"zig",
 	},
 	sync_install = false,
 	ignore_install = {},
