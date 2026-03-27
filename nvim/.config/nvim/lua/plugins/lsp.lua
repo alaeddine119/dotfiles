@@ -47,6 +47,9 @@ require("mason-tool-installer").setup({
 		"commitlint",
 		"bash-language-server",
 		"shfmt",
+		"zls",
+		"typos-lsp",
+		"marksman",
 	},
 })
 
@@ -59,6 +62,7 @@ end
 
 -- 5. HANDLERS (Mason Bridge)
 local lspconfig = require("lspconfig")
+
 require("mason-lspconfig").setup({
 	handlers = {
 		function(server)
@@ -159,6 +163,15 @@ require("mason-lspconfig").setup({
 						indexWorkspace = true,
 						telemetry = false,
 					},
+				},
+			})
+		end,
+
+		["typos_lsp"] = function()
+			lspconfig.typos_lsp.setup({
+				capabilities = caps,
+				init_options = {
+					diagnosticSeverity = "Hint", -- Makes it less annoying
 				},
 			})
 		end,
