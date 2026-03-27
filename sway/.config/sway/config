@@ -135,6 +135,7 @@ bindsym $mod+Alt+b exec foot --title "Bluetooth TUI" bluetui
 bindsym $mod+Alt+w exec foot --title "Wifi TUI" impala
 bindsym $mod+Shift+BackSpace exec foot --title "Task Manager" btop
 bindsym $mod+Alt+s exec foot --title "Sound TUI" wiremix --max-volume-percent 100
+bindsym $mod+Alt+a exec foot --title "Airpods TUI" airpods-tui
 
 # Lock Screen
 bindsym $mod+Alt+l exec swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2
@@ -222,6 +223,7 @@ for_window [app_id="foot" title="Bluetooth TUI"] floating enable, resize set 800
 for_window [app_id="foot" title="Wifi TUI"] floating enable, resize set 800 600
 for_window [app_id="foot" title="Task Manager"] floating enable, resize set 1500 800
 for_window [app_id="foot" title="Sound TUI"] floating enable, resize set 800 600
+for_window [app_id="foot" title="Airpods TUI"] floating enable, resize set 800 600
 for_window [title="^Picture-in-Picture$"] floating enable, sticky enable
 
 #
