@@ -49,6 +49,18 @@ end, { desc = "Diagnostics" })
 map("n", "<leader>sp", function()
 	Snacks.picker.projects()
 end, { desc = "Projects" })
+map("n", "z=", function()
+	-- Check if the current window is in Right-to-Left mode
+	local is_rtl = vim.wo.rightleft
+
+	Snacks.picker.spelling({
+		-- Pass the RTL state to the Snacks floating windows
+		win = {
+			input = { wo = { rightleft = is_rtl } },
+			list = { wo = { rightleft = is_rtl } },
+		},
+	})
+end, { desc = "Spell Suggestions" })
 
 -- -------------------------------------------------------------------------- --
 --  SNACKS: BUFFERS, GIT (<leader>b, <leader>g)
@@ -157,6 +169,16 @@ end, { desc = "Toggle UI" })
 map("n", "<leader>de", function()
 	require("dapui").eval()
 end, { desc = "Evaluate" })
+
+-- -------------------------------------------------------------------------- --
+--  Notifications (<leader>n)
+-- -------------------------------------------------------------------------- --
+map("n", "<leader>nh", function()
+	Snacks.notifier.show_history()
+end, { desc = "History" })
+map("n", "<leader>nd", function()
+	Snacks.notifier.hide()
+end, { desc = "Dismiss" })
 
 -- -------------------------------------------------------------------------- --
 --  TESTING (<leader>r)
