@@ -1,6 +1,10 @@
 theme = Rose Pine Moon
 background = #000000
 foreground = #E0E0E0
-font-size = 14
+font-family = "JetBrains Mono"
+font-family = "Kawkab Mono"
+font-family = "Noto Color Emoji"
+font-size = 15
 command = tmux new-session -A -s main
 confirm-close-surface = false
+adjust-cell-height = 15%
