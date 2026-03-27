@@ -11,6 +11,7 @@ vim.g.loaded_netrwPlugin = 1
 -- Visuals
 vim.o.number = true
 vim.o.relativenumber = true
+vim.o.linebreak = true
 vim.o.signcolumn = "yes"
 vim.o.cursorline = true
 vim.o.colorcolumn = "80"
@@ -21,6 +22,8 @@ vim.o.scrolloff = 8
 vim.o.splitright = true
 vim.o.splitbelow = true
 vim.opt.formatoptions:append("tc")
+vim.opt.list = true
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- Tabs & Indentation
 vim.o.tabstop = 2
@@ -33,7 +36,10 @@ vim.o.smartindent = true
 vim.o.mouse = "a"
 vim.o.undofile = true
 vim.o.confirm = true
-vim.opt.completeopt = ""
+vim.o.completeopt = ""
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.spell = false
 
 vim.schedule(function()
 	vim.o.clipboard = "unnamedplus"
