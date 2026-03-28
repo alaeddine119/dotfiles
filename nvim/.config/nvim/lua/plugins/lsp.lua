@@ -49,7 +49,7 @@ require("mason-tool-installer").setup({
 		"shfmt",
 		"zls",
 		"typos-lsp",
-		"marksman",
+		"markdown-oxide",
 	},
 })
 
@@ -175,6 +175,25 @@ require("mason-lspconfig").setup({
 				},
 			})
 		end,
+		["markdown_oxide"] = function()
+			-- Deep extend your blink.cmp caps to add dynamicRegistration
+			local moxide_caps = vim.tbl_deep_extend("force", caps, {
+				workspace = {
+					didChangeWatchedFiles = {
+						dynamicRegistration = true,
+					},
+				},
+			})
+
+			lspconfig.markdown_oxide.setup({
+				capabilities = moxide_caps,
+				root_dir = lspconfig.util.root_pattern(
+					".moxide.toml",
+					".obsidian",
+					".git"
+				),
+			})
+		end,
 	},
 })
 
@@ -249,7 +268,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 				"Definition",
 			},
 			{
-				"gr",
+				"grr",
 				function()
 					Snacks.picker.lsp_references()
 				end,
@@ -329,6 +348,19 @@ vim.api.nvim_create_autocmd("LspAttach", {
 					cp.open_cppman_for(vim.fn.expand("<cword>"))
 				end, "Cppman")
 			end
+		end
+
+		-- LANGUAGE SPECIFIC EXTRAS
+		-- LANGUAGE SPECIFIC EXTRAS
+		if client.name == "markdown_oxide" then
+			-- 1. Create the :Daily command
+			vim.api.nvim_create_user_command("Daily", function(args)
+				local input = args.args
+				client:exec_cmd(
+					{ title = "jump", command = "jump", arguments = { input } },
+					{ bufnr = ev.buf }
+				)
+			end, { desc = "Open daily note", nargs = "*" })
 		end
 
 		if client.name == "vtsls" then
