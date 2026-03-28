@@ -12,7 +12,6 @@ map("n", "n", "nzzzv", { desc = "Next search result & center" })
 map("n", "N", "Nzzzv", { desc = "Prev search result & center" })
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
 map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
-map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 map("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 map("n", "<leader><leader>", "<CMD>Oil<CR>", { desc = "File Explorer" })
 
@@ -28,6 +27,9 @@ end, { desc = "Recent Files" })
 map("n", "<leader>sb", function()
 	Snacks.picker.buffers()
 end, { desc = "Buffers" })
+map("n", "<leader>sk", function()
+	Snacks.picker.keymaps()
+end, { desc = "Keymaps" })
 map("n", "<leader>sg", function()
 	Snacks.picker.grep()
 end, { desc = "Grep (Workspace)" })
@@ -49,6 +51,25 @@ end, { desc = "Diagnostics" })
 map("n", "<leader>sp", function()
 	Snacks.picker.projects()
 end, { desc = "Projects" })
+
+map("n", "<leader>sl", function()
+	Snacks.picker.lines()
+end, { desc = "Buffer Lines" })
+map("n", "<leader>sR", function()
+	Snacks.picker.registers()
+end, { desc = "Registers" })
+map("n", "<leader>sm", function()
+	Snacks.picker.marks()
+end, { desc = "Marks" })
+
+map({ "n", "t" }, "<C-t>", function()
+	Snacks.terminal.toggle()
+end, { desc = "Toggle Terminal" })
+
+map("n", "<leader>tz", function()
+	Snacks.zen()
+end, { desc = "Zen Mode" })
+
 map("n", "z=", function()
 	-- Check if the current window is in Right-to-Left mode
 	local is_rtl = vim.wo.rightleft
@@ -65,18 +86,26 @@ end, { desc = "Spell Suggestions" })
 -- -------------------------------------------------------------------------- --
 --  SNACKS: BUFFERS, GIT (<leader>b, <leader>g)
 -- -------------------------------------------------------------------------- --
-map("n", "<leader>bh", function()
-	Snacks.dashboard()
-end, { desc = "Dashboard" })
+map("n", "<leader>bb", function()
+	Snacks.picker.buffers()
+end, { desc = "List Buffers" })
 map("n", "<leader>bd", function()
 	Snacks.bufdelete()
 end, { desc = "Delete Buffer" })
 map("n", "<leader>b.", function()
 	Snacks.scratch()
 end, { desc = "Scratch Buffer" })
+map("n", "<leader>bn", "<cmd>bnext<CR>", { desc = "Next Buffer" })
+map("n", "<leader>bp", "<cmd>bprevious<CR>", { desc = "Previous Buffer" })
+map("n", "<leader>bc", "<cmd>enew<CR>", { desc = "Create Blank Buffer" })
+map("n", "<leader>bh", function()
+	Snacks.dashboard()
+end, { desc = "Dashboard" })
+
 map("n", "<leader>gg", function()
 	Snacks.lazygit()
 end, { desc = "Lazygit" })
+
 map("n", "<leader>gb", function()
 	Snacks.gitbrowse()
 end, { desc = "Git Browse" })
@@ -206,3 +235,21 @@ map("n", "<leader>tw", function()
 	require("mini.trailspace").trim()
 end, { desc = "Trim Whitespace" })
 map("n", "<leader>tu", vim.cmd.UndotreeToggle, { desc = "UndoTree" })
+
+-- -------------------------------------------------------------------------- --
+--  WINDOW RESIZING (Arrow Keys)
+-- -------------------------------------------------------------------------- --
+map("n", "<Up>", "<cmd>resize +2<cr>", { desc = "Increase Window Height" })
+map("n", "<Down>", "<cmd>resize -2<cr>", { desc = "Decrease Window Height" })
+map(
+	"n",
+	"<Left>",
+	"<cmd>vertical resize -2<cr>",
+	{ desc = "Decrease Window Width" }
+)
+map(
+	"n",
+	"<Right>",
+	"<cmd>vertical resize +2<cr>",
+	{ desc = "Increase Window Width" }
+)
