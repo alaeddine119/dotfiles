@@ -6,7 +6,6 @@
 vim.pack.add({
 	{
 		src = "https://github.com/nvim-treesitter/nvim-treesitter",
-		version = "master",
 	},
 	"https://github.com/nvim-treesitter/nvim-treesitter-context",
 	"https://github.com/windwp/nvim-ts-autotag",
