@@ -6,11 +6,11 @@
       "version": "1.0.0 - 2.0.0"
     },
     "clangd_extensions.nvim": {
-      "rev": "c9f2190064c4b42d5ce58419684251771019961f",
+      "rev": "92b720768fad9d8a333a3cbb167f0bab550f9f50",
       "src": "https://git.sr.ht/~chinmay/clangd_extensions.nvim"
     },
     "compile-mode.nvim": {
-      "rev": "6b41499bd782be2c213011072ce0f0eb9f7b78a2",
+      "rev": "ce34ad9e69cb6a2d9f71017f4cb090195fb9fc09",
       "src": "https://github.com/ej-shafran/compile-mode.nvim",
       "version": "5.0.0 - 6.0.0"
     },
@@ -27,7 +27,7 @@
       "src": "https://github.com/madskjeldgaard/cppman.nvim"
     },
     "fidget.nvim": {
-      "rev": "7fa433a83118a70fe24c1ce88d5f0bd3453c0970",
+      "rev": "889e2e96edef4e144965571d46f7a77bcc4d0ddf",
       "src": "https://github.com/j-hui/fidget.nvim"
     },
     "friendly-snippets": {
@@ -35,7 +35,7 @@
       "src": "https://github.com/rafamadriz/friendly-snippets"
     },
     "gitsigns.nvim": {
-      "rev": "7c4faa3540d0781a28588cafbd4dd187a28ac6e3",
+      "rev": "0f00d07c2c3106ba6abd594ac1c17f211141b7b5",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "lazydev.nvim": {
@@ -43,7 +43,7 @@
       "src": "https://github.com/folke/lazydev.nvim"
     },
     "mason-lspconfig.nvim": {
-      "rev": "a676ab7282da8d651e175118bcf54483ca11e46d",
+      "rev": "25f609e7fca78af7cede4f9fa3af8a94b1c4950b",
       "src": "https://github.com/williamboman/mason-lspconfig.nvim"
     },
     "mason-nvim-dap.nvim": {
@@ -63,7 +63,7 @@
       "src": "https://github.com/nvim-mini/mini.icons"
     },
     "mini.nvim": {
-      "rev": "9990c41f10f54f29a888d13024c9f765037bde23",
+      "rev": "3923662bf3d6ca49a9503f8d7196ea0450983e6a",
       "src": "https://github.com/echasnovski/mini.nvim"
     },
     "neovim": {
@@ -79,15 +79,15 @@
       "src": "https://github.com/MunifTanjim/nui.nvim"
     },
     "nvim-colorizer.lua": {
-      "rev": "ef211089af881bea206c7aa3f2693a81feee7e90",
+      "rev": "c8c2c19436d33165ec34fa90c975bc0a739fe3fb",
       "src": "https://github.com/NvChad/nvim-colorizer.lua"
     },
     "nvim-dap": {
-      "rev": "a9d8cb68ee7184111dc66156c4a2ebabfbe01bc5",
+      "rev": "4f5deb110d9ff8994d96c21df95e2271d11214f9",
       "src": "https://github.com/mfussenegger/nvim-dap"
     },
     "nvim-dap-ui": {
-      "rev": "cf91d5e2d07c72903d052f5207511bf7ecdb7122",
+      "rev": "f5b6673f374626515401c5bc51b005f784a4f252",
       "src": "https://github.com/rcarriga/nvim-dap-ui"
     },
     "nvim-hlslens": {
@@ -95,11 +95,11 @@
       "src": "https://github.com/kevinhwang91/nvim-hlslens"
     },
     "nvim-lint": {
-      "rev": "606b823a57b027502a9ae00978ebf4f5d5158098",
+      "rev": "4b03656c09c1561f89b6aa0665c15d292ba9499d",
       "src": "https://github.com/mfussenegger/nvim-lint"
     },
     "nvim-lspconfig": {
-      "rev": "dd261ad5266ab5bbec249d21efeceda98ff3e1a6",
+      "rev": "8e2084bf5e40c79c1f42210a6ef96a0a4793a763",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-nio": {
@@ -111,12 +111,11 @@
       "src": "https://github.com/petertriho/nvim-scrollbar"
     },
     "nvim-treesitter": {
-      "rev": "42fc28ba918343ebfd5565147a42a26580579482",
-      "src": "https://github.com/nvim-treesitter/nvim-treesitter",
-      "version": "'master'"
+      "rev": "c82bf96f0a773d85304feeb695e1e23b2207ac35",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "nvim-treesitter-context": {
-      "rev": "9a8e39993e3b895601bf8227124a48ea8268149e",
+      "rev": "adf4b6b0420b7be6c717ef0ac7993183d6c201b1",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-context"
     },
     "nvim-ts-autotag": {
@@ -148,7 +147,7 @@
       "src": "https://github.com/ahmedkhalf/project.nvim"
     },
     "render-markdown.nvim": {
-      "rev": "e3c18ddd27a853f85a6f513a864cf4f2982b9f26",
+      "rev": "c7188a8f9d2953696b6303caccbf39c51fa2c1b1",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
     "rustaceanvim": {
@@ -160,7 +159,7 @@
       "src": "https://github.com/sphamba/smear-cursor.nvim"
     },
     "snacks.nvim": {
-      "rev": "a049339328e2599ad6e85a69fa034ac501e921b2",
+      "rev": "ad9ede6a9cddf16cedbd31b8932d6dcdee9b716e",
       "src": "https://github.com/folke/snacks.nvim"
     },
     "tabout.nvim": {
@@ -180,7 +179,7 @@
       "src": "https://github.com/mbbill/undotree"
     },
     "vim-test": {
-      "rev": "e4d4fa7f5ce354e7df473550080d9e78207ef4a0",
+      "rev": "7d7a3a220fd46aa24e179bc9a073687e4cf187ac",
       "src": "https://github.com/vim-test/vim-test"
     },
     "vim-tmux-navigator": {
