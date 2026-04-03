@@ -32,7 +32,7 @@ snacks.setup({
 		},
 	},
 	dashboard = {
-		enabled = true,
+		enabled = false,
 		sections = {
 			{ section = "header" },
 			{
