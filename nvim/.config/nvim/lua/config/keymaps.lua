@@ -235,21 +235,3 @@ map("n", "<leader>tw", function()
 	require("mini.trailspace").trim()
 end, { desc = "Trim Whitespace" })
 map("n", "<leader>tu", vim.cmd.UndotreeToggle, { desc = "UndoTree" })
-
--- -------------------------------------------------------------------------- --
---  WINDOW RESIZING (Arrow Keys)
--- -------------------------------------------------------------------------- --
-map("n", "<Up>", "<cmd>resize +2<cr>", { desc = "Increase Window Height" })
-map("n", "<Down>", "<cmd>resize -2<cr>", { desc = "Decrease Window Height" })
-map(
-	"n",
-	"<Left>",
-	"<cmd>vertical resize -2<cr>",
-	{ desc = "Decrease Window Width" }
-)
-map(
-	"n",
-	"<Right>",
-	"<cmd>vertical resize +2<cr>",
-	{ desc = "Increase Window Width" }
-)
