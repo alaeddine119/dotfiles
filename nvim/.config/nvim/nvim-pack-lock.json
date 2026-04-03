@@ -6,7 +6,7 @@
       "version": "1.0.0 - 2.0.0"
     },
     "clangd_extensions.nvim": {
-      "rev": "92b720768fad9d8a333a3cbb167f0bab550f9f50",
+      "rev": "9ac242ec71609eeeb5b5baff6ea6d3a1cb015b64",
       "src": "https://git.sr.ht/~chinmay/clangd_extensions.nvim"
     },
     "compile-mode.nvim": {
@@ -35,7 +35,7 @@
       "src": "https://github.com/rafamadriz/friendly-snippets"
     },
     "gitsigns.nvim": {
-      "rev": "0f00d07c2c3106ba6abd594ac1c17f211141b7b5",
+      "rev": "e1fb5425c8812214209b3f24eaa582c6c552cf98",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "lazydev.nvim": {
@@ -111,11 +111,11 @@
       "src": "https://github.com/petertriho/nvim-scrollbar"
     },
     "nvim-treesitter": {
-      "rev": "c82bf96f0a773d85304feeb695e1e23b2207ac35",
+      "rev": "539abf6da5ee8702e37b82cc953131dadd570da2",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "nvim-treesitter-context": {
-      "rev": "adf4b6b0420b7be6c717ef0ac7993183d6c201b1",
+      "rev": "b0c45cefe2c8f7b55fc46f34e563bc428ef99636",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-context"
     },
     "nvim-ts-autotag": {
@@ -123,16 +123,20 @@
       "src": "https://github.com/windwp/nvim-ts-autotag"
     },
     "nvim-web-devicons": {
-      "rev": "d7462543c9e366c0d196c7f67a945eaaf5d99414",
+      "rev": "40e9d5a6cc3db11b309e39593fc7ac03bb844e38",
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
     },
     "nvim_context_vt": {
       "rev": "fadbd9e57af72f6df3dd33df32ee733aa01cdbc0",
       "src": "https://github.com/andersevenrud/nvim_context_vt"
     },
-    "oil-git-status.nvim": {
-      "rev": "a3e2ccb00cb8822115e28a9a1791eda051d940c9",
-      "src": "https://github.com/refractalize/oil-git-status.nvim"
+    "oil-git.nvim": {
+      "rev": "85731c6e0deb6da473ca627f09b7de6ca0f07435",
+      "src": "https://github.com/malewicz1337/oil-git.nvim"
+    },
+    "oil-lsp-diagnostics.nvim": {
+      "rev": "282308383d8d8485937aaf3c28b44fa1cb26007a",
+      "src": "https://github.com/JezerM/oil-lsp-diagnostics.nvim"
     },
     "oil.nvim": {
       "rev": "0fcc83805ad11cf714a949c98c605ed717e0b83e",
@@ -179,7 +183,7 @@
       "src": "https://github.com/mbbill/undotree"
     },
     "vim-test": {
-      "rev": "7d7a3a220fd46aa24e179bc9a073687e4cf187ac",
+      "rev": "36c501a89696e5ec18fb653e958957d0826e5c0b",
       "src": "https://github.com/vim-test/vim-test"
     },
     "vim-tmux-navigator": {
