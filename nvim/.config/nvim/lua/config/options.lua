@@ -22,8 +22,6 @@ vim.o.scrolloff = 8
 vim.o.splitright = true
 vim.o.splitbelow = true
 vim.opt.formatoptions:append("tc")
-vim.opt.list = true
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- Tabs & Indentation
 vim.o.tabstop = 2
@@ -39,15 +37,11 @@ vim.o.confirm = true
 vim.o.completeopt = ""
 vim.o.ignorecase = true
 vim.o.smartcase = true
-vim.o.spell = false
+vim.o.spell = true
 
 vim.schedule(function()
 	vim.o.clipboard = "unnamedplus"
 end)
-
-vim.filetype.add({
-	filename = { [".blerc"] = "bash" },
-})
 
 -- Autocommands
 vim.api.nvim_create_autocmd("TextYankPost", {
