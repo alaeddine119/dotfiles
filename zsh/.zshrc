@@ -65,17 +65,10 @@ fi
 
 export EDITOR='nvim'
 export VISUAL='nvim'
+export NB_EDITOR='nvim'
 
 # ================================================== #
-#  TOOL INITIALIZATION (Zoxide, Starship, Mise) #
-# ================================================== #
-eval "$(zoxide init --cmd cd zsh)"
-eval "$(starship init zsh)"
-eval "$(/home/alaeddine/.local/bin/mise activate zsh)"
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-# ================================================== #
-#  ENVIRONMENT VARIABLES (NVM, Cargo, Bun, Doom)  #
+#  ENVIRONMENT VARIABLES (NVM, Cargo, Bun)  #
 # ================================================== #
 # Node Version Manager
 export NVM_DIR="$HOME/.nvm"
@@ -88,11 +81,6 @@ export NVM_DIR="$HOME/.nvm"
 # Bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# Doom Emacs
-if [ -d "$HOME/.config/emacs/bin" ]; then
-    export PATH="$HOME/.config/emacs/bin:$PATH"
-fi
 
 # pnpm
 export PNPM_HOME="/home/alaeddine/.local/share/pnpm"
@@ -122,6 +110,7 @@ fi
 
 # PNPM Completions
 if command -v pnpm &> /dev/null; then
+    export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
     source <(pnpm completion zsh)
 fi
 
@@ -149,3 +138,13 @@ if [ -d ~/.zshrc.d ]; then
   done
 fi
 unset rc
+# ================================================== #
+#  TOOL INITIALIZATION (Zoxide, Starship, Mise) #
+# ================================================== #
+eval "$(zoxide init --cmd cd zsh)"
+eval "$(tv init zsh)"
+eval "$(/home/alaeddine/.local/bin/mise activate zsh)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(starship init zsh)"
+
+
