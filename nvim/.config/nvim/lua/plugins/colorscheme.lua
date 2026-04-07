@@ -5,10 +5,10 @@
 vim.pack.add({ "https://github.com/rose-pine/neovim" })
 
 require("rose-pine").setup({
-	variant = "moon",
-	styles = {
-		italic = true,
-	},
+	-- variant = "moon",
+	-- styles = {
+	-- 	italic = true,
+	-- },
 	palette = {
 		moon = {
 			base = "#000000",

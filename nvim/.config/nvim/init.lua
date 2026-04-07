@@ -1,34 +1,32 @@
--- 1. CORE CONFIGURATION
--- Ensure Leader is set in options/keymaps before plugins load
+-- ~/.config/nvim/init.lua
+
+-- 1. CORE CONFIGURATION (Must load first)
 require("config.options")
 require("config.keymaps")
 
--- 2. PRIORITY PLUGINS
--- We boot these manually to ensure the UI looks right and LSP is ready immediately
-local priority = { "colorscheme", "lsp" }
-for _, name in ipairs(priority) do
-	require("plugins." .. name)
-end
+-- 2. LOAD PLUGINS
+-- Explicit requires are faster than disk-scanning loops,
+-- and ensure your priority plugins boot in the exact order you want.
 
--- 3. DYNAMIC PLUGIN LOADER
-local plugin_path = vim.fn.stdpath("config") .. "/lua/plugins"
+-- Priority
+require("plugins.colorscheme")
+require("plugins.lsp")
 
-for file, type in vim.fs.dir(plugin_path) do
-	local name = file:sub(1, -5) -- Remove '.lua'
+-- Core Tools
+require("plugins.blink")
+require("plugins.conform")
+require("plugins.fidget")
+require("plugins.gitsigns")
+require("plugins.lint")
+require("plugins.mini")
+require("plugins.oil")
+require("plugins.snacks")
+require("plugins.treesitter")
 
-	-- Only load files, and skip the ones we already loaded in Step 2
-	if
-		type == "file"
-		and file:match("%.lua$")
-		and name ~= "colorscheme"
-		and name ~= "lsp"
-	then
-		local ok, err = pcall(require, "plugins." .. name)
-		if not ok then
-			vim.notify(
-				"Error loading " .. name .. ":\n" .. err,
-				vim.log.levels.ERROR
-			)
-		end
-	end
-end
+-- Utilities
+require("plugins.pack-cleaner")
+require("plugins.render-markdown")
+require("plugins.tmux-navigator")
+require("plugins.tpipeline")
+require("plugins.trouble")
+require("plugins.undotree")

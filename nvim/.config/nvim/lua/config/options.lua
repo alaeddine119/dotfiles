@@ -21,7 +21,6 @@ vim.o.timeoutlen = 300
 vim.o.scrolloff = 8
 vim.o.splitright = true
 vim.o.splitbelow = true
-vim.opt.formatoptions:append("tc")
 
 -- Tabs & Indentation
 vim.o.tabstop = 2
@@ -34,7 +33,6 @@ vim.o.smartindent = true
 vim.o.mouse = "a"
 vim.o.undofile = true
 vim.o.confirm = true
-vim.o.completeopt = ""
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.spell = true

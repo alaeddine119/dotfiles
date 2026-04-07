@@ -30,7 +30,6 @@ conform.setup({
 		rust = { "rustfmt", lsp_format = "fallback" },
 		bash = { "shfmt" },
 		sh = { "shfmt" },
-		matlab = { "mh_style" },
 		["_"] = { "trim_whitespace" },
 	},
 
@@ -59,20 +58,6 @@ conform.setup({
 		},
 		["clang-format"] = {
 			prepend_args = { "--style=file", "--fallback-style=LLVM" },
-		},
-		mh_style = {
-			command = "uv",
-			args = {
-				"-q",
-				"tool",
-				"run",
-				"--from",
-				"miss_hit",
-				"mh_style",
-				"--fix",
-				"$FILENAME",
-			},
-			stdin = false,
 		},
 	},
 
