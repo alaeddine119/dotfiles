@@ -7,4 +7,4 @@ font-family = "Noto Color Emoji"
 font-size = 14
 command = tmux new-session -A -s main
 confirm-close-surface = false
-adjust-cell-height = 20%
+adjust-cell-height = 25%
