@@ -98,6 +98,7 @@ miniclue.setup({
 		miniclue.gen_clues.windows(),
 		miniclue.gen_clues.z(),
 		{ mode = "n", keys = "<Leader>b", desc = "+Buffers" },
+		{ mode = "n", keys = "<Leader>h", desc = "+Hank" },
 		{ mode = "n", keys = "<Leader>c", desc = "+Code" },
 		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
 		{ mode = "n", keys = "<leader>n", desc = "+Notifications" },

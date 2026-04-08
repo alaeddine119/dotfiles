@@ -56,9 +56,6 @@ conform.setup({
 		shfmt = {
 			prepend_args = { "-i", "4", "-ci", "-bn" },
 		},
-		["clang-format"] = {
-			prepend_args = { "--style=file", "--fallback-style=LLVM" },
-		},
 	},
 
 	-- 5. FORMAT ON SAVE

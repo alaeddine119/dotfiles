@@ -5,7 +5,6 @@
 vim.pack.add({
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	"https://github.com/nvim-treesitter/nvim-treesitter-context",
-	"https://github.com/windwp/nvim-ts-autotag",
 	"https://github.com/NvChad/nvim-colorizer.lua",
 })
 
@@ -60,7 +59,6 @@ vim.keymap.set("n", "[C", function()
 	require("treesitter-context").go_to_context(vim.v.count1)
 end, { desc = "Jump to [C]ontext" })
 
-require("nvim-ts-autotag").setup()
 require("colorizer").setup({
 	user_default_options = { tailwind = true, mode = "background" },
 })

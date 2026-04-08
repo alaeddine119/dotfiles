@@ -32,14 +32,24 @@ end
 
 blink.setup({
 	fuzzy = {
-		prebuilt_binaries = {
-			download = true,
-			force_version = get_blink_version(),
-		},
+		prebuilt_binaries = { force_version = get_blink_version() },
 	},
-	keymap = { preset = "default", ["<CR>"] = { "accept", "fallback" } },
-	appearance = { use_nvim_cmp_as_default = true, nerd_font_variant = "mono" },
+
+	keymap = {
+		preset = "default",
+		["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+		["<CR>"] = { "accept", "fallback" },
+	},
+
+	-- Disable Auto-Show (Manual mode only)
+	completion = {
+		menu = { auto_show = false },
+		documentation = { auto_show = false },
+		ghost_text = { enabled = false },
+	},
+
 	signature = { enabled = true, window = { border = "rounded" } },
+
 	sources = {
 		providers = {
 			lsp = { score_offset = 1000 },
