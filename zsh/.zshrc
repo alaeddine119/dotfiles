@@ -139,11 +139,10 @@ if [ -d ~/.zshrc.d ]; then
 fi
 unset rc
 # ================================================== #
-#  TOOL INITIALIZATION (Zoxide, Starship, Mise) #
+#  TOOL INITIALIZATION (Zoxide, Starship) #
 # ================================================== #
 eval "$(zoxide init --cmd cd zsh)"
 eval "$(tv init zsh)"
-eval "$(/home/alaeddine/.local/bin/mise activate zsh)"
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 eval "$(starship init zsh)"
 
