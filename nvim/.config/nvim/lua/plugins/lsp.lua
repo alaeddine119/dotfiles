@@ -104,12 +104,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- Native Actions Override
 		map("<leader>te", vim.diagnostic.open_float, "LSP Error Float")
 
-		if client.name == "rust_analyzer" then
-			map("gra", function()
-				vim.cmd.RustLsp("codeAction")
-			end, "Code Action", { "n", "x" })
-		end
-
 		if client:supports_method("textDocument/inlayHint") then
 			map("<leader>th", function()
 				vim.lsp.inlay_hint.enable(
