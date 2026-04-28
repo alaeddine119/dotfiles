@@ -22,7 +22,6 @@ bob
 brightnessctl
 btop
 btrfs-progs
-chromium
 clang
 cliphist
 cmake
@@ -198,7 +197,6 @@ unzip
 vale
 vim
 w3m
-waybar
 webkitgtk-6.0
 wf-recorder
 wget
