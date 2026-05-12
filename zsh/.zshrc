@@ -147,3 +147,7 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 eval "$(starship init zsh)"
 
 
+
+# bun completions
+[ -s "/home/alaeddine/.bun/_bun" ] && source "/home/alaeddine/.bun/_bun"
+eval "$(mise activate zsh)"
