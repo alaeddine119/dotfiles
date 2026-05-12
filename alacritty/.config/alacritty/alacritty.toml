@@ -1,0 +1,48 @@
+# ==============================================================================
+# ALACRITTY CONFIGURATION
+# ==============================================================================
+
+[terminal.shell]
+# Equivalent to: command = tmux new-session -A -s main
+program = "tmux"
+args = ["new-session", "-A", "-s", "main"]
+
+[font]
+# Equivalent to: font-size = 14
+size = 14.0
+
+[font.normal]
+# Equivalent to: font-family = "JetBrains Mono"
+family = "JetBrains Mono"
+
+[font.offset]
+# Equivalent to: adjust-cell-height = 25%
+# 25% of 14pt is ~3.5. Alacritty uses absolute pixel offsets.
+x = 0
+y = 4
+
+[colors.primary]
+# Equivalent to: background = #000000 / foreground = #E0E0E0
+background = "#000000"
+foreground = "#E0E0E0"
+
+# Equivalent to: theme = Rose Pine Moon
+[colors.normal]
+black   = "#393552"
+red     = "#eb6f92"
+green   = "#3e8fb0"
+yellow  = "#f6c177"
+blue    = "#9ccfd8"
+magenta = "#c4a7e7"
+cyan    = "#ea9a97"
+white   = "#e0def4"
+
+[colors.bright]
+black   = "#6e6a86"
+red     = "#eb6f92"
+green   = "#3e8fb0"
+yellow  = "#f6c177"
+blue    = "#9ccfd8"
+magenta = "#c4a7e7"
+cyan    = "#ea9a97"
+white   = "#e0def4"
