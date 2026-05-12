@@ -2,7 +2,7 @@
 /* Author: Newman Sanchez (https://github.com/newmanls) */
 
 * {
-    font:   "JetBrainsMono Nerd Font Mono 12";
+    font:   "JetBrainsMono Nerd Font Mono 14";
 
     bg0:    #111111;
     bg1:    #222222;
@@ -31,7 +31,7 @@ window {
 }
 
 inputbar {
-    font:       "JetBrainsMono Nerd Font Mono 16";
+    font:       "JetBrainsMono Nerd Font Mono 18";
     padding:    12px;
     spacing:    12px;
     children:   [ icon-search, prompt, entry ];
