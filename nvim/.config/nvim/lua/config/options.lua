@@ -8,6 +8,19 @@ vim.g.maplocalleader = " "
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- Experimental UI2
+require("vim._core.ui2").enable({
+	enable = true,
+	msg = {
+		-- Route all standard messages to the bottom cmdline area
+		targets = "cmd",
+		cmd = {
+			-- Expand the cmdline up to half the screen height if needed
+			height = 0.5,
+		},
+	},
+})
+
 -- Visuals
 vim.o.number = true
 vim.o.relativenumber = true
@@ -47,5 +60,17 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
 	callback = function()
 		vim.hl.on_yank()
+	end,
+})
+
+-- Configure UI2 specific buffers
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "cmd", "msg", "pager", "dialog" },
+	callback = function()
+		-- Set local options to keep the UI clean
+		vim.opt_local.number = false
+		vim.opt_local.relativenumber = false
+		vim.opt_local.signcolumn = "no"
+		vim.opt_local.spell = false
 	end,
 })
