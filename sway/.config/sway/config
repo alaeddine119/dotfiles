@@ -273,6 +273,9 @@ bindsym $mod+c exec grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:
 # Power Menu
 bindsym $mod+Shift+q exec ~/.local/bin/power-menu.sh
 
+# TuneD Power Profiles Menu
+bindsym $mod+Alt+p exec ~/.local/bin/power-profile.sh
+
 # Notification Center (Toggle)
 bindsym $mod+n exec swaync-client -t -sw
 
