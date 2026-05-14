@@ -1,0 +1,8 @@
+[tools]
+"aqua:github/copilot-cli" = "latest"
+"aqua:joshmedeski/sesh" = "latest"
+bun = "latest"
+"go:github.com/joshmedeski/sesh" = "latest"
+node = "lts"
+opencode = "latest"
+zig = "master"
