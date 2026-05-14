@@ -68,26 +68,11 @@ export VISUAL='nvim'
 export NB_EDITOR='nvim'
 
 # ================================================== #
-#  ENVIRONMENT VARIABLES (NVM, Cargo, Bun)  #
+#  ENVIRONMENT VARIABLES ( Cargo)  #
 # ================================================== #
-# Node Version Manager
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # Rust/Cargo
 . "$HOME/.cargo/env"
-
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-# pnpm
-export PNPM_HOME="/home/alaeddine/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
 
 # Bob Neovim Manager
 if [ -f "$HOME/.local/share/bob/env/env.sh" ]; then
@@ -103,16 +88,6 @@ if command -v rustup &> /dev/null; then
     source <(rustup completions zsh)
 fi
 
-# Bun Completions
-if command -v bun &> /dev/null; then
-    source <(bun completions)
-fi
-
-# PNPM Completions
-if command -v pnpm &> /dev/null; then
-    export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-    source <(pnpm completion zsh)
-fi
 
 # ================================================== #
 # ALIASES & FZF  #
@@ -143,11 +118,8 @@ unset rc
 # ================================================== #
 eval "$(zoxide init --cmd cd zsh)"
 eval "$(tv init zsh)"
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 eval "$(starship init zsh)"
 
 
+eval "$(mise activate zsh --shims)"
 
-# bun completions
-[ -s "/home/alaeddine/.bun/_bun" ] && source "/home/alaeddine/.bun/_bun"
-eval "$(mise activate zsh)"
