@@ -27,11 +27,13 @@ vim.o.relativenumber = true
 vim.o.linebreak = true
 vim.o.signcolumn = "yes"
 vim.o.cursorline = true
+vim.o.showmode = false
 vim.o.colorcolumn = "80"
 vim.o.textwidth = 80
 vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 vim.o.scrolloff = 8
+vim.o.inccommand = "split"
 vim.o.splitright = true
 vim.o.splitbelow = true
 

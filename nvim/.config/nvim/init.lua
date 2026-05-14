@@ -1,10 +1,15 @@
 -- ~/.config/nvim/init.lua
 
+-- Enable faster startup by caching compiled Lua modules
+vim.loader.enable()
+
 -- 1. CORE CONFIGURATION (Must load first)
 require("config.options")
 require("config.keymaps")
+require("config.autocmds")
 
 -- 2. LOAD PLUGINS
+
 -- Explicit requires are faster than disk-scanning loops,
 -- and ensure your priority plugins boot in the exact order you want.
 

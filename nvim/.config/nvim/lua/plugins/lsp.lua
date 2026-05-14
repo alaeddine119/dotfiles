@@ -104,6 +104,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- Native Actions Override
 		map("<leader>te", vim.diagnostic.open_float, "LSP Error Float")
 
+		if client:supports_method("textDocument/codeLens") then
+			map("grx", vim.lsp.codelens.run, "CodeLens")
+		end
+
 		if client:supports_method("textDocument/inlayHint") then
 			map("<leader>th", function()
 				vim.lsp.inlay_hint.enable(
