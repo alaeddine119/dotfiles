@@ -7,7 +7,7 @@ set $left h
 set $down j
 set $up k
 set $right l
-set $term alacritty
+set $term kitty
 
 # --- ROFI REPLACEMENT ---
 # We use 'combi' mode to show Apps (drun) and Calculator (calc) in one list
