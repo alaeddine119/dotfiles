@@ -13,8 +13,15 @@ source "${ZINIT_HOME}/zinit.zsh"
 # PLUGINS #
 # =================================================== #
 # Load completions, syntax highlighting, and autosuggestions asynchronously
+fpath=(~/.zsh/completions $fpath)
+# Load completions normally
 zinit light zsh-users/zsh-completions
+
+# Load these asynchronously (Turbo Mode)
+zinit ice wait lucid
 zinit light zsh-users/zsh-autosuggestions
+
+zinit ice wait lucid
 zinit light zsh-users/zsh-syntax-highlighting
 
 # Completion plugins from Oh My Zsh
@@ -27,7 +34,13 @@ zinit snippet OMZP::vscode
 zinit snippet OMZP::command-not-found
 
 # Initialize Zsh's advanced completion system
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+# Only run full compinit if the dump file is older than 24 hours
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 # replaces Zsh's default completion menu with an interactivy
 zinit light Aloxaf/fzf-tab
@@ -60,34 +73,12 @@ zstyle ':fzf-tab:complete:z:*' fzf-preview 'eza -1 --color=always $realpath'
 # PATH & EDITOR SETUP #
 # =================================================== #
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-    export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+    export PATH="$HOME/.local/share/bob/nvim-bin:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 
 export EDITOR='nvim'
 export VISUAL='nvim'
 export NB_EDITOR='nvim'
-
-# ================================================== #
-#  ENVIRONMENT VARIABLES ( Cargo)  #
-# ================================================== #
-
-# Rust/Cargo
-. "$HOME/.cargo/env"
-
-# Bob Neovim Manager
-if [ -f "$HOME/.local/share/bob/env/env.sh" ]; then
-    . "$HOME/.local/share/bob/env/env.sh"
-fi
-
-# UV
-eval "$(uv generate-shell-completion zsh)"
-
-# Completions
-# Rust/Cargo Completions (via Rustup)
-if command -v rustup &> /dev/null; then
-    source <(rustup completions zsh)
-fi
-
 
 # ================================================== #
 # ALIASES & FZF  #
@@ -113,13 +104,34 @@ if [ -d ~/.zshrc.d ]; then
   done
 fi
 unset rc
-# ================================================== #
-#  TOOL INITIALIZATION (Zoxide, Starship) #
-# ================================================== #
-eval "$(zoxide init --cmd cd zsh)"
-eval "$(tv init zsh)"
-eval "$(starship init zsh)"
 
+# ================================================== #
+#  SMART CACHED TOOL INITIALIZATION #
+# ================================================== #
+CACHE_DIR="$HOME/.zsh/cache"
+mkdir -p "$CACHE_DIR"
+
+# Function to only regenerate cache if the binary was updated
+smart_cache_init() {
+  local tool_name=$1
+  local cache_file="$CACHE_DIR/${tool_name}.zsh"
+  local bin_path="$(command -v $tool_name 2>/dev/null)"
+
+  # If the tool exists in our PATH
+  if [[ -n "$bin_path" ]]; then
+    # If the cache file doesn't exist, OR the binary is newer than the cache file
+    if [[ ! -f "$cache_file" || "$bin_path" -nt "$cache_file" ]]; then
+      "$tool_name" init zsh > "$cache_file"
+    fi
+    source "$cache_file"
+  fi
+}
+
+smart_cache_init zoxide
+smart_cache_init tv
+smart_cache_init starship
 
 eval "$(mise activate zsh --shims)"
+
+
 
