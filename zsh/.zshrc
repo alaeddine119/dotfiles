@@ -106,31 +106,12 @@ fi
 unset rc
 
 # ================================================== #
-#  SMART CACHED TOOL INITIALIZATION #
+#  TOOL INITIALIZATION #
 # ================================================== #
-CACHE_DIR="$HOME/.zsh/cache"
-mkdir -p "$CACHE_DIR"
 
-# Function to only regenerate cache if the binary was updated
-smart_cache_init() {
-  local tool_name=$1
-  local cache_file="$CACHE_DIR/${tool_name}.zsh"
-  local bin_path="$(command -v $tool_name 2>/dev/null)"
-
-  # If the tool exists in our PATH
-  if [[ -n "$bin_path" ]]; then
-    # If the cache file doesn't exist, OR the binary is newer than the cache file
-    if [[ ! -f "$cache_file" || "$bin_path" -nt "$cache_file" ]]; then
-      "$tool_name" init zsh > "$cache_file"
-    fi
-    source "$cache_file"
-  fi
-}
-
-smart_cache_init zoxide
-smart_cache_init tv
-smart_cache_init starship
-
+eval "$(tv init zsh)"
+eval "$(zoxide init zsh --cmd cd)"
+eval "$(starship init zsh)"
 eval "$(mise activate zsh --shims)"
 
 
