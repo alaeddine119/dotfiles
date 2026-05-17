@@ -87,6 +87,7 @@ alias ls="eza -lh"
 alias ll="eza -alh"
 alias tree="eza --tree"
 alias cat="bat"
+alias vim="nvim"
 
 export FZF_COMPLETION_OPTS="--preview 'eval v={1} 2>/dev/null; if [ -d \"\$v\" ]; then eza --tree --color=always -- \"\$v\" | head -200; else bat -n --color=always --line-range :500 -- \"\$v\"; fi'"
 
