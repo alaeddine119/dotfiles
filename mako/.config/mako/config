@@ -1,0 +1,23 @@
+# Global styling
+font=JetBrainsMono Nerd Font Mono 12
+background-color=#000000
+text-color=#eeeeee
+border-color=#222222
+border-size=2
+border-radius=4
+padding=15
+margin=10
+
+# Position and behavior
+default-timeout=5000
+max-visible=5
+sort=-time
+layer=overlay
+anchor=top-right
+
+# Urgent notifications (Matches your $urgent-bg-color)
+[urgency=high]
+background-color=#8c001a
+border-color=#8c001a
+text-color=#eeeeee
+default-timeout=0
