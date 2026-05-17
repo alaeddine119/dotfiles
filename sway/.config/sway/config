@@ -62,7 +62,7 @@ exec swayidle -w \
     before-sleep 'swaylock -f --screenshots --clock --indicator --effect-scale 0.5 --effect-blur 7x5 --effect-scale 2'
 
 # Essential Daemons
-exec swaync
+exec mako
 
 ### Input Configuration (Asahi/Mac)
 input type:touchpad {
@@ -276,8 +276,10 @@ bindsym $mod+Shift+q exec ~/.local/bin/power-menu.sh
 # TuneD Power Profiles Menu
 bindsym $mod+Alt+p exec ~/.local/bin/power-profile.sh
 
-# Notification Center (Toggle)
-bindsym $mod+n exec swaync-client -t -sw
+# Notification Management (Mako)
+bindsym $mod+n exec makoctl dismiss      # Dismiss the top notification
+bindsym $mod+Shift+n exec makoctl dismiss -a  # Dismiss ALL notifications at once
+bindsym $mod+Ctrl+n exec makoctl restore      # Bring back the last dismissed notification
 
 # Start the swayr daemon
 exec swayrd
