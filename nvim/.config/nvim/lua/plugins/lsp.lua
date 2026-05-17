@@ -41,7 +41,6 @@ require("mason-tool-installer").setup({
 		"commitlint",
 		"bash-language-server",
 		"shfmt",
-		"zls",
 		"typos_lsp",
 		"markdown_oxide",
 	},
@@ -58,10 +57,24 @@ end
 require("mason-lspconfig").setup({
 	handlers = {
 		function(server)
-			require("lspconfig")[server].setup({ capabilities = caps })
+			-- Inject capabilities into the native config
+			vim.lsp.config[server] = {
+				capabilities = caps,
+			}
+			-- Natively start the server
+			vim.lsp.enable(server)
 		end,
 	},
 })
+
+-- Manually setup ZLS (bypassing Mason)
+vim.lsp.config["zls"] = {
+	-- Neovim will automatically find this in ~/.local/bin/zls
+	cmd = { "zls" },
+	capabilities = caps,
+}
+
+vim.lsp.enable("zls")
 
 -- 6. GLOBAL LSP ATTACH
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -116,5 +129,26 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			end, "LSP Inlay Hints")
 			vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 		end
+	end,
+})
+
+-- 7. NATIVE FORMATTING & ACTIONS (Zig)
+
+-- Disable the default zig.vim formatting to prevent conflicts
+vim.g.zig_fmt_parse_errors = 0
+vim.g.zig_fmt_autosave = 0
+
+-- Enable format-on-save natively via ZLS
+vim.api.nvim_create_autocmd("BufWritePre", {
+	pattern = { "*.zig", "*.zon" },
+	callback = function(ev)
+		-- 1. Format the file
+		vim.lsp.buf.format({ bufnr = ev.buf })
+
+		-- 2. Apply automatic fixes (like removing unused variables)
+		vim.lsp.buf.code_action({
+			context = { only = { "source.fixAll" } },
+			apply = true,
+		})
 	end,
 })

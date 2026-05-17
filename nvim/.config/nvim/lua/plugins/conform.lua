@@ -37,15 +37,33 @@ conform.setup({
 	formatters = {
 		biome = {
 			require_cwd = false,
-			prepend_args = {
-				"format",
-				"--indent-style",
-				"space",
-				"--indent-width",
-				"2",
-				"--line-width",
-				"80",
-			},
+			-- Use a dynamic function to support projects with AND without biome.json
+			args = function(self, ctx)
+				-- 1. Search upwards from the current file for a biome config
+				local has_config =
+					vim.fs.find({ "biome.json", "biome.jsonc" }, {
+						path = ctx.dirname,
+						upward = true,
+					})[1]
+
+				if has_config then
+					-- 2. If config exists, strictly use defaults and let biome.json dictate the rules
+					return { "format", "--stdin-file-path", "$FILENAME" }
+				end
+
+				-- 3. If NO config exists, apply your custom fallback rules
+				return {
+					"format",
+					"--stdin-file-path",
+					"$FILENAME",
+					"--indent-style",
+					"space",
+					"--indent-width",
+					"2",
+					"--line-width",
+					"80",
+				}
+			end,
 		},
 		stylua = {
 			prepend_args = { "--column-width", "80" },
