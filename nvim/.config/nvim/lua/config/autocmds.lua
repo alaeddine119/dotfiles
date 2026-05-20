@@ -22,11 +22,31 @@ vim.api.nvim_create_autocmd("PackChanged", {
 			return
 		end
 
-	if name == "LuaSnip" then
-		if vim.fn.has("win32") ~= 1 and vim.fn.executable("make") == 1 then
-			run_build(name, { "make", "install_jsregexp" }, ev.data.path)
+		if name == "LuaSnip" then
+			if vim.fn.has("win32") ~= 1 and vim.fn.executable("make") == 1 then
+				run_build(name, { "make", "install_jsregexp" }, ev.data.path)
+			end
+			return
 		end
-		return
-	end
-end,
+	end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "*",
+    callback = function(args)
+        local buf = args.buf
+        local ft = vim.bo[buf].filetype
+
+        local lang = vim.treesitter.language.get_lang(ft)
+        if not lang then
+            return
+        end
+
+        local ok_add = pcall(vim.treesitter.language.add, lang)
+        if not ok_add then
+            return
+        end
+
+        pcall(vim.treesitter.start, buf, lang)
+    end,
 })
