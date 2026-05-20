@@ -26,15 +26,19 @@ require("mason-tool-installer").setup({
 	ensure_installed = {
 		"lua_ls",
 		"tailwindcss-language-server",
-		"html-lsp",
-		"css-lsp",
+		"html-lsp", -- VS Code HTML Server (Provides diagnostics)
+		"css-lsp", -- VS Code CSS Server (Provides diagnostics)
+		"json-lsp", -- VS Code JSON Server (Provides diagnostics)
 		"dockerfile-language-server",
-		"biome",
+		"biome", -- Used exclusively for JS/TS stack natively
 		"rustywind",
 		"rust_analyzer",
 		"vtsls",
+		"gopls",
+		"goimports",
 		"eslint-lsp",
 		"stylua",
+		"prettierd", -- Zero-config ultra-fast markup formatting daemon
 		"hadolint",
 		"htmlhint",
 		"stylelint",
@@ -57,11 +61,11 @@ end
 require("mason-lspconfig").setup({
 	handlers = {
 		function(server)
-			-- Inject capabilities into the native config
-			vim.lsp.config[server] = {
+			local config = {
 				capabilities = caps,
 			}
-			-- Natively start the server
+
+			vim.lsp.config[server] = config
 			vim.lsp.enable(server)
 		end,
 	},
@@ -69,12 +73,16 @@ require("mason-lspconfig").setup({
 
 -- Manually setup ZLS (bypassing Mason)
 vim.lsp.config["zls"] = {
-	-- Neovim will automatically find this in ~/.local/bin/zls
 	cmd = { "zls" },
 	capabilities = caps,
 }
-
 vim.lsp.enable("zls")
+
+-- Global Augroups for automation loops
+local highlight_augroup =
+	vim.api.nvim_create_augroup("lsp-highlight", { clear = true })
+local detach_augroup =
+	vim.api.nvim_create_augroup("lsp-detach", { clear = true })
 
 -- 6. GLOBAL LSP ATTACH
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -95,27 +103,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		end
 
 		-- Core Navigation
-		map("gd", function()
-			Snacks.picker.lsp_definitions()
-		end, "Definition")
-		map("grr", function()
-			Snacks.picker.lsp_references()
-		end, "References")
-		map("gri", function()
-			Snacks.picker.lsp_implementations()
-		end, "Implementation")
-		map("grt", function()
-			Snacks.picker.lsp_type_definitions()
-		end, "Type Definition")
-		map("gO", function()
-			Snacks.picker.lsp_symbols()
-		end, "Document Symbols")
-		map("gW", function()
-			Snacks.picker.lsp_workspace_symbols()
-		end, "Workspace Symbols")
+		map("gd", Snacks.picker.lsp_definitions, "Definition")
+		map("grr", Snacks.picker.lsp_references, "References")
+		map("gri", Snacks.picker.lsp_implementations, "Implementation")
+		map("grt", Snacks.picker.lsp_type_definitions, "Type Definition")
+		map("gO", Snacks.picker.lsp_symbols, "Document Symbols")
+		map("gW", Snacks.picker.lsp_workspace_symbols, "Workspace Symbols")
 
 		-- Native Actions Override
-		map("<leader>te", vim.diagnostic.open_float, "LSP Error Float")
+		map("<leader>te", function()
+			vim.diagnostic.open_float()
+		end, "LSP Error Float")
 
 		if client:supports_method("textDocument/codeLens") then
 			map("grx", vim.lsp.codelens.run, "CodeLens")
@@ -129,25 +127,50 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			end, "LSP Inlay Hints")
 			vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 		end
+
+		-- Symbol Highlighting on Hover
+		if client:supports_method("textDocument/documentHighlight", ev.buf) then
+			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+				buffer = ev.buf,
+				group = highlight_augroup,
+				callback = vim.lsp.buf.document_highlight,
+			})
+
+			vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+				buffer = ev.buf,
+				group = highlight_augroup,
+				callback = vim.lsp.buf.clear_references,
+			})
+		end
+
+		-- Clean up highlights when LSP detaches
+		vim.api.nvim_create_autocmd("LspDetach", {
+			buffer = ev.buf,
+			group = detach_augroup,
+			callback = function(event2)
+				vim.lsp.buf.clear_references()
+				vim.api.nvim_clear_autocmds({
+					group = highlight_augroup,
+					buffer = event2.buf,
+				})
+			end,
+		})
 	end,
 })
 
 -- 7. NATIVE FORMATTING & ACTIONS (Zig)
-
--- Disable the default zig.vim formatting to prevent conflicts
 vim.g.zig_fmt_parse_errors = 0
 vim.g.zig_fmt_autosave = 0
 
--- Enable format-on-save natively via ZLS
 vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = { "*.zig", "*.zon" },
 	callback = function(ev)
-		-- 1. Format the file
 		vim.lsp.buf.format({ bufnr = ev.buf })
-
-		-- 2. Apply automatic fixes (like removing unused variables)
 		vim.lsp.buf.code_action({
-			context = { only = { "source.fixAll" } },
+			context = {
+				only = { "source.fixAll" },
+				diagnostics = {}, -- 💡 Fix: Add this empty table to satisfy the strict LSP type requirement
+			},
 			apply = true,
 		})
 	end,
