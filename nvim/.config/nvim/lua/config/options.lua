@@ -51,6 +51,8 @@ vim.o.confirm = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.spell = true
+vim.o.laststatus = 3
+vim.o.cmdheight = 0
 
 vim.schedule(function()
 	vim.o.clipboard = "unnamedplus"
