@@ -1,7 +1,6 @@
 -- ========================================================================== --
 --  PLUGIN: NVIM-LINT
 --  An asynchronous linter plugin (complementary to LSP).
---  It catches style errors and bugs that LSPs might miss.
 -- ========================================================================== --
 
 -- 1. Install
@@ -12,6 +11,11 @@ local status, lint = pcall(require, "lint")
 if not status then
 	return
 end
+
+lint.linters_by_ft = {
+	html = { "htmlhint" },
+	css = { "stylelint" },
+}
 
 -- 5. Auto-Trigger
 vim.api.nvim_create_autocmd(
