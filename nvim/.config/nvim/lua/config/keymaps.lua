@@ -15,7 +15,7 @@ map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 map("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 map("n", "<leader><leader>", "<CMD>Oil<CR>", { desc = "File Explorer" })
 map("n", "<leader>m", "g<", { desc = "Show Full Messages" })
-
+map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 -- -------------------------------------------------------------------------- --
 --  SNACKS: PICKERS, SEARCH, BUFFERS, GIT
 -- -------------------------------------------------------------------------- --
