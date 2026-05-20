@@ -24,6 +24,10 @@ configs.setup({
 		"luadoc",
 		"markdown",
 		"markdown_inline",
+		"go", -- Go source code
+		"gomod", -- go.mod files
+		"gosum", -- go.sum files
+		"gowork", -- go.work files
 		"query",
 		"vim",
 		"vimdoc",
@@ -61,11 +65,4 @@ end, { desc = "Jump to [C]ontext" })
 
 require("colorizer").setup({
 	user_default_options = { tailwind = true, mode = "background" },
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "bash", "c", "diff", "html", "lua", "markdown", "rust", "vim" },
-	callback = function()
-		pcall(vim.treesitter.start)
-	end,
 })
