@@ -15,6 +15,10 @@ end
 lint.linters_by_ft = {
 	html = { "htmlhint" },
 	css = { "stylelint" },
+	javascript = { "oxlint" },
+	typescript = { "oxlint" },
+	javascriptreact = { "oxlint" },
+	typescriptreact = { "oxlint" },
 }
 
 -- 5. Auto-Trigger

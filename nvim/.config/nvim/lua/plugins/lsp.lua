@@ -38,6 +38,7 @@ require("mason-tool-installer").setup({
 		"goimports",
 		"eslint-lsp",
 		"stylua",
+		"oxlint",
 		"prettierd", -- Zero-config ultra-fast markup formatting daemon
 		"hadolint",
 		"htmlhint",
