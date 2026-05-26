@@ -27,6 +27,7 @@ require("plugins.mini")
 require("plugins.oil")
 require("plugins.snacks")
 require("plugins.treesitter")
+require("plugins.bidi")
 
 -- Utilities
 require("plugins.pack-cleaner")
