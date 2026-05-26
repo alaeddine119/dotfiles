@@ -1,10 +1,19 @@
+# Core Aesthetics & Theme
 theme = Rose Pine Moon
+window-theme = dark
+window-decoration = false
 background = #000000
 foreground = #E0E0E0
-font-family = "JetBrains Mono"
-font-family = "Kawkab Mono"
-font-family = "Noto Color Emoji"
+
+# Hardware-Accelerated Typography Stack
+font-family = JetBrains Mono
+font-family = Kawkab Mono
+font-family = Noto Color Emoji
 font-size = 14
-command = tmux new-session -A -s main
-confirm-close-surface = false
 adjust-cell-height = 25%
+
+# Automated Tmux Multiplexer Boot Loop
+command = tmux new-session -A -s main
+
+# Surface Control Mechanics
+confirm-close-surface = false
