@@ -117,3 +117,6 @@ eval "$(mise activate zsh --shims)"
 
 
 
+autoload bashcompinit
+bashcompinit
+source "/home/alaeddine/.local/share/bash-completion/completions/appman"
