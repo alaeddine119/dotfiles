@@ -1,2 +1,4 @@
 nvim/.local/
 /scripts/.local/bin/zls
+/_backup/
+*.tar.gz
