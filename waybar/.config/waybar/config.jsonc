@@ -1,0 +1,26 @@
+{
+  "layer": "top",
+  "position": "bottom",
+  "height": 26,
+
+  "modules-left": ["sway/workspaces"],
+  "modules-center": ["sway/language"],
+  "modules-right": ["custom/sys_loop"],
+
+  "niri/workspaces": {
+    "format": "{name}",
+  },
+
+  "niri/language": {
+    "format": "{} ",
+    "format-en": "EN",
+    "format-ar": "AR",
+  },
+
+  "custom/sys_loop": {
+    "exec": "~/.config/waybar/status.sh",
+    "return-type": "json",
+    "format": "{}",
+    "escape": false,
+  },
+}
