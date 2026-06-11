@@ -18,14 +18,6 @@ C_PEACH="#eeeeee"  # UI / Peripherals Group
 C_TEXT="#eeeeee"   # Default Text / Date
 C_SEP="#eeeeee"    # Muted grey for separators
 
-# --- CPU Helper Function ---
-get_cpu_stats() {
-  read -r _ user nice system idle iowait irq softirq steal _ </proc/stat
-  total=$((user + nice + system + idle + iowait + irq + softirq + steal))
-  idle_sum=$((idle + iowait))
-  echo "$total $idle_sum"
-}
-
 # --- Escaping for Pango & JSON ---
 escape() {
   local t="$1"
@@ -46,7 +38,11 @@ else
   prev_tx=0
 fi
 
-read -r prev_total prev_idle <<<"$(get_cpu_stats)"
+# Inline initial CPU stats read to avoid fork
+read -r _ user nice system idle iowait irq softirq steal _ </proc/stat
+prev_total=$((user + nice + system + idle + iowait + irq + softirq + steal))
+prev_idle=$((idle + iowait))
+
 sleep 0.5
 
 timer=0
@@ -66,6 +62,10 @@ weather_text=""
 layout_text=""
 wifi_up=0
 
+# Find native backlight path to avoid invoking brightnessctl entirely
+BL_DIR="/sys/class/backlight/apple_screen"
+[ ! -d "$BL_DIR" ] && BL_DIR=$(ls -d /sys/class/backlight/* 2>/dev/null | head -n 1)
+
 # ==========================================
 # JSON PROTOCOL HEADER (REQUIRED FOR COLORS)
 # ==========================================
@@ -79,17 +79,23 @@ while true; do
   # ==========================================
 
   # --- Keyboard Layout (UI Group: Peach) ---
-  raw_layout=$(swaymsg -t get_inputs 2>/dev/null | grep -m1 'xkb_active_layout_name' | cut -d '"' -f4)
-  if [[ "$raw_layout" == *"Arabic"* ]] || [[ "$raw_layout" == *"Morocco"* ]] || [[ "$raw_layout" == *"ma"* ]]; then
-    layout_text="<span color='$C_TEXT'>AR </span>"
-  elif [[ -n "$raw_layout" ]]; then
-    layout_text="<span color='$C_TEXT'>EN </span>"
+  raw_layout=$(swaymsg -t get_inputs 2>/dev/null)
+  if [[ "$raw_layout" =~ \"xkb_active_layout_name\":[[:space:]]*\"([^\"]+)\" ]]; then
+    parsed_layout="${BASH_REMATCH[1]}"
+    if [[ "$parsed_layout" == *"Arabic"* ]] || [[ "$parsed_layout" == *"Morocco"* ]] || [[ "$parsed_layout" == *"ma"* ]]; then
+      layout_text="<span color='$C_TEXT'>AR </span>"
+    else
+      layout_text="<span color='$C_TEXT'>EN </span>"
+    fi
   else
     layout_text=""
   fi
 
   # --- CPU (System Group: Mauve) ---
-  read -r curr_total curr_idle <<<"$(get_cpu_stats)"
+  read -r _ user nice system idle iowait irq softirq steal _ </proc/stat
+  curr_total=$((user + nice + system + idle + iowait + irq + softirq + steal))
+  curr_idle=$((idle + iowait))
+
   diff_idle=$((curr_idle - prev_idle))
   diff_total=$((curr_total - prev_total))
 
@@ -104,13 +110,28 @@ while true; do
   prev_idle=$curr_idle
 
   # --- RAM (System Group: Mauve) ---
-  ram_pct=$(free -m | awk '/^Mem/ { printf("%2d%%", $3/$2 * 100) }')
-  ram_text="<span color='$C_MAUVE'>$ram_pct </span>"
+  mem_total=0
+  mem_avail=0
+  while read -r key val _; do
+    case "$key" in
+      MemTotal:) mem_total=$val ;;
+      MemAvailable:) mem_avail=$val ;;
+    esac
+  done </proc/meminfo
+
+  if [ "$mem_total" -gt 0 ]; then
+    ram_usage=$(((mem_total - mem_avail) * 100 / mem_total))
+    ram_text="<span color='$C_MAUVE'>$(printf "%2d%%" "$ram_usage") </span>"
+  else
+    ram_text="<span color='$C_MAUVE'>--% </span>"
+  fi
 
   # --- Brightness (UI Group: Peach) ---
-  raw_bright=$(brightnessctl -m 2>/dev/null | awk -F, '{print $4}')
-  if [ -n "$raw_bright" ]; then
-    bright_text="<span color='$C_PEACH'>$raw_bright 󰃠</span>"
+  if [ -d "$BL_DIR" ]; then
+    read -r bright_cur <"$BL_DIR/brightness"
+    read -r bright_max <"$BL_DIR/max_brightness"
+    bright_pct=$((bright_cur * 100 / bright_max))
+    bright_text="<span color='$C_PEACH'>${bright_pct}% 󰃠</span>"
   else
     bright_text="<span color='$C_PEACH'>--% 󰃠</span>"
   fi
@@ -118,7 +139,13 @@ while true; do
   # --- Volume (UI Group: Peach) ---
   raw_vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
   if [ -n "$raw_vol" ]; then
-    vol_pct=$(echo "$raw_vol" | awk '{print int($2 * 100)}')
+    vol_pct=0
+    if [[ "$raw_vol" =~ Volume:[[:space:]]([0-9]+)\.([0-9]{2}) ]]; then
+      vol_pct=$((10#${BASH_REMATCH[1]} * 100 + 10#${BASH_REMATCH[2]}))
+    elif [[ "$raw_vol" =~ Volume:[[:space:]]([0-9]+)\.([0-9]{1}) ]]; then
+      vol_pct=$((10#${BASH_REMATCH[1]} * 100 + 10#${BASH_REMATCH[2]} * 10))
+    fi
+
     if [[ "$raw_vol" == *"[MUTED]"* ]] || [ "$vol_pct" -eq 0 ]; then
       vol_icon=""
     elif [ "$vol_pct" -lt 30 ]; then
@@ -172,9 +199,20 @@ while true; do
   if [ "$timer" -eq 0 ]; then
 
     # --- Sensors (Temperature & Power) ---
-    sensors_out=$(sensors 2>/dev/null)
+    raw_temp=""
+    raw_power=""
+    while read -r line; do
+      if [[ "$line" == *"Charge Regulator Temp"* ]]; then
+        t="${line##*:}"
+        t="${t//[^0-9.]/}"
+        raw_temp=${t%.*}
+      elif [[ "$line" == *"Total System Power"* ]]; then
+        p="${line##*:}"
+        p="${p//[^0-9.]/}"
+        raw_power=${p%.*}
+      fi
+    done < <(sensors 2>/dev/null)
 
-    raw_temp=$(echo "$sensors_out" | awk -F: '/Charge Regulator Temp/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print int(v) }')
     if [ -n "$raw_temp" ]; then
       if [ "$raw_temp" -ge 70 ]; then
         temp_text="<span color='$C_RED'>${raw_temp}°C </span>"
@@ -185,7 +223,6 @@ while true; do
       temp_text="<span color='$C_MAUVE'>--°C </span>"
     fi
 
-    raw_power=$(echo "$sensors_out" | awk -F: '/Total System Power/ { gsub(/[^0-9.]/,"",$2); v=$2+0; print int(v) }')
     if [ -n "$raw_power" ]; then
       power_text="<span color='$C_GREEN'>${raw_power}W </span>"
     else
@@ -193,8 +230,10 @@ while true; do
     fi
 
     # --- Disk Space ---
-    disk_free=$(df -m / | awk 'NR==2 { v=$4/1024; print int(v) }')
-    disk_text="<span color='$C_MAUVE'>${disk_free}GB </span>"
+    if [ "$((loop_count % 60))" -eq 0 ] || [ -z "$disk_text" ]; then
+      disk_free=$(df -m / | awk 'NR==2 { v=$4/1024; print int(v) }')
+      disk_text="<span color='$C_MAUVE'>${disk_free}GB </span>"
+    fi
 
     # --- Battery ---
     if [ -d "$BAT_PATH" ]; then
@@ -231,12 +270,10 @@ while true; do
       bat_text=""
     fi
 
-    # --- Wi-Fi (PERFORMANCE FIX: Prioritize iwgetid over nmcli) ---
+    # --- Wi-Fi ---
     if [ -f "/sys/class/net/$WIFI_IFACE/operstate" ] && [ "$(cat "/sys/class/net/$WIFI_IFACE/operstate")" = "up" ]; then
       wifi_up=1
-      # Blazing fast direct query
       ssid=$(iwgetid -r 2>/dev/null)
-      # Fallback to slow nmcli ONLY if iwgetid fails
       [ -z "$ssid" ] && ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes' | cut -d: -f2)
       [ -z "$ssid" ] && ssid="Connected"
       ssid=$(escape "$ssid")
@@ -247,21 +284,18 @@ while true; do
       net_speed_text=""
     fi
 
-    # --- Native Bluetooth + Battery (PERFORMANCE FIX: Single D-Bus query) ---
+    # --- Native Bluetooth + Battery ---
     bt_text=""
     if bluetoothctl show | grep -q "Powered: yes"; then
       bt_mac=$(bluetoothctl devices Connected | awk '{print $2}' | head -n 1)
 
       if [ -n "$bt_mac" ]; then
-        # Cache the info block in memory so we don't query D-Bus twice!
         bt_info_cache=$(bluetoothctl info "$bt_mac")
-
         bt_dev=$(echo "$bt_info_cache" | grep "Alias:" | sed 's/.*Alias: //')
         bt_bat=$(echo "$bt_info_cache" | awk -F'[()]' '/Battery Percentage/ {print $2}')
 
         if [ -n "$bt_dev" ]; then
           bt_dev_escaped=$(escape "$bt_dev")
-
           if [ -n "$bt_bat" ]; then
             if [ "$bt_bat" -le 20 ]; then
               bt_color="$C_RED"
@@ -280,7 +314,6 @@ while true; do
   # ==========================================
   # 3. ULTRA SLOW UPDATES (Every 5min / 300 loops)
   # ==========================================
-  # PERFORMANCE FIX: Make checkupdates asynchronous so it never freezes the bar!
   [ ! -f /tmp/sway_updates.txt ] && touch /tmp/sway_updates.txt
 
   if [ "$loop_count" -eq 0 ]; then
@@ -328,7 +361,6 @@ while true; do
   # ==========================================
   # OUTPUT
   # ==========================================
-
   slots=()
   [ -n "$update_text" ] && slots+=("$update_text")
   [ -n "$net_speed_text" ] && slots+=("$net_speed_text")
@@ -355,12 +387,10 @@ while true; do
     fi
   done
 
-  # --- JSON SANITIZER ---
   safe_output="${final_output//$'\n'/ }"
   safe_output="${safe_output//\\/\\\\}"
   safe_output="${safe_output//\"/\\\"}"
 
-  # Print using the robust i3bar JSON protocol
   printf ',[{"full_text": "%s", "markup": "pango"}]\n' "$safe_output"
 
   timer=$(((timer + 1) % 5))
