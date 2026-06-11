@@ -7,4 +7,5 @@ node = "lts"
 opencode = "latest"
 pi = "latest"
 topgrade = "latest"
+yt-dlp = { version = "latest", rename_exe = "yt-dlp" }
 zig = "master"
