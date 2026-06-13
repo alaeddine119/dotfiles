@@ -1,9 +1,9 @@
 configuration {
     /* 1. Enable Modi: We must include 'combi' here */
-    modi: "combi,drun,calc";
+    modi: "combi,drun";
 
     /* 2. Define Combi: This tells Combi exactly what to show */
-    combi-modes: "drun,calc";
+    combi-modes: "drun";
 
     /* 3. Formatting */
     font: "JetBrainsMono Nerd Font 16";
