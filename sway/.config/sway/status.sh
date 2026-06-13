@@ -7,6 +7,9 @@ BAT_PATH="/sys/class/power_supply/macsmc-battery"
 
 # Wifi Interface
 WIFI_IFACE="wlan0"
+# Auto-detect the exact Asahi Wi-Fi Interface (e.g., wlp1s0f0) using nmcli
+WIFI_IFACE=$(nmcli -t -f DEVICE,TYPE device 2>/dev/null | awk -F: '$2=="wifi" {print $1; exit}')
+[ -z "$WIFI_IFACE" ] && WIFI_IFACE="wlan0"
 
 # --- Colors (Catppuccin Macchiato) ---
 C_RED="#eeeeee"    # Alerts, High Temp, Low Battery
@@ -273,8 +276,8 @@ while true; do
     # --- Wi-Fi ---
     if [ -f "/sys/class/net/$WIFI_IFACE/operstate" ] && [ "$(cat "/sys/class/net/$WIFI_IFACE/operstate")" = "up" ]; then
       wifi_up=1
-      ssid=$(iwgetid -r 2>/dev/null)
-      [ -z "$ssid" ] && ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes' | cut -d: -f2)
+      # Replaced iwgetid with modern nmcli for Fedora
+      ssid=$(nmcli -t -f NAME connection show --active 2>/dev/null | head -n 1)
       [ -z "$ssid" ] && ssid="Connected"
       ssid=$(escape "$ssid")
       wifi_text="<span color='$C_BLUE'>$ssid 󰖩</span>"
@@ -318,7 +321,8 @@ while true; do
 
   if [ "$loop_count" -eq 0 ]; then
     (
-      updates=$(checkupdates 2>/dev/null | wc -l)
+      # Replaced Arch's checkupdates with Fedora's dnf check-update
+      updates=$(dnf check-update -q | awk 'NF {count++} END {print count+0}')
       echo "$updates" >/tmp/sway_updates.txt
     ) &
   fi
