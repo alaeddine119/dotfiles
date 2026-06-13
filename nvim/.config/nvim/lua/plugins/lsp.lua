@@ -34,8 +34,6 @@ require("mason-tool-installer").setup({
 		"rustywind",
 		"rust_analyzer",
 		"vtsls",
-		"gopls",
-		"goimports",
 		"eslint-lsp",
 		"stylua",
 		"oxlint",
