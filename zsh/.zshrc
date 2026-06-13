@@ -76,6 +76,15 @@ if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     export PATH="$HOME/.local/share/bob/nvim-bin:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 
+# pnpm
+export PNPM_HOME="/home/alaeddine/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end
+
+
 export EDITOR='nvim'
 export VISUAL='nvim'
 export NB_EDITOR='nvim'
@@ -110,13 +119,14 @@ unset rc
 #  TOOL INITIALIZATION #
 # ================================================== #
 
+eval "$(mise activate zsh --shims)"
 eval "$(tv init zsh)"
 eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
-eval "$(mise activate zsh --shims)"
 
 
 
 autoload bashcompinit
 bashcompinit
-source "/home/alaeddine/.local/share/bash-completion/completions/appman"
+
+

@@ -7,6 +7,7 @@ foreground = #E0E0E0
 
 # Hardware-Accelerated Typography Stack
 font-family = JetBrains Mono
+font-family = JuliaMono
 font-family = Kawkab Mono
 font-family = Noto Color Emoji
 font-size = 14
