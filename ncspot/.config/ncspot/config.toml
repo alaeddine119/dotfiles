@@ -1,0 +1,32 @@
+# Audio Quality
+bitrate = 320
+
+# Notifications
+notify = true
+[notification_format]
+title = "%title"
+body = "%artists"
+
+# UI Settings
+use_nerdfont = true
+cover_max_scale = 2
+
+# Rosé Pine Theme Palette
+[theme]
+background = "#000000"
+primary = "#e0def4"
+secondary = "#908caa"
+title = "#c4a7e7"
+playing = "#ebbcba"
+playing_selected = "#ebbcba"
+playing_bg = "#333333"
+highlight = "#e0def4"
+highlight_bg = "#333333"
+error = "#e0def4"
+error_bg = "#eb6f92"
+statusbar = "#000000"
+statusbar_progress = "#ebbcba"
+statusbar_bg = "#333333"
+cmdline = "#e0def4"
+cmdline_bg = "#000000"
+search_match = "#f6c177"
