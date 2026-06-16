@@ -21,6 +21,9 @@ C_PEACH="#eeeeee"  # UI / Peripherals Group
 C_TEXT="#eeeeee"   # Default Text / Date
 C_SEP="#eeeeee"    # Muted grey for separators
 
+# --- BiDi Isolation Controls (Fixes Arabic/RTL Layout Jumping) ---
+LRM=$(printf '\u200E') # Left-to-Right Mark
+
 # --- Escaping for Pango & JSON ---
 escape() {
   local t="$1"
@@ -46,11 +49,10 @@ read -r _ user nice system idle iowait irq softirq steal _ </proc/stat
 prev_total=$((user + nice + system + idle + iowait + irq + softirq + steal))
 prev_idle=$((idle + iowait))
 
-sleep 0.5
-
 timer=0
 loop_count=0
 weather_loop_count=0
+media_scroll=0
 bat_text="Loading..."
 wifi_text=""
 bt_text=""
@@ -193,8 +195,9 @@ while true; do
     net_speed_text=""
   fi
 
-  # --- Date (Neutral Text Color, No Icon) ---
-  date_text="<span color='$C_TEXT'>$(date +'%a %-d %H:%M:%S')</span>"
+  # --- Date (Neutral Text Color, Zero-Fork Bash Native) ---
+  printf -v current_time '%(%a %-d %H:%M:%S)T' -1
+  date_text="<span color='$C_TEXT'>$current_time</span>"
 
   # ==========================================
   # 2. SLOW UPDATES (Every 5 seconds)
@@ -275,11 +278,13 @@ while true; do
 
     # --- Wi-Fi ---
     if [ -f "/sys/class/net/$WIFI_IFACE/operstate" ] && [ "$(cat "/sys/class/net/$WIFI_IFACE/operstate")" = "up" ]; then
+      # ONLY query nmcli if we just transitioned from disconnected to connected
+      if [ $wifi_up -eq 0 ]; then
+        ssid=$(nmcli -t -f NAME connection show --active 2>/dev/null | head -n 1)
+        [ -z "$ssid" ] && ssid="Connected"
+        ssid=$(escape "$ssid")
+      fi
       wifi_up=1
-      # Replaced iwgetid with modern nmcli for Fedora
-      ssid=$(nmcli -t -f NAME connection show --active 2>/dev/null | head -n 1)
-      [ -z "$ssid" ] && ssid="Connected"
-      ssid=$(escape "$ssid")
       wifi_text="<span color='$C_BLUE'>$ssid 󰖩</span>"
     else
       wifi_up=0
@@ -289,29 +294,29 @@ while true; do
 
     # --- Native Bluetooth + Battery ---
     bt_text=""
-    if bluetoothctl show | grep -q "Powered: yes"; then
-      bt_mac=$(bluetoothctl devices Connected | awk '{print $2}' | head -n 1)
+    # Grab the connected MAC directly. If empty, skip all heavy BT processing.
+    bt_mac=$(bluetoothctl devices Connected 2>/dev/null | awk '{print $2}' | head -n 1)
 
-      if [ -n "$bt_mac" ]; then
-        bt_info_cache=$(bluetoothctl info "$bt_mac")
-        bt_dev=$(echo "$bt_info_cache" | grep "Alias:" | sed 's/.*Alias: //')
-        bt_bat=$(echo "$bt_info_cache" | awk -F'[()]' '/Battery Percentage/ {print $2}')
+    if [ -n "$bt_mac" ]; then
+      bt_info_cache=$(bluetoothctl info "$bt_mac" 2>/dev/null)
+      bt_dev=$(echo "$bt_info_cache" | grep "Alias:" | sed 's/.*Alias: //')
+      bt_bat=$(echo "$bt_info_cache" | awk -F'[()]' '/Battery Percentage/ {print $2}')
 
-        if [ -n "$bt_dev" ]; then
-          bt_dev_escaped=$(escape "$bt_dev")
-          if [ -n "$bt_bat" ]; then
-            if [ "$bt_bat" -le 20 ]; then
-              bt_color="$C_RED"
-            else
-              bt_color="$C_GREEN"
-            fi
-            bt_text="<span color='$bt_color'>(${bt_bat}% 󰥉)</span> <span color='$C_BLUE'>$bt_dev_escaped 󰂱</span>"
+      if [ -n "$bt_dev" ]; then
+        bt_dev_escaped=$(escape "$bt_dev")
+        if [ -n "$bt_bat" ]; then
+          if [ "$bt_bat" -le 20 ]; then
+            bt_color="$C_RED"
           else
-            bt_text="<span color='$C_BLUE'>$bt_dev_escaped 󰂱</span>"
+            bt_color="$C_GREEN"
           fi
+          bt_text="<span color='$bt_color'>(${bt_bat}% 󰥉)</span> <span color='$C_BLUE'>$bt_dev_escaped 󰂱</span>"
+        else
+          bt_text="<span color='$C_BLUE'>$bt_dev_escaped 󰂱</span>"
         fi
       fi
     fi
+
   fi
 
   # ==========================================
@@ -321,7 +326,6 @@ while true; do
 
   if [ "$loop_count" -eq 0 ]; then
     (
-      # Replaced Arch's checkupdates with Fedora's dnf check-update
       updates=$(dnf check-update -q | awk 'NF {count++} END {print count+0}')
       echo "$updates" >/tmp/sway_updates.txt
     ) &
@@ -362,11 +366,50 @@ while true; do
     weather_text=""
   fi
 
+  # --- Media Player (Media Group: Green) ---
+  # Query both status and metadata in one single command separated by a pipe
+  player_info=$(playerctl metadata --format "{{status}}|{{title}}" 2>/dev/null)
+
+  if [ -n "$player_info" ]; then
+    # Bash string manipulation to split the status and the title
+    play_status="${player_info%%|*}"
+    raw_media="${player_info#*|}"
+
+    max_len=25
+    len=${#raw_media}
+
+    if [ "$len" -gt "$max_len" ]; then
+      padded_media="${raw_media} • "
+      pad_len=${#padded_media}
+      offset=$((media_scroll % pad_len))
+      scrolled="${padded_media:offset}${padded_media:0:offset}"
+      display_media="${scrolled:0:max_len}"
+      media_scroll=$((media_scroll + 6))
+    else
+      display_media="$raw_media"
+      media_scroll=0
+    fi
+
+    escaped_media=$(escape "$display_media")
+
+    if [ "$play_status" = "Playing" ]; then
+      media_icon="󰎆"
+    else
+      media_icon="󰏤"
+    fi
+
+    media_text="${LRM}<span color='$C_GREEN'>${escaped_media} $media_icon</span>${LRM}"
+  else
+    media_text=""
+    media_scroll=0
+  fi
+
   # ==========================================
   # OUTPUT
   # ==========================================
   slots=()
   [ -n "$update_text" ] && slots+=("$update_text")
+  [ -n "$media_text" ] && slots+=("$media_text")
   [ -n "$net_speed_text" ] && slots+=("$net_speed_text")
   [ -n "$wifi_text" ] && slots+=("$wifi_text")
   [ -n "$bt_text" ] && slots+=("$bt_text")
@@ -385,9 +428,9 @@ while true; do
   final_output=""
   for slot in "${slots[@]}"; do
     if [ -z "$final_output" ]; then
-      final_output="$slot"
+      final_output="${LRM}${slot}${LRM}"
     else
-      final_output="${final_output} <span color='$C_SEP'>•</span> ${slot}"
+      final_output="${final_output} ${LRM}<span color='$C_SEP'>•</span>${LRM} ${LRM}${slot}${LRM}"
     fi
   done
 
