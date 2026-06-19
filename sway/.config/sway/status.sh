@@ -375,7 +375,7 @@ while true; do
     play_status="${player_info%%|*}"
     raw_media="${player_info#*|}"
 
-    max_len=25
+    max_len=30
     len=${#raw_media}
 
     if [ "$len" -gt "$max_len" ]; then
