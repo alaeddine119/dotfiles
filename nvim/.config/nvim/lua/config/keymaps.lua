@@ -47,6 +47,10 @@ map("n", "<leader>sR", function()
 	Snacks.picker.registers()
 end, { desc = "Registers" })
 
+map("n", "<leader>se", function()
+	Snacks.explorer()
+end, { desc = "Snacks Explorer" })
+
 map({ "n", "t" }, "<C-t>", function()
 	Snacks.terminal.toggle()
 end, { desc = "Toggle Terminal" })
