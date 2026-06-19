@@ -10,7 +10,7 @@ font-family = JetBrains Mono
 font-family = JuliaMono
 font-family = Kawkab Mono
 font-family = Noto Color Emoji
-font-size = 14
+font-size = 12
 adjust-cell-height = 25%
 
 # Automated Tmux Multiplexer Boot Loop
